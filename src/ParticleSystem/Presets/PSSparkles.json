@@ -1,0 +1,29 @@
+﻿{
+
+	"_comment": "A particle system's configuration file | SPARKLES || after every modifications sometimes you need to empty your cache",
+
+	"Properties":{
+		"StartColour":[240, 20, 10, 1],
+		"StartColourRandom":[0, 0, 0, 0.5],
+		"FinishColour":[0, 0, 0, 0.3],
+		"FinishColourRandom":[0, 0, 50, 0.0],
+		"Size":2,
+		"SizeRandom":5,
+		"LifeSpan":0.5,
+		"LifeSpanRandom": 0.7,
+		"Location":"326, 150",
+		"LocationRandom":"2,0",
+		"BlendMode":"lighter",
+		"Gravity":"0, 0.01",
+		"Speed":1,
+		"SpeedRandom":2,
+		"Sharpness":0.1,
+		"SharpnessRandom":0.1,
+		"Z":95,
+		"Angle": -0.5,
+		"AngleRandom": 0.7,
+		"MaxParticles": 20,
+		"MaxSpeed":5
+	}
+
+}

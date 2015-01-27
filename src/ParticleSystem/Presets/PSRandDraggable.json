@@ -1,0 +1,30 @@
+﻿{
+
+	"_comment": "A particle system's configuration file | RAND-DRAGGABLE || after every modifications sometimes you need to empty your cache",
+
+	"Properties":{
+		"StartColour":[255, 255, 120, 0.2],
+		"StartColourRandom":[255, 255, 255, 1],
+		"FinishColour":[50, 1, 1, 0],
+		"FinishColourRandom":[100, 50, 50, 0],
+		"Alpha":0.1,
+		"Size":10,
+		"Angle": 0,
+		"AngleRandom": 3.14159,
+		"SizeRandom":30,
+		"LifeSpan":2,
+		"LifeSpanRandom": 0.5,
+		"Location":"426, 150",
+		"LocationRandom":"0,0",
+		"MaxParticles":500,
+		"BlendMode":"lighter",
+		"Gravity":"0.0, 0.0",
+		"Speed":0.4,
+		"SpeedRandom":0.2,
+		"Sharpness":10,
+		"SharpnessRandom":0,
+		"Z":5,
+		"Draggable": true
+	}
+
+}

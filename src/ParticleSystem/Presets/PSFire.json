@@ -1,0 +1,28 @@
+﻿{
+
+	"_comment": "A particle system's configuration file | FIRE || after every modifications sometimes you need to empty your cache",
+
+	"Properties":{
+		"StartColour":[255, 255, 120, 0.2],
+		"StartColourRandom":[0, 0, 0, 0.7],
+		"FinishColour":[255, 0, 0, 0],
+		"FinishColourRandom":[255, 0, 0, 0],
+		"Alpha":0.1,
+		"Size":10,
+		"SizeRandom":29,
+		"LifeSpan":1,
+		"LifeSpanRandom": 0.5,
+		"Location":"426, 150",
+		"LocationRandom":"1,0",
+		"MaxParticles":300,
+		"BlendMode":"lighter",
+		"Gravity":"0, -0.005",
+		"Speed":0.04,
+		"SpeedRandom":0.2,
+		"LifeSpan":1,
+		"Sharpness":10,
+		"SharpnessRandom":0,
+		"Z":5
+	}
+
+}
