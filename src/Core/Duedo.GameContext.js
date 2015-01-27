@@ -62,7 +62,6 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
     this._Boot(canvas, WWMaxX, WWMaxY, bool_enablePhysics, rendererType);
 };
 
-
 /* Constructor */
 Duedo.GameContext.prototype.constructor = Duedo.GameContext;
 
