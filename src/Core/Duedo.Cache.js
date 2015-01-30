@@ -9,14 +9,14 @@ This is where all the buffered data is stored
 */
 
 Duedo.Cache = function(gameContext) {
-    this.Game = gameContext || Duedo.Global.Games[0];
+	this.Game = gameContext || Duedo.Global.Games[0];
 
-    this._Data = {
-        _Sounds:  {},
-        _Images:  {},
-        _JSON:    {},
-        _Txt:     {}
-    };
+	this._Data = {
+		_Sounds:  {},
+		_Images:  {},
+		_JSON:    {},
+		_Txt:     {}
+	};
 	
 
 	this.Total  = 0;
@@ -52,12 +52,12 @@ Duedo.Cache.prototype.AddSound = function( bufferedData, name ) {
  * Slow. Better to use the specific function: like GetSound for sounds etc...
 */
 Duedo.Cache.prototype.Get = function (name) {
-    
-    for (var i in this._Data)
-        if (!Duedo.Utils.IsNull(this._Data[i][name]))
-            return this._Data[i][name];
+	
+	for (var i in this._Data)
+		if (!Duedo.Utils.IsNull(this._Data[i][name]))
+			return this._Data[i][name];
 
-    return null;
+	return null;
 };
 
 
@@ -66,7 +66,7 @@ Duedo.Cache.prototype.Get = function (name) {
 */
 Duedo.Cache.prototype.GetSound = function( name ) {
 
-    return this._Data._Sounds[name];
+	return this._Data._Sounds[name];
 
 };
 
@@ -76,7 +76,7 @@ Duedo.Cache.prototype.GetSound = function( name ) {
 */
 Duedo.Cache.prototype.RemoveSound = function( name ) {
 
-    delete this._Data._Sounds[name];
+	delete this._Data._Sounds[name];
 	this.Total--;
 };
 
@@ -106,7 +106,7 @@ Duedo.Cache.prototype.AddImage = function( bufferedData, name ) {
 */
 Duedo.Cache.prototype.GetImage = function( name ) {
 
-    return this._Data._Images[name];
+	return this._Data._Images[name];
 
 };
 
@@ -116,7 +116,7 @@ Duedo.Cache.prototype.GetImage = function( name ) {
 */
 Duedo.Cache.prototype.RemoveImage = function( name ) {
 
-    delete this._Data._Images[name];
+	delete this._Data._Images[name];
 	this.Total--;
 };
 
@@ -146,7 +146,7 @@ Duedo.Cache.prototype.AddJSON = function( bufferedData, name ) {
 */
 Duedo.Cache.prototype.GetJSON = function( name ) {
 		
-    return this._Data._JSON[name];
+	return this._Data._JSON[name];
 
 };
 
@@ -157,7 +157,7 @@ Duedo.Cache.prototype.GetJSON = function( name ) {
 */
 Duedo.Cache.prototype.RemoveJSON = function( name ) {
 
-    delete this._Data._JSON[name];
+	delete this._Data._JSON[name];
 	this.Total--;
 };
 
@@ -186,7 +186,7 @@ Duedo.Cache.prototype.AddTxt = function( bufferedData, name ) {
 */
 Duedo.Cache.prototype.GetTxt = function( name ) {
 	
-    return this._Data._Txt[name];
+	return this._Data._Txt[name];
 
 };
 
@@ -197,7 +197,7 @@ Duedo.Cache.prototype.GetTxt = function( name ) {
 */
 Duedo.Cache.prototype.RemoveTxt = function( name ) {
 
-    delete this._Data._Txt[name];
+	delete this._Data._Txt[name];
 	this.Total--;
 };
 
@@ -209,24 +209,24 @@ Duedo.Cache.prototype.RemoveTxt = function( name ) {
 */
 Duedo.Cache.prototype.Destroy = function() {
 
-    for (var i in this._Data._Sounds)
+	for (var i in this._Data._Sounds)
 	{
-	    delete this._Data._Sounds[i];
+		delete this._Data._Sounds[i];
 	}
 
-    for (var i in this._Data._Images)
+	for (var i in this._Data._Images)
 	{
-	    delete this._Data._Images[i];
+		delete this._Data._Images[i];
 	}
 
-    for (var i in this._Data._JSON)
+	for (var i in this._Data._JSON)
 	{
-	    delete this._Data._JSON[i];
+		delete this._Data._JSON[i];
 	}
 
-    for (var i in this._Data._Txt)
+	for (var i in this._Data._Txt)
 	{
-	    delete this._Data._Txt[i];
+		delete this._Data._Txt[i];
 	}
 
 
