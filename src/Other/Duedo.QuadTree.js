@@ -6,7 +6,8 @@ Initially based on http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-q
 
 
 Places a Duedo Object that has a Location vector and a dimension (.Width, .Height) inside a quadtree grid
-
+Sueggestion: if you want to use points instead of graphic objects, remember to add a reference of your big data to that point
+ex: point1.RelatedObject = myEntity;
 ==========================================
 */
 
@@ -93,9 +94,14 @@ Duedo.QuadTree.prototype.Connect = function () {
 */
 Duedo.QuadTree.prototype.Clear = function() {
 	
-	this._ObjectsList = [];
-	return this;
-
+    this._ObjectsList = [];
+	 
+    for( var i=0; i < this._Nodes.length; i++ ) {
+        if( typeof this._Nodes[i] !== 'undefined' ) {
+            this._Nodes[i].Clear();
+            delete this._Nodes[i];
+        }
+    }
 };
 
 
@@ -188,6 +194,7 @@ Duedo.QuadTree.prototype.Insert = function(rect) {
 
 	//Insert into the main list
 	this._ObjectsList.push(rect);
+	rect.__QNode = this;
 
 	//... then check if we are in need of splitting the node
 	if(this._ObjectsList.length > this.MaxObjects && this._Level < this.MaxLevels)
@@ -214,6 +221,11 @@ Duedo.QuadTree.prototype.Insert = function(rect) {
 
 
 
+/*
+ * Add
+ * @public
+ * Same as Insert
+*/
 Duedo.QuadTree.prototype.Add = Duedo.QuadTree.prototype.Insert;
 
 
@@ -238,7 +250,7 @@ Duedo.QuadTree.prototype._HasChildNodes = function() {
 
 /*
  * Retrieve
- * Return objects that can collide with @rect rect
+ * Return nearest objects to rect
 */
 Duedo.QuadTree.prototype.Retrieve = function(rect) {
 
@@ -280,21 +292,49 @@ Object.defineProperty(Duedo.QuadTree.prototype, "IsEmpty", {
 
 });
 
+
 /*
  * Update
  * Update the quadtree for moving objects
 */
 Duedo.QuadTree.prototype.Update = function () {
 
-	for (var x = this._ObjectsList.length - 1; x >= 0; x--) {
-		var ob = this.Remove(this._ObjectsList[x]);
-		if(ob != null)
-			this._MainNode.Insert(ob);
-	}
+    //TODO:
+    //Remove from current node
+    //add in the next/or actual node that fits
+    //Only when the last position is different from the new?
 
-	for (var i = this._Nodes.length - 1; i >= 0; i--) {
-		this._Nodes[i].Update();
-	}
+    for (var x = this._ObjectsList.length - 1; x >= 0; x--) {
+        var ob = this.Remove(this._ObjectsList[x]);
+        if (ob != null) {
+
+            /*
+            pnode = ob.__QNode;
+            not_inserted = true;
+            while (pnode && not_inserted)
+            {
+                if (pnode)
+                {
+                    var i = pnode.GetIndex(ob);
+                    if (i != -1) {
+                        pnode.Insert(ob);
+                        not_inserted = false;
+                        break;
+                    }
+                }
+
+
+                pnode = pnode._ParentNode;
+                if (!pnode)
+                    this._MainNode.Insert(ob);
+            }
+            */this._MainNode.Insert(ob);
+        }
+    }
+
+    /*Update subnodes*/
+    for (var i = this._Nodes.length - 1; i >= 0; i--) 
+        this._Nodes[i].Update();
 };
 
 
@@ -304,16 +344,15 @@ Duedo.QuadTree.prototype.Update = function () {
 */
 Duedo.QuadTree.prototype.Remove = function (obj) {
 
-    var index = this._ObjectsList.indexOf(obj);
-    if (index != -1)
-        return this._ObjectsList.splice(index, 1)[0];
-    else return null;
+    var ind = this._ObjectsList.indexOf(obj);
+    if (ind != -1)
+        return this._ObjectsList.splice(ind, 1)[0];
+
+    return null;
     
 };
 
 
-Duedo.QuadTree.prototype.__Remove = function (__obj) {
-};
 
 
 /*
@@ -325,16 +364,20 @@ Duedo.QuadTree.prototype.__Remove = function (__obj) {
  * Draw
  * Draw this node
 */
+
+Duedo.QuadTree.__dr_index = 0;
+
 Duedo.QuadTree.prototype.Draws = function(ctx) {
 
-	this.DrawObjects(ctx);
+    this.DrawObjects(ctx);
 	ctx.strokeStyle = "black";
 	ctx.rect(this._Bounds.Location.X, this._Bounds.Location.Y, this._Bounds.Width, this._Bounds.Height);
 	ctx.stroke();
 	
+    /*Draw children nodes*/
 	if (this._HasChildNodes())
 		for (var i in this._Nodes)
-			this._Nodes[i].Draws(ctx);
+		    this._Nodes[i].Draws(ctx);
 };
 
 
@@ -343,22 +386,13 @@ Duedo.QuadTree.prototype.Draws = function(ctx) {
 */
 Duedo.QuadTree.prototype.DrawObjects = function(ctx) {
 
-	var obj;
-	
 	ctx.strokeStyle = "black";
 
-	for(var i = 0; i < this._ObjectsList.length; i++ ) {
-		obj = this._ObjectsList[i];
-		ctx.strokeRect(obj.Location.X, obj.Location.Y, 5, 5);
-	}
-
+	for(var i = 0; i < this._ObjectsList.length; i++ )
+		ctx.strokeRect(this._ObjectsList[i].Location.X, this._ObjectsList[i].Location.Y, 5, 5);
+    
 	/*Total per node*/
-	if(this == this._MainNode)
-		ctx.strokeText(this._ObjectsList.length, this._Bounds.Location.X + 10, this._Bounds.Location.Y + 30);
-	else
 	ctx.strokeText(this._ObjectsList.length, this._Bounds.Location.X + 10, this._Bounds.Location.Y + 10);
-	
-
 };
 
 

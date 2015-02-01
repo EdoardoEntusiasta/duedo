@@ -63,3 +63,12 @@ Duedo.Point.prototype.Rotate = function (rad, center) {
     this.Y = center.Y + (dx * Math.sin(rad) + dy * Math.cos(rad));
     return this;
 };
+
+
+Object.defineProperty(Duedo.Point.prototype, "Width", {
+    get: function () { return 1; }
+});
+
+Object.defineProperty(Duedo.Point.prototype, "Height", {
+    get: function () { return 1; }
+});
