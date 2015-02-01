@@ -307,28 +307,8 @@ Duedo.QuadTree.prototype.Update = function () {
     for (var x = this._ObjectsList.length - 1; x >= 0; x--) {
         var ob = this.Remove(this._ObjectsList[x]);
         if (ob != null) {
-
-            /*
-            pnode = ob.__QNode;
-            not_inserted = true;
-            while (pnode && not_inserted)
-            {
-                if (pnode)
-                {
-                    var i = pnode.GetIndex(ob);
-                    if (i != -1) {
-                        pnode.Insert(ob);
-                        not_inserted = false;
-                        break;
-                    }
-                }
-
-
-                pnode = pnode._ParentNode;
-                if (!pnode)
-                    this._MainNode.Insert(ob);
-            }
-            */this._MainNode.Insert(ob);
+            //Instead of inserting from the "main node" should i move up gradually from this object?
+            this._MainNode.Insert(ob);
         }
     }
 
