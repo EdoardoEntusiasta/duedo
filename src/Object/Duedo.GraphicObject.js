@@ -317,10 +317,12 @@ Object.defineProperty(Duedo.GraphicObject.prototype, "Interactive", {
     set: function (bool) {
 
         if (bool === true) {
-            this._Interactive = this.Game.InputManager.InteractivityManager.Add(this);
+            if(!this._Interactive)
+                this._Interactive = this.Game.InputManager.InteractivityManager.Add(this);
         }
         else {
-            this._Interactive = this.Game.InputManager.InteractivityManager.Remove(this);
+            if(this._Interactive)
+                this._Interactive = this.Game.InputManager.InteractivityManager.Remove(this);
         }
 
     },

@@ -68,7 +68,7 @@ Duedo.Animation.prototype._init = function() {
     this._Paused       = false;
     this._Yoyo         = false;
     this._YoyoRepeated = 0;
-
+    
     this._Data         = {};
 
     return this;

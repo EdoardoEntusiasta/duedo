@@ -399,7 +399,7 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 
 	//Update coordinates
 	if (obj.FixedToViewport) {
-		obj.ViewportOffset.Add(DirVector);
+	    obj.ViewportOffset.Add(DirVector);
 	}
 	else
 	{

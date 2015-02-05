@@ -25,16 +25,16 @@ Duedo.ParticleSystem = function( gameContext, name ){
 	this.IsDead = true;
 
 	/*Location random*/
-	this.LocationRandom = new Duedo.Vector2(0, 5);
+	this.LocationRandom = new Duedo.Vector2(0, 0);
 
     /*Size*/
 	this.Size = 15;
 	this.SizeRandom = 30;
 
     /*Speed*/
-	this.Speed = 5;
-	this.SpeedRandom = 10;
-	this.MaxSpeed = 1;
+	this.Speed = 0.1;
+	this.SpeedRandom = 1.2;
+	this.MaxSpeed = 2;
 
     /*Lifespan*/
 	this.LifeSpan = 1;
@@ -42,10 +42,10 @@ Duedo.ParticleSystem = function( gameContext, name ){
 
     /*Angle (rad) */
 	this.Angle = 0;
-	this.AngleRandom = 0;
+	this.AngleRandom = Math.PI;
 
     /*Gravity*/
-	this.Gravity = new Duedo.Vector2(0.0, -0.01);
+	this.Gravity = new Duedo.Vector2(0.0, 0.0);
 
     /*Texture*/
 	this.Texture = null;
@@ -444,8 +444,8 @@ Duedo.ParticleSystem.prototype.PostUpdate = function() {
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
     }
     
 };

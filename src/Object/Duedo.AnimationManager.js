@@ -49,10 +49,10 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
     var Animation;
     var pValue;
     var self = this; 
-    
+    var ID = this.Animations.length;
+
     Duration  = Duration != null ? Duration : 1 /*second*/;
     Animation = new Duedo.Animation(this.Game, this.Parent);
-
 
     for (var PropertyName in AffectedProperties) {
         
@@ -63,7 +63,9 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         Animation.Tweening            = Tweening || "Linear";
         Animation._Data[PropertyName] = {};
         Animation.Length++;
+        Animation.ID                  = ID;
         
+
         pValue = AffectedProperties[PropertyName];
             
         /*Destination values as object es: Location {X:10, Y:10}*/
@@ -127,6 +129,7 @@ Duedo.AnimationManager.prototype.Update = function (deltaT) {
         {
             case Duedo.Animation._ENDED_:
                 /*Remove animation*/
+                /*FIX: the triggers are repeat for every affected properties of the same instance*/
                 this.Animations[i]._CallTriggers("complete", this.Parent);
                 this.Animations.splice(i, 1); 
                 continue;
