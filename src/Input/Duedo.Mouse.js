@@ -49,22 +49,45 @@ Duedo.Mouse = function(gameContext, InputManager) {
 	this.ButtonRight;
 	this.ButtonMiddle;
 
+
 	/*Used for mouse location history recording*/
 	this._NextHistoryPush = 0;
 	this._PHistory = [];
 
-	/*Callbacks*/
+    /*Callbacks*/
+    /*
+     * Mouse out from canvas
+    */
 	this.OutCallback;
+
+    /*
+     * Mouse enter canvas
+    */
 	this.EnterCallback;
 	
+    /*
+     * LeftClick callback
+    */
 	this.LeftCallback;
+
+    /*
+     * RightClick callback
+    */
 	this.RightCallback;
+
+    /*
+     * MiddleClick callback
+    */
 	this.MiddleCallback;
 
+    /*
+     * // Inverse callback
+    */
 	this.LeftUpCallback;
 	this.RightUpCallback;
 	this.MiddleUpCallback;
 	
+
 	//DoubleClickInterval
 	this.DoubleClickInterval = 0.5;
 
