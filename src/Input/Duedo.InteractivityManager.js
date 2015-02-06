@@ -148,10 +148,10 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 			if (this._HookedObject.OnPointerUp)
 				this._HookedObject.OnPointerUp.call(this._HookedObject);
 
-			if (this._HookedObject._Cache['OriginalZValue'])
+			if (typeof this._HookedObject._Cache['OriginalZValue'] != "undefined")
 			{
 				this._HookedObject.Z = this._HookedObject._Cache['OriginalZValue'];
-				this._HookedObject._Cache['OriginalZValue'] = null;
+				delete this._HookedObject._Cache['OriginalZValue'];
 			}
 
 			this._HookedObject.LeftClicked = false;
@@ -377,9 +377,9 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 			this._DragMouseLastLocation = Pointer.Location.Clone();
 
 		
-	if (obj.DragBringToTop && !obj._Cache['OriginalZValue'])
+	if (obj.DragBringToTop && typeof obj._Cache['OriginalZValue'] == "undefined")
 	{
-		obj._Cache['OriginalZValue'] = obj.Z;
+	    obj._Cache['OriginalZValue'] = obj.Z;
 		obj.Z = this.Game.Renderer.MaxZPlane + 1;
 	}
 

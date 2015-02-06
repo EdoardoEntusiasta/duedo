@@ -202,19 +202,10 @@ Duedo.Renderer.prototype.PreRender = function() {
 	/*Check whether it is necessary to sort the objects by Z*/
 	if(this.SortPlanes)
 	{
-		//Sort state children
-		if (!Duedo.Utils.IsNull(this.Game.Entities[this.Game.StateManager.CurrentState()])) {
-			/*ADD/FIX: se più oggetti hanno lo stesso Z chi viene usato per prima? Stessa cosa nel renderer*/
-			this.SortList(this.Game.Entities[this.Game.StateManager.CurrentState()], this.Sorting.OrderType);
-			this._Cache["_RequestMinMaXUpdate"] = true;
-		}
-
-		//Sort stage children
-		this.SortList(this.Game.Stage.Children, this.Sorting.OrderType);
-
+	    this.SortList(this.Game.Entities, this.Sorting.OrderType);
+	    this._Cache["_RequestMinMaXUpdate"] = true;
 		this.SortPlanes = false;
 	}
-
 
 	return this;
 
@@ -231,109 +222,42 @@ Duedo.Renderer.prototype.Render = function() {
 
 	/*Transform and scale*/
 	this.SetTransformationMatrix();
-	
 	/*Translate*/
 	this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
-	
-	if(this.ClearBeforeRender)
-	{
+	/*Clear*/
+	if(this.ClearBeforeRender) 
 		this.Clear();
+    //Cycle
+	var lng = this.Game.Entities.length - 1;
+	while((child = this.Game.Entities[lng--]) != null) {
+        if(child.ParentState == this.Game.StateManager.CurrentState() || child.ParentState == -1) {
+            if (child["Draw"]) {
+                child.RenderOrderID = this.CurrentRenderOrderID++;
+                child.Draw(this.Context);
+                if (this._Cache["_RequestMinMaXUpdate"])
+                    this._UpdateMinMaxPlane(child);
+                /*Draw attached children*/
+                if (child.Children)
+                    if (child.Children.length) {
+                        for (var x = child.Children.length - 1; x >= 0; x--) {
+                            if (child.Children[x]["Draw"]) {
+                                child.Children[x].RenderOrderID = this.CurrentRenderOrderID++;
+                                child.Children[x].Draw(this.Context);
+                                if (this._Cache["_RequestMinMaXUpdate"])
+                                    this._UpdateMinMaxPlane(child.Children[x]);
+                            }
+                        }
+                    }
+            }
+
+        }
+
 	}
 	
-	//Draw entities of the current state
-	var cs = this.Game.StateManager.CurrentState();
-	
-	//Cycle
-	if(!Duedo.Utils.IsNull(this.Game.Entities[cs]))
-	{
-		for(var i = this.Game.Entities[cs].length - 1; i >= 0; i--)
-		{
-			child = this.Game.Entities[cs][i];
-		   
-			if (child["Draw"]) {
-				child.RenderOrderID = this.CurrentRenderOrderID++;
-
-				child.Draw(this.Context);
-
-				if (this._Cache["_RequestMinMaXUpdate"])
-					this._UpdateMinMaxPlane(child);
-
-				/*Draw attached children*/
-				if(child.Children)
-				if(child.Children.length) 
-				{
-					for(var x = child.Children.length - 1; x >= 0; x--) 
-					{
-						if(child.Children[x]["Draw"]) 
-						{
-							child.Children[x].RenderOrderID = this.CurrentRenderOrderID++;
-							child.Children[x].Draw(this.Context);
-
-							if (this._Cache["_RequestMinMaXUpdate"])
-								this._UpdateMinMaxPlane(child.Children[x]);
-						}
-					}       
-				} 
-			}
-		}
-	}
-
-	/*Draw main stage entities*/
-	this._DrawStage(this.Context);
-
 	/*Render additional graphics from the current state*/
 	this.Game.StateManager.RenderState(this.Context);
 
 	return this;
-
-};
-
-
-
-/*
- * _DrawStage
- * @private
- * Draw everything inside the generic stage
-*/
-Duedo.Renderer.prototype._DrawStage = function (ctx) {
-
-
-	for (var i = this.Game.Stage.Children.length - 1; i >= 0; i--) {
-
-		var ent = this.Game.Stage.Children[i];
-
-		if (!ent.Renderable) {
-			continue;
-		}
-
-		if (!Duedo.Utils.IsNull(ent["Draw"])) {
-
-			ent.RenderOrderID = this.Game.Renderer.CurrentRenderOrderID++;
-			ent.Draw(ctx);
-
-			if (this._Cache["_RequestMinMaXUpdate"])
-				this._UpdateMinMaxPlane(ent);
-
-			if (ent.Children)
-			if (ent.Children.length)
-			{
-				for (var x = ent.Children.length - 1; x >= 0; x--) {
-
-					if (typeof ent.Children[x]["Draw"] === "undefined")
-					{
-						ent.Children[x].RenderOrderID = this.Game.Renderer.CurrentRenderOrderID++;
-						ent.Children[x].Draw(ctx);
-
-						if (this._Cache["_RequestMinMaXUpdate"])
-							this._UpdateMinMaxPlane(ent.Children[x]);
-					}
-
-				}
-			}
-		}
-
-
-	}
 
 };
 

@@ -80,7 +80,7 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     Duedo.Global.Games.push(this);
 
     /*Entities*/
-    this.Entities = {};
+    this.Entities = [];
     /*Time/Tick*/
     this.ElapsedTime = 0;
     this.DeltaT      = 0;
@@ -189,34 +189,20 @@ Duedo.GameContext.prototype.Reboot = function (then) {
 */
 Duedo.GameContext.prototype.Add = function( object ) {
 
-    if(Duedo.Utils.IsNull(object))
-    {
+    if(Duedo.Utils.IsNull(object)){
         return null;
     }
 
+    /*Internal info*/
     object.Id = Duedo.__GenNextObjID();
+    object.ParentState = this.StateManager.CurrentState();
 
-    if(this.StateManager.CurrentState() && Duedo.Null(object.ParentState))
-    {
-        object.ParentState = this.StateManager.CurrentState();
-    }
-    
     /*Add into main stage*/
-    if(Duedo.Null(object.ParentState))
-    {
-        this.Stage.Add(object);
+    if(Duedo.Null(object.ParentState)) 
         object.ParentState = -1; //omnipresent
-    }
-    else
-    {
-        if( Duedo.Null(this.Entities[object.ParentState]) )
-        {
-            this.Entities[object.ParentState] = new Array();
-        }
 
-        this.Entities[object.ParentState].push(object);
-    }
-    
+    /*Push entity*/
+    this.Entities.push(object);
 
     /*Object BornTime*/
     object.BornTime = this.ElapsedTime;
@@ -224,6 +210,11 @@ Duedo.GameContext.prototype.Add = function( object ) {
     /*Request to sort the planes by the Z index*/
     this.Renderer.SortPlanes = true;
     
+    /*Call on stage add trigger*/
+    if (!Duedo.Utils.IsNull(object["_CallTriggers"])) {
+        object._CallTriggers("stageadd");
+    }
+
 
     return object;
 
