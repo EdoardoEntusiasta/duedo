@@ -33,7 +33,6 @@ Duedo.QUADTREE         = 22;
 Duedo.ANIMATIONMANAGER = 23;
 
 
-
 //2DContext.MeasureText
 Duedo.MeasureText = function (str, font) {
     var cv = document.createElement("canvas");

@@ -135,7 +135,7 @@ Duedo.Stage.prototype.PreUpdate = function(deltaT) {
     {
         var curState = this.Game.StateManager.CurrentState();
 
-        for(var i = this.Game.Entities[curState].length - 1; i >= 0; i-- )
+        for(var i = this.Game.Entities[curState].length - 1; i >= 0; i--)
         {
             var ent = this.Game.Entities[curState][i];
 

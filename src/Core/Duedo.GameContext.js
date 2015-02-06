@@ -235,34 +235,31 @@ Duedo.GameContext.prototype.AddEntity = Duedo.GameContext.prototype.Add;
 
 
 /*
+ * FPS
+ * Calculate FPS
+*/
+Duedo.GameContext.prototype.FPS = function (dt) {
+    if (Duedo.Utils.IsNull(dt))
+        dt = this.DeltaT;
+    return (1.0 / ((dt + dt) / 2.0));
+};
+
+
+
+/*
  * _Loop
  * private
  * Core auto main loop
 */
 Duedo.GameContext.prototype.__RunTicks = function() {
 
-    if( !this.Running )
-    {
+    if( !this.Running ) 
         return;
-    }
-
-    /*Run next frame*/
-    this.__Step();
     
+    this.__Step();
     //Call next tick and mem the current LoopID
     this._LoopID = requestAnimationFrame(this.__RunTicks.bind(this));
 
-};
-
-
-
-/*
- * FPS
- * Calculate FPS
-*/
-Duedo.GameContext.prototype.FPS = function (dt) {
-    if (Duedo.Utils.IsNull(dt)) dt = this.DeltaT;
-    return (1.0 / ((dt + dt) / 2.0));
 };
 
 
@@ -316,66 +313,37 @@ Duedo.GameContext.prototype.__Step = function() {
 */
 Duedo.GameContext.prototype.Simulate = function (Game, dt) {
 
-    /*PRE UPDATE*/
-    {
-        /*InputManager update*/
         Game.InputManager.Update(dt);
-        /*StateManager inceptive updates*/
         Game.StateManager.PreUpdate();
-        /*PhysicsEngine*/
         Game.PhysicsEngine.PreUpdate(dt);
-        /*Update entities*/
         Game.Stage.PreUpdate(dt);
-        /*Viewport*/
         Game.Viewport.PreUpdate();
-        /*Debug*/
         if (Game.Debug)
             Game.DebugStorage.PreUpdate(dt);
-    }
 
-    /*MAIN UPDATE*/
-    {
-        
-        /*Update SpeechRecognition*/
-        if (!Duedo.Utils.IsNull(Game.SpeechRecognition)) Game.SpeechRecognition.Update(dt);
-        /*Update StateManager*/
+        if (!Duedo.Utils.IsNull(Game.SpeechRecognition)) 
+            Game.SpeechRecognition.Update(dt);
         Game.StateManager.UpdateState();
-        /*Update events*/
         Game.Events.Update(dt);
-        /*Update stage*/
         Game.Stage.Update(dt);
-        /*Update world*/
         Game.World.Update(dt);
-        /*Update Viewport*/
         Game.Viewport.Update(dt);
-        /*Update SoundManager*/
         Game.SoundManager.Update(dt);
-        /*PhysicsEngine*/
         Game.PhysicsEngine.Update();
-        /*Debug*/
         if (Game.Debug)
             Game.DebugStorage.Update(dt);
-    }
 
-    /*POST UPDATE AND RENDERING*/
-    {
-        
-        /*Stage*/
         Game.Stage.PostUpdate(dt);
-        /*Input manager*/
         Game.InputManager.PostUpdate(dt);
-        /*Viewport*/
         Game.Viewport.PostUpdate(dt);
-        /*Debug*/
         if (Game.Debug)
             Game.DebugStorage.PostUpdate(dt);
-
-        /*Render*/
+        
         Game.Renderer
             .PreRender()
             .Render()
             .PostRender();
-    }
+    
 };
 
 
@@ -400,8 +368,7 @@ Duedo.GameContext.prototype.UseRequestAnimationFrame = function() {
     }
 
     /*SetTimeout, POLYFILL*/
-    if (!window.requestAnimationFrame) 
-    {
+    if (!window.requestAnimationFrame) {
 
         var that = this;
 
