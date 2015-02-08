@@ -48,6 +48,6 @@ http://brm.io/matter-js/
 #Todo
 Tilemaps, physics engine, improve the parallax
 
-#Tofix & bugs
-Geometry rotations and rendering
+#Toimprove & bugs
+Toimprove: Geometry rotations and rendering
 
