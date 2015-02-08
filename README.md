@@ -10,7 +10,7 @@ Readme.md INCOMPLETE
 2. Actual version: 1.0
 3. Renderer: canvas2d context
 
-#Engine info and functionality
+#Engine and functionality
 1. Sound manager
   1. Can preload and play: mp3, wav, ogg, mp4
   2. Dynamic sounds: you can give a world location to the sound: smanager.Play("soundname").SetLocation(x, y);
