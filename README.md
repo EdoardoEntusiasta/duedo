@@ -44,3 +44,10 @@ Readme.md INCOMPLETE
 Matter.js by Liam Brummit
 http://brm.io/matter-js/
 
+
+#Todo
+Tilemaps, physics engine, improve the parallax
+
+#Tofix & bugs
+Geometry rotations and rendering
+
