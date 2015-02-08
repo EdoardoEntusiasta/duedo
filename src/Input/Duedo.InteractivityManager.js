@@ -112,16 +112,16 @@ Duedo.InteractivityManager.prototype._Init = function() {
 */
 Duedo.InteractivityManager.prototype.UseQuadTree = function (qt) {
 
-    if (this.QuadTree) return;
+	if (this.QuadTree) return;
 
-    this.QuadTree = qt;
+	this.QuadTree = qt;
 
-    /*Move old entities to the new quadtree*/
-    if (this.Collection["Entities"].length)
-        for (var i = this.Collection["Entities"].length - 1; i >= 0; i--) {
-            this.QuadTree.Add(this.Collection["Entities"][i]);
-            this.Collection["Entities"].splice(i, 1);
-        }
+	/*Move old entities to the new quadtree*/
+	if (this.Collection["Entities"].length)
+		for (var i = this.Collection["Entities"].length - 1; i >= 0; i--) {
+			this.QuadTree.Add(this.Collection["Entities"][i]);
+			this.Collection["Entities"].splice(i, 1);
+		}
 };
 
 
@@ -229,8 +229,7 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 	//if (this._Altered) {
 		this._Cache["SortedByZ"] = this._SortElements(obs, "RenderOrderID");
 		this._Altered = false;
-	//}
-
+    //}
 	for (var i in this._Cache["SortedByZ"]) {
 		var obj = this._Cache["SortedByZ"][i];
 		
@@ -391,7 +390,7 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 		
 	if (obj.DragBringToTop && typeof obj._Cache['OriginalZValue'] == "undefined")
 	{
-	    obj._Cache['OriginalZValue'] = obj.Z;
+		obj._Cache['OriginalZValue'] = obj.Z;
 		obj.Z = this.Game.Renderer.MaxZPlane + 1;
 	}
 
@@ -411,7 +410,11 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 
 	//Update coordinates
 	if (obj.FixedToViewport) {
-	    obj.ViewportOffset.Add(DirVector);
+		obj.ViewportOffset.Add(DirVector);
+	}
+	else if (obj["Offset"]) {
+        /*Child element*/
+	    obj.Offset.Add(DirVector);
 	}
 	else
 	{
@@ -437,10 +440,11 @@ Duedo.InteractivityManager.prototype.Add = function(object) {
    
 	Object.ExtendDeeply(object, Duedo.InteractiveProperties);
 	
-	if (this.QuadTree)
-		this.QuadTree.Add(object);
+	if (this.QuadTree) {
+	    this.QuadTree.Add(object);
+	}
 	else
-		this.Collection["Entities"].push(object);	
+	    this.Collection["Entities"].push(object);
 
 	this.Empty = false;
 	this._Altered = true;

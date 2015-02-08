@@ -170,6 +170,14 @@ Duedo.Shape.prototype.CreatePath = function (context) {
  * PreUpdate
 */
 Duedo.Shape.prototype.PreUpdate = function (deltaT) {
+
+    /*Update any children*/
+    if (this.Children.length) {
+        for (var x = this.Children.length - 1; x >= 0; x--)
+            if (!Duedo.Utils.IsNull(this.Children[x]["PreUpdate"]))
+                this.Children[x].PreUpdate(deltaT);
+    }
+
 };
 
 
@@ -179,6 +187,13 @@ Duedo.Shape.prototype.PreUpdate = function (deltaT) {
 Duedo.Shape.prototype.Update = function (deltaT) {
     this.SuperUpdate(deltaT);
     this.UpdateAnimations(deltaT);
+
+    /*Update any children*/
+    if (this.Children.length) {
+        for (var x = this.Children.length - 1; x >= 0; x--)
+            if (!Duedo.Utils.IsNull(this.Children[x]["Update"]))
+                this.Children[x].Update(deltaT);
+    }
 };
 
 
@@ -200,7 +215,16 @@ Duedo.Shape.prototype.PostUpdate = function(deltaT) {
     if (this.Points.length && !Duedo.Vector2.Compare(this.LastLocation, this.Location))
         this.UpdateVertices();
 
+    /*Update any children*/
+    if (this.Children.length) {
+        for (var x = this.Children.length - 1; x >= 0; x--)
+            if (!Duedo.Utils.IsNull(this.Children[x]["PostUpdate"]))
+                this.Children[x].PostUpdate(deltaT);
+    }
+
+
     this.LastLocation = this.Location.Clone();
+
 
 };
 

@@ -16,7 +16,6 @@ Duedo.Stage.prototype = Object.create(Duedo.Object.prototype);
 Duedo.Stage.prototype.constructor = Duedo.Stage;
 
 
-
 /*
  * Update levels
  * Called by the main loop
@@ -32,7 +31,6 @@ Duedo.Stage.prototype.PostUpdate = function (dt) {
 };
 
 
-
 /*
  * __Update
  * @private
@@ -44,6 +42,9 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
 
     /*Cycle through all entities*/
     while ((ent = ents[len--]) != null) {
+
+        if (ent["NeedsUpdate"] && ent["NeedsUpdate"] == false)
+            continue;
 
         /*Check entity life*/
         if (!Duedo.Null(ent["InUse"])) {

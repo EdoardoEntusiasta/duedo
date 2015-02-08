@@ -165,6 +165,8 @@ Duedo.GraphicObject.prototype.SetLocation = function(x, y) {
 */
 Duedo.GraphicObject.prototype.Attach = function (gobject) {
     gobject.Offset = gobject.Location.Clone();
+    gobject.ParentState = this.ParentState;
+    gobject.Parent = this;
     this.Children.push(gobject);
     return this;
 };
@@ -257,10 +259,17 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
         //Update based on this parent
         child.Location.X = this.Location.X + child.Offset.X;
         child.Location.Y = this.Location.Y + child.Offset.Y;
+
+        /*Important*/
+        if (child.ParentState != this.ParentState)
+            child.ParentState = this.ParentState;
+
         child.Z = this.Z + child.Z;
         child.Scale = this.Scale;
         child.Alpha = this.Alpha;
     }
+
+    return this;
 
 };
 
