@@ -10,6 +10,7 @@ Desktop.ini
 website/
 00_BACKUP_BEFORE_GAME
 ECS/
+ComicPart/
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
