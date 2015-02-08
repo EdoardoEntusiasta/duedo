@@ -59,17 +59,37 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
                 continue;
             }
         }
+        
+        Game.Global.CurrentEntity = ent;
 
-        /*Update entity and sub-children*/
-        if (!Duedo.Null(ent[upLevel])) {
-            ent[upLevel](deltaT);
-            
-            if(!Duedo.Null(ent["Super" + upLevel]))
-                ent["Super" + upLevel](deltaT);
-
-            if(Duedo.IsArray(ent.Children))
-                this.__Update(deltaT, ent.Children, upLevel);
-        }
+        /*Step entity*/
+        this.__StepEntity(deltaT, ent, upLevel);
+        
     }
 };
 
+
+/*
+ * __StepEntity
+ * Update an individual entity and all his sub-children
+*/
+Duedo.Stage.prototype.__StepEntity = function (deltaT, ent, upLevel) {
+
+    if (Duedo.Null(upLevel)) upLevel = "Update";
+
+    /*Update entity*/
+    if (!Duedo.Null(ent[upLevel])) {
+
+        /*SuperUpdate*/
+        if (!Duedo.Null(ent["Super" + upLevel]))
+            ent["Super" + upLevel](deltaT);
+
+        /*Update*/
+        ent[upLevel](deltaT);
+
+        /*Update sub-children*/
+        if (Duedo.IsArray(ent.Children))
+            this.__Update(deltaT, ent.Children, upLevel);
+    }
+
+};

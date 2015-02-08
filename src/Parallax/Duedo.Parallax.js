@@ -117,14 +117,6 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
  * PostUpdate
 */
 Duedo.Parallax.prototype.PostUpdate = function(deltaT) {
-    
-    /*Update any children*/
-    if(this.Children.length)
-    {
-        for(var x = this.Children.length - 1; x >= 0; x--)
-            if(!Duedo.Utils.IsNull(this.Children[x]["PostUpdate"]))
-                this.Children[x].PostUpdate(deltaT);
-    }
 
 };
 

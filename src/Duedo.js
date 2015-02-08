@@ -54,7 +54,8 @@ Duedo.Conf = {
 /*Global*/
 Duedo.Global = {
     //Game instances
-    Games: []
+    Games: [],
+    CurrentEntity: null
 };
 
 
