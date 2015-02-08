@@ -1,4 +1,4 @@
-![Alt text](http://projects.edoardocasella.it/duedo/img/logo.png?raw=true "Optional Title")
+![Alt text](http://projects.edoardocasella.it/duedo/img/logo.png?=100x100&raw=true "Duedo")
 
 2D HTML5 game engine
 Duedo is currently under heavy development and actually does not have: physics engine, mobile supports and a minified version
