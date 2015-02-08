@@ -24,10 +24,12 @@ Readme.md INCOMPLETE
 4. Animations
   1. Animate the properties of a graphic object (mysprite.Animate( { prop:val }, time, "Linear"))
   2. Bind customized callbacks to the animations
-5. Input and interactivities manager
+5. Input and interactions manager
   1. Handle interactions between graphic elements and your mouse
 6. QuadTree support
 7. Particle System
   1. Useful to create some graphical effects like fire, smoke, magic etc.. (not collidable)
   2. Include a json presets ready to use and customize
 8. Spritesheets and image rendering
+9. Geometry and math supports
+10. Parallax
