@@ -60,11 +60,15 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
             }
         }
 
-        /*Update entity*/
+        /*Update entity and sub-children*/
         if (!Duedo.Null(ent[upLevel])) {
             ent[upLevel](deltaT);
+            
             if(!Duedo.Null(ent["Super" + upLevel]))
                 ent["Super" + upLevel](deltaT);
+
+            if(Duedo.IsArray(ent.Children))
+                this.__Update(deltaT, ent.Children, upLevel);
         }
     }
 };

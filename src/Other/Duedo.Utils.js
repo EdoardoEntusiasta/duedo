@@ -150,6 +150,16 @@ Duedo.RemoveSpaces = function (string) { return string.replace(/\s/g, ""); };
 Duedo.Is32Bit = function (value) { /*ADD*/ };
 Duedo.Is64Bit = function (value) { /*ADD*/ };
 
+/*Array.isArray polyfill*/
+if (typeof Array.isArray === 'undefined') {
+    Array.isArray = function(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+};
+Duedo.IsArray = function (value) {
+    if (typeof value == "undefined") return false;
+    return Array.isArray(value);
+}
 
 
 

@@ -354,17 +354,6 @@ Duedo.SpriteSheet.prototype.Update = function ( deltaT ) {
 
     this._ElapsedTime = 0;
 
-
-    /*Update any children*/
-    if(this.Children.length)
-    {
-        for(var x = this.Children.length - 1; x >= 0; x--)
-            if(!Duedo.Utils.IsNull(this.Children[x]["Update"]))
-                this.Children[x].Update(deltaT);
-    }
-
-
-
     return this;
 };
 
@@ -434,15 +423,7 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
         this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
         this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
     }
-
-    /*Update any children*/
-    if(this.Children.length)
-    {
-        for(var x = this.Children.length - 1; x >= 0; x--)
-            if(!Duedo.Utils.IsNull(this.Children[x]["PostUpdate"]))
-                this.Children[x].PostUpdate(deltaT);
-    }
-
+    
 };
 
 

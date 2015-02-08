@@ -146,7 +146,7 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 	else
 		this.SmoothProperty = null;
 
-    /*Check blend modes support*/
+	/*Check blend modes support*/
 	this._PrepareBlendModes();
 
 	
@@ -208,31 +208,31 @@ Duedo.Renderer.prototype.Render = function() {
 */
 Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate) {
 
-    //Cycle
-    var lng = collection.length - 1;
+	//Cycle
+	var lng = collection.length - 1;
 
-    while ((child = collection[lng--]) != null) {
+	while ((child = collection[lng--]) != null) {
 
-        if (child.ParentState != this.Game.StateManager.CurrentState()
-            && child.ParentState != -1 && pstate != -1
-            || !child["Draw"])
-            continue;
+		if (child.ParentState != this.Game.StateManager.CurrentState()
+			&& child.ParentState != -1 && pstate != -1
+			|| !child["Draw"])
+			continue;
 
-        /*Mem render order id*/
-        child.RenderOrderID = this.CurrentRenderOrderID++;
+		/*Mem render order id*/
+		child.RenderOrderID = this.CurrentRenderOrderID++;
 
-        /*Render the parent graphic object*/
-        child.Draw(context);
+		/*Render the parent graphic object*/
+		child.Draw(context);
 
-        /*Update min and max */
-        if (this._Cache["_RequestMinMaxUpdate"])
-            this._UpdateMinMaxPlane(child);
+		/*Update min and max */
+		if (this._Cache["_RequestMinMaxUpdate"])
+			this._UpdateMinMaxPlane(child);
 
-        /*Render sub-children*/
-        if (child.Children)
-            this._RenderGraphics(child.Children, context, -1);
-    }
-        
+		/*Render sub-children*/
+		if (Duedo.IsArray(child.Children))
+			this._RenderGraphics(child.Children, context, -1);
+	}
+		
 };
 
 
@@ -423,48 +423,48 @@ Duedo.Renderer.prototype.Clear = function() {
 */
 Duedo.Renderer.prototype._PrepareBlendModes = function () {
 
-    /*Check blend modes support*/
-    if (Duedo.Utils.Can.BlendModes()) {
-        this.BlendModesEnabled = true;
-        Duedo.BlendModes.NORMAL = "source-over";
-        Duedo.BlendModes.ADD = "lighter";
-        Duedo.BlendModes.MULTIPLY = "multiply";
-        Duedo.BlendModes.SCREEN = "screen";
-        Duedo.BlendModes.OVERLAY = "overlay";
-        Duedo.BlendModes.DARKEN = "darken";
-        Duedo.BlendModes.LIGHTER = "lighter";
-        Duedo.BlendModes.COLOR_DODGE = "color-dodge";
-        Duedo.BlendModes.COLOR_BURN = "color-burn";
-        Duedo.BlendModes.HARD_LIGHT = "hard-light";
-        Duedo.BlendModes.SOFT_LIGHT = "soft-light";
-        Duedo.BlendModes.DIFFERENCE = "difference";
-        Duedo.BlendModes.EXCLUSION = "exclusion";
-        Duedo.BlendModes.HUE = "hue";
-        Duedo.BlendModes.SATURATION = "saturation";
-        Duedo.BlendModes.COLOR = "color";
-        Duedo.BlendModes.LUMINOSITY = "luminosity";
-    }
-    else {
-        Duedo.BlendModes.NORMAL = "source-over";
-        Duedo.BlendModes.ADD = "lighter";
-        Duedo.BlendModes.MULTIPLY = "source-over";
-        Duedo.BlendModes.SCREEN = "source-over";
-        Duedo.BlendModes.OVERLAY = "source-over";
-        Duedo.BlendModes.DARKEN = "source-over";
-        Duedo.BlendModes.LIGHTER = "source-over";
-        Duedo.BlendModes.COLOR_DODGE = "source-over";
-        Duedo.BlendModes.COLOR_BURN = "source-over";
-        Duedo.BlendModes.HARD_LIGHT = "source-over";
-        Duedo.BlendModes.SOFT_LIGHT = "source-over";
-        Duedo.BlendModes.DIFFERENCE = "source-over";
-        Duedo.BlendModes.EXCLUSION = "source-over";
-        Duedo.BlendModes.HUE = "source-over";
-        Duedo.BlendModes.SATURATION = "source-over";
-        Duedo.BlendModes.COLOR = "source-over";
-        Duedo.BlendModes.LUMINOSITY = "source-over";
-    }
+	/*Check blend modes support*/
+	if (Duedo.Utils.Can.BlendModes()) {
+		this.BlendModesEnabled = true;
+		Duedo.BlendModes.NORMAL = "source-over";
+		Duedo.BlendModes.ADD = "lighter";
+		Duedo.BlendModes.MULTIPLY = "multiply";
+		Duedo.BlendModes.SCREEN = "screen";
+		Duedo.BlendModes.OVERLAY = "overlay";
+		Duedo.BlendModes.DARKEN = "darken";
+		Duedo.BlendModes.LIGHTER = "lighter";
+		Duedo.BlendModes.COLOR_DODGE = "color-dodge";
+		Duedo.BlendModes.COLOR_BURN = "color-burn";
+		Duedo.BlendModes.HARD_LIGHT = "hard-light";
+		Duedo.BlendModes.SOFT_LIGHT = "soft-light";
+		Duedo.BlendModes.DIFFERENCE = "difference";
+		Duedo.BlendModes.EXCLUSION = "exclusion";
+		Duedo.BlendModes.HUE = "hue";
+		Duedo.BlendModes.SATURATION = "saturation";
+		Duedo.BlendModes.COLOR = "color";
+		Duedo.BlendModes.LUMINOSITY = "luminosity";
+	}
+	else {
+		Duedo.BlendModes.NORMAL = "source-over";
+		Duedo.BlendModes.ADD = "lighter";
+		Duedo.BlendModes.MULTIPLY = "source-over";
+		Duedo.BlendModes.SCREEN = "source-over";
+		Duedo.BlendModes.OVERLAY = "source-over";
+		Duedo.BlendModes.DARKEN = "source-over";
+		Duedo.BlendModes.LIGHTER = "source-over";
+		Duedo.BlendModes.COLOR_DODGE = "source-over";
+		Duedo.BlendModes.COLOR_BURN = "source-over";
+		Duedo.BlendModes.HARD_LIGHT = "source-over";
+		Duedo.BlendModes.SOFT_LIGHT = "source-over";
+		Duedo.BlendModes.DIFFERENCE = "source-over";
+		Duedo.BlendModes.EXCLUSION = "source-over";
+		Duedo.BlendModes.HUE = "source-over";
+		Duedo.BlendModes.SATURATION = "source-over";
+		Duedo.BlendModes.COLOR = "source-over";
+		Duedo.BlendModes.LUMINOSITY = "source-over";
+	}
 
-    return this;
+	return this;
 
 };
 
