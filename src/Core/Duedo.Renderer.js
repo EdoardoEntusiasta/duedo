@@ -146,49 +146,10 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 	else
 		this.SmoothProperty = null;
 
+    /*Check blend modes support*/
+	this._PrepareBlendModes();
 
-	/*Check blend modes support*/
-	if(Duedo.Utils.Can.BlendModes())
-	{
-		this.BlendModesEnabled       = true;
-		Duedo.BlendModes.NORMAL      = "source-over";
-		Duedo.BlendModes.ADD         = "lighter";
-		Duedo.BlendModes.MULTIPLY    = "multiply";
-		Duedo.BlendModes.SCREEN      = "screen";
-		Duedo.BlendModes.OVERLAY     = "overlay";
-		Duedo.BlendModes.DARKEN      = "darken";
-		Duedo.BlendModes.LIGHTER     = "lighter";
-		Duedo.BlendModes.COLOR_DODGE = "color-dodge";
-		Duedo.BlendModes.COLOR_BURN  = "color-burn";
-		Duedo.BlendModes.HARD_LIGHT  = "hard-light";
-		Duedo.BlendModes.SOFT_LIGHT  = "soft-light";
-		Duedo.BlendModes.DIFFERENCE  = "difference";
-		Duedo.BlendModes.EXCLUSION   = "exclusion";
-		Duedo.BlendModes.HUE         = "hue";
-		Duedo.BlendModes.SATURATION  = "saturation";
-		Duedo.BlendModes.COLOR       = "color";
-		Duedo.BlendModes.LUMINOSITY  = "luminosity";
-	}
-	else
-	{   
-		Duedo.BlendModes.NORMAL      = "source-over";
-		Duedo.BlendModes.ADD         = "lighter";
-		Duedo.BlendModes.MULTIPLY    = "source-over";
-		Duedo.BlendModes.SCREEN      = "source-over";
-		Duedo.BlendModes.OVERLAY     = "source-over";
-		Duedo.BlendModes.DARKEN      = "source-over";
-		Duedo.BlendModes.LIGHTER     = "source-over";
-		Duedo.BlendModes.COLOR_DODGE = "source-over";
-		Duedo.BlendModes.COLOR_BURN  = "source-over";
-		Duedo.BlendModes.HARD_LIGHT  = "source-over";
-		Duedo.BlendModes.SOFT_LIGHT  = "source-over";
-		Duedo.BlendModes.DIFFERENCE  = "source-over";
-		Duedo.BlendModes.EXCLUSION   = "source-over";
-		Duedo.BlendModes.HUE         = "source-over";
-		Duedo.BlendModes.SATURATION  = "source-over";
-		Duedo.BlendModes.COLOR       = "source-over";
-		Duedo.BlendModes.LUMINOSITY  = "source-over";
-	}
+	
 
 };
 
@@ -252,7 +213,9 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 
     while ((child = collection[lng--]) != null) {
 
-        if (child.ParentState != this.Game.StateManager.CurrentState() && child.ParentState != -1 && pstate != -1 || !child["Draw"])
+        if (child.ParentState != this.Game.StateManager.CurrentState()
+            && child.ParentState != -1 && pstate != -1
+            || !child["Draw"])
             continue;
 
         /*Mem render order id*/
@@ -449,6 +412,59 @@ Duedo.Renderer.prototype.Clear = function() {
 	{
 		this.Context.clearRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
 	}
+
+};
+
+
+
+/*
+ * _PrepareBlendModes
+ * Check support for blend modes
+*/
+Duedo.Renderer.prototype._PrepareBlendModes = function () {
+
+    /*Check blend modes support*/
+    if (Duedo.Utils.Can.BlendModes()) {
+        this.BlendModesEnabled = true;
+        Duedo.BlendModes.NORMAL = "source-over";
+        Duedo.BlendModes.ADD = "lighter";
+        Duedo.BlendModes.MULTIPLY = "multiply";
+        Duedo.BlendModes.SCREEN = "screen";
+        Duedo.BlendModes.OVERLAY = "overlay";
+        Duedo.BlendModes.DARKEN = "darken";
+        Duedo.BlendModes.LIGHTER = "lighter";
+        Duedo.BlendModes.COLOR_DODGE = "color-dodge";
+        Duedo.BlendModes.COLOR_BURN = "color-burn";
+        Duedo.BlendModes.HARD_LIGHT = "hard-light";
+        Duedo.BlendModes.SOFT_LIGHT = "soft-light";
+        Duedo.BlendModes.DIFFERENCE = "difference";
+        Duedo.BlendModes.EXCLUSION = "exclusion";
+        Duedo.BlendModes.HUE = "hue";
+        Duedo.BlendModes.SATURATION = "saturation";
+        Duedo.BlendModes.COLOR = "color";
+        Duedo.BlendModes.LUMINOSITY = "luminosity";
+    }
+    else {
+        Duedo.BlendModes.NORMAL = "source-over";
+        Duedo.BlendModes.ADD = "lighter";
+        Duedo.BlendModes.MULTIPLY = "source-over";
+        Duedo.BlendModes.SCREEN = "source-over";
+        Duedo.BlendModes.OVERLAY = "source-over";
+        Duedo.BlendModes.DARKEN = "source-over";
+        Duedo.BlendModes.LIGHTER = "source-over";
+        Duedo.BlendModes.COLOR_DODGE = "source-over";
+        Duedo.BlendModes.COLOR_BURN = "source-over";
+        Duedo.BlendModes.HARD_LIGHT = "source-over";
+        Duedo.BlendModes.SOFT_LIGHT = "source-over";
+        Duedo.BlendModes.DIFFERENCE = "source-over";
+        Duedo.BlendModes.EXCLUSION = "source-over";
+        Duedo.BlendModes.HUE = "source-over";
+        Duedo.BlendModes.SATURATION = "source-over";
+        Duedo.BlendModes.COLOR = "source-over";
+        Duedo.BlendModes.LUMINOSITY = "source-over";
+    }
+
+    return this;
 
 };
 

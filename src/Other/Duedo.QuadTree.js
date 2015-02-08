@@ -24,7 +24,7 @@ Duedo.QuadTree = function(gameContext, level, /*Duedo.Rectangle*/bounds) {
 	this.Type = Duedo.QUADTREE;
 
 	/*how many objects a node can hold before it splits*/
-	this.MaxObjects = 5;
+	this.MaxObjects = 4;
 	/*the deepest level subnode*/
 	this.MaxLevels = 7;
 	/*the current node level (0 being the topmost node)*/

@@ -139,24 +139,6 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
 
 
 /*
- * _PostBoot
- * Read and exe options
-*/
-Duedo.GameContext.prototype._PostBoot = function () {
-
-    /*Show FPS*/
-    if (Duedo.Conf.DrawFPS) {
-        var fpst = new Duedo.Text("FPS: -----");
-        fpst.FixedToViewport = true;
-        fpst.Draggable = true;
-        fpst.ViewportOffset = new Duedo.Vector2(5, 2);
-        this._Cache["FPS"] = this.Add(fpst);
-    }
-
-};
-
-
-/*
  * Reboot the main core
  * @param then: function to execute after reboot 
 */
@@ -179,6 +161,26 @@ Duedo.GameContext.prototype.Reboot = function (then) {
 
     return this;
 };
+
+
+
+/*
+ * _PostBoot
+ * Read and exe options
+*/
+Duedo.GameContext.prototype._PostBoot = function () {
+
+    /*Show FPS*/
+    if (Duedo.Conf.DrawFPS) {
+        var fpst = new Duedo.Text("FPS: -----");
+        fpst.FixedToViewport = true;
+        fpst.Draggable = true;
+        fpst.ViewportOffset = new Duedo.Vector2(5, 2);
+        this._Cache["FPS"] = this.Add(fpst);
+    }
+
+};
+
 
 
 
