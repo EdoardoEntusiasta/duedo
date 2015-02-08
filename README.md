@@ -19,18 +19,18 @@ Readme.md INCOMPLETE
 2. Events
   1. Set customized events based on time (like a spaceship that appear every 10 seconds or by a random value)
   2. Give to each element a customizable lifetime
-  3. Give temporary modifications to an object
+  3. Handle objects temporary modifications 
 3. StateManager
   1. Create your own game states (menu, menu2, gameplay, menu3)
 4. Animations
   1. Animate the properties of a graphic object (mysprite.Animate( { prop:val }, time, "Linear"))
   2. Bind customized callbacks to the animations
 5. Input and interactions manager
-  1. Handle interactions between graphic elements and your mouse
+  1. Handle interactions between graphic elements and your mouse: like dragging or clicks
 6. QuadTree support
 7. Particle System
   1. Useful to create some graphical effects like fire, smoke, magic etc.. (not collidable)
-  2. Include a json presets ready to use and customize
+  2. Includes a json presets ready to use and customize
 8. Spritesheets and image rendering
-9. Geometry and math supports
+9. Geometry and math support
 10. Parallax
