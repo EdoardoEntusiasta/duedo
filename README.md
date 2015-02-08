@@ -34,3 +34,11 @@ Readme.md INCOMPLETE
 8. Spritesheets and image rendering
 9. Geometry and math support
 10. Parallax
+11. Physics engine: matter.js
+
+
+#Physics engine
+![Alt text](http://projects.edoardocasella.it/duedo/img/matter-js_logo.png "Matter.js")
+Matter.js by Liam Brummit
+http://brm.io/matter-js/
+
