@@ -35,8 +35,8 @@ var Duedo = Duedo || {};
 
 /*Duedo Info*/
 Duedo.Info = {
-    Version: "1",
-    LastUpdate: "2014/23/06"
+    Version: "0.8.5",
+    LastUpdate: "2015/08/02"
 };
 
 
