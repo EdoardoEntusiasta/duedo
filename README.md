@@ -15,7 +15,7 @@ Readme.md INCOMPLETE
   1. Can preload and play: mp3, wav, ogg, mp4
   2. Dynamic sounds: you can give a world location to the sound: smanager.Play("soundname").SetLocation(x, y);
   3. Callbacks for every sound playing
-  4. Google speech recognition to trigger vocal commands to your game
+  4. Google speech recognition to trigger vocal commands inside your game
 2. Events
   1. Set customized events based on time (like a spaceship that appear every 10 seconds or by a random value)
   2. Give to each element a customizable lifetime
