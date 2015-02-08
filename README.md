@@ -7,7 +7,7 @@ Readme.md INCOMPLETE
 
 #Version info
 1. Project started: 01/2014  
-2. Actual version: 1.0
+2. Actual version: 0.8.5
 3. Renderer: canvas2d context
 
 #Engine and functionality
