@@ -30,6 +30,8 @@ myGraphicObject.OnPointerUp = myfunction;
 For more complete informations: Duedo.InteractiveProperties.js
 ------------------------------------------------------------------
 
+Note: To use a QUADTREE use the function UseQuadTree( @quadtree q );
+
 ==============================
 */
 
@@ -109,7 +111,17 @@ Duedo.InteractivityManager.prototype._Init = function() {
  * Requests the support of a quadtree
 */
 Duedo.InteractivityManager.prototype.UseQuadTree = function (qt) {
-	this.QuadTree = qt;
+
+    if (this.QuadTree) return;
+
+    this.QuadTree = qt;
+
+    /*Move old entities to the new quadtree*/
+    if (this.Collection["Entities"].length)
+        for (var i = this.Collection["Entities"].length - 1; i >= 0; i--) {
+            this.QuadTree.Add(this.Collection["Entities"][i]);
+            this.Collection["Entities"].splice(i, 1);
+        }
 };
 
 

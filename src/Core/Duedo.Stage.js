@@ -60,6 +60,8 @@ Duedo.Stage.prototype.PreUpdate = function(deltaT) {
             if(!Duedo.Utils.IsNull(ent["PreUpdate"]))
             {
                 ent.PreUpdate(deltaT);
+                if (ent["SuperPreUpdate"])
+                    ent.SuperPreUpdate(deltaT);
             }
         }
 };
@@ -92,6 +94,8 @@ Duedo.Stage.prototype.PostUpdate = function(deltaT) {
             if(!Duedo.Utils.IsNull(ent["PostUpdate"]))
             {
                 ent.PostUpdate(deltaT);
+                if (ent["SuperPostUpdate"])
+                    ent.SuperPostUpdate(deltaT);
             }
         }
     
@@ -132,6 +136,8 @@ Duedo.Stage.prototype.Update = function( deltaT ) {
             if(!Duedo.Utils.IsNull(ent["Update"]))
             {
                 ent.Update(deltaT);
+                if (ent["SuperUpdate"])
+                    ent.SuperUpdate(deltaT);
             }
         }
 

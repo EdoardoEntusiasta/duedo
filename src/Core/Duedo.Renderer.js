@@ -200,10 +200,9 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 Duedo.Renderer.prototype.PreRender = function() {
 
 	/*Check whether it is necessary to sort the objects by Z*/
-	if(this.SortPlanes)
-	{
-	    this.SortList(this.Game.Entities, this.Sorting.OrderType);
-	    this._Cache["_RequestMinMaXUpdate"] = true;
+	if(this.SortPlanes) {
+		this.SortList(this.Game.Entities, this.Sorting.OrderType);
+		this._Cache["_RequestMinMaxUpdate"] = true;
 		this.SortPlanes = false;
 	}
 
@@ -222,37 +221,15 @@ Duedo.Renderer.prototype.Render = function() {
 
 	/*Transform and scale*/
 	this.SetTransformationMatrix();
-	/*Translate*/
+
+	/*Translate by viewport/camera*/
 	this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
+
 	/*Clear*/
 	if(this.ClearBeforeRender) 
 		this.Clear();
-    //Cycle
-	var lng = this.Game.Entities.length - 1;
-	while((child = this.Game.Entities[lng--]) != null) {
-        if(child.ParentState == this.Game.StateManager.CurrentState() || child.ParentState == -1) {
-            if (child["Draw"]) {
-                child.RenderOrderID = this.CurrentRenderOrderID++;
-                child.Draw(this.Context);
-                if (this._Cache["_RequestMinMaXUpdate"])
-                    this._UpdateMinMaxPlane(child);
-                /*Draw attached children*/
-                if (child.Children)
-                    if (child.Children.length) {
-                        for (var x = child.Children.length - 1; x >= 0; x--) {
-                            if (child.Children[x]["Draw"]) {
-                                child.Children[x].RenderOrderID = this.CurrentRenderOrderID++;
-                                child.Children[x].Draw(this.Context);
-                                if (this._Cache["_RequestMinMaXUpdate"])
-                                    this._UpdateMinMaxPlane(child.Children[x]);
-                            }
-                        }
-                    }
-            }
 
-        }
-
-	}
+	this._RenderGraphics(this.Game.Entities, this.Context);
 	
 	/*Render additional graphics from the current state*/
 	this.Game.StateManager.RenderState(this.Context);
@@ -260,6 +237,41 @@ Duedo.Renderer.prototype.Render = function() {
 	return this;
 
 };
+
+
+
+
+/*
+ * _RenderGraphics
+ * Render all the graphics objects
+*/
+Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate) {
+
+    //Cycle
+    var lng = collection.length - 1;
+
+    while ((child = collection[lng--]) != null) {
+
+        if (child.ParentState != this.Game.StateManager.CurrentState() && child.ParentState != -1 && pstate != -1 || !child["Draw"])
+            continue;
+
+        /*Mem render order id*/
+        child.RenderOrderID = this.CurrentRenderOrderID++;
+
+        /*Render the parent graphic object*/
+        child.Draw(context);
+
+        /*Update min and max */
+        if (this._Cache["_RequestMinMaxUpdate"])
+            this._UpdateMinMaxPlane(child);
+
+        /*Render sub-children*/
+        if (child.Children)
+            this._RenderGraphics(child.Children, context, -1);
+    }
+        
+};
+
 
 
 
@@ -295,8 +307,8 @@ Duedo.Renderer.prototype.PostRender = function() {
 		this._RenderDebug();
 
 	/*No more MinMaxUpdate til the next entity*/
-	if (this._Cache["_RequestMinMaXUpdate"]) {
-		this._Cache["_RequestMinMaXUpdate"] = false;
+	if (this._Cache["_RequestMinMaxUpdate"]) {
+		this._Cache["_RequestMinMaxUpdate"] = false;
 	}
 
 	/*Render FPS*/

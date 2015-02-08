@@ -158,6 +158,33 @@ Duedo.GraphicObject.prototype.SetLocation = function(x, y) {
 };
 
 
+/*
+ * Attach
+ * Attach a children to this GraphicObject
+ * Useful to create parents elements or groups
+*/
+Duedo.GraphicObject.prototype.Attach = function (gobject) {
+    gobject.Offset = gobject.Location.Clone();
+    this.Children.push(gobject);
+    return this;
+};
+
+
+
+/*
+ * Detach
+ * Detach a children graphic object
+*/
+Duedo.GraphicObject.prototype.Detach = function (gobject) {
+    
+    var index = this.Children.indexOf(gobject);
+    if (index != -1)
+        return this.Children.splice(i, 1)[0];
+
+    return null;
+};
+
+
 
 
 /*
@@ -197,21 +224,53 @@ Duedo.GraphicObject.prototype.MouseHover = function () {
 };
 
 
+Duedo.GraphicObject.prototype.SuperPreUpdate = function (deltaT) { };
+
 
 /*
- * Draw
+ * SuperPreUpdate
+ * @public
 */
-Duedo.GraphicObject.prototype.Draw = function () {
-  //throw 'Duedo.GraphicObject.draw not implemented';
+Duedo.GraphicObject.prototype.SuperPreUpdate = function (deltaT) {
+
+};
+
+
+/*
+ * SuperUpdate
+*/
+Duedo.GraphicObject.prototype.SuperUpdate = function (deltaT) {
+    
+};
+
+
+/*
+ * SuperPostUpdate
+*/
+Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
+
+
+    //Update graphic children
+    for (var i = this.Children.length - 1; i >= 0; i--) {
+        var child = this.Children[i];
+
+        //Update based on this parent
+        child.Location.X = this.Location.X + child.Offset.X;
+        child.Location.Y = this.Location.Y + child.Offset.Y;
+        child.Z = this.Z + child.Z;
+        child.Scale = this.Scale;
+        child.Alpha = this.Alpha;
+    }
+
 };
 
 
 
 /*
- * SuperUpdate
- * @public
+ * SuperDraw
 */
-Duedo.GraphicObject.prototype.SuperUpdate = function(deltaT) {
+Duedo.GraphicObject.prototype.SuperDraw = function (context) {
+    //throw 'Duedo.GraphicObject.draw not implemented';
 };
 
 

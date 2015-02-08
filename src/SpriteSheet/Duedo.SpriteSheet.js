@@ -517,8 +517,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     //DrawBody
     if(this.Body && this.Game.PhysicsEngine.Debug)
         this.Body.Draw(context);
-
-
+    
     return this;
 };
 
