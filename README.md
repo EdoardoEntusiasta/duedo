@@ -26,7 +26,10 @@ Readme.md INCOMPLETE
   1. Animate the properties of a graphic object (mysprite.Animate( { prop:val }, time, "Linear"))
   2. Bind customized callbacks to the animations
 5. Input and interactions manager
-  1. Handle pointer events: like dragging or click
+  1. Keyboard
+  2. Mouse
+  4. Customizable input properties
+  5. Handle pointer events: like dragging or click or pointerover, pointerup ...
 6. QuadTree support
 7. Particle System
   1. Useful to create some graphical effects like fire, smoke, magic etc.. (not collidable)
