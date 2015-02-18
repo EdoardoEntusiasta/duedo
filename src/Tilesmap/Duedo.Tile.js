@@ -37,7 +37,6 @@ Duedo.Tile.prototype._init = function(x, y, layer width, height, image) {
 	this.Location.X = x || 0;
 	this.Location.Y = y || 0;
 
-
 	this.Layer = layer || 0;
 
 };
