@@ -405,6 +405,7 @@ Duedo.Sound.prototype.Resume = function () {
  * Loop
 */
 Duedo.Sound.prototype.Loop = function (loop) {
+    if(!loop) loop = Infinity;
     this.Repeat = Math.floor(loop);
     return this;
 };
