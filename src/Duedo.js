@@ -51,15 +51,6 @@ Duedo.Conf = {
 };
 
 
-/*Global*/
-Duedo.Global = {
-    //Game instances
-    Games: [],
-    CurrentEntity: null
-};
-
-
-
 /*
  * Call the mainFunc when the document is loaded
  * @Duedo.Conf.MainFunc

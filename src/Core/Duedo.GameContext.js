@@ -8,6 +8,13 @@ Manage all the core objects, calculate deltaTime, update and render the game
 ==============================
 */
 
+/*Global*/
+Duedo.Global = {
+    //Game instances
+    Games: [],
+    PreviousEntity: null
+};
+
 
 /* GameContext
  * @canvas:       destination canvas (as node element)
@@ -311,11 +318,10 @@ Duedo.GameContext.prototype.Simulate = function (Game, dt) {
         Game.PhysicsEngine.PreUpdate(dt);
         Game.Stage.PreUpdate(dt);
         Game.Viewport.PreUpdate();
-        if (Game.Debug)
-            Game.DebugStorage.PreUpdate(dt);
-
+        
         if (!Duedo.Utils.IsNull(Game.SpeechRecognition)) 
             Game.SpeechRecognition.Update(dt);
+        
         Game.StateManager.UpdateState();
         Game.Events.Update(dt);
         Game.Stage.Update(dt);
@@ -323,15 +329,11 @@ Duedo.GameContext.prototype.Simulate = function (Game, dt) {
         Game.Viewport.Update(dt);
         Game.SoundManager.Update(dt);
         Game.PhysicsEngine.Update();
-        if (Game.Debug)
-            Game.DebugStorage.Update(dt);
 
         Game.Stage.PostUpdate(dt);
         Game.InputManager.PostUpdate(dt);
         Game.Viewport.PostUpdate(dt);
-        if (Game.Debug)
-            Game.DebugStorage.PostUpdate(dt);
-        
+
         Game.Renderer
             .PreRender()
             .Render()

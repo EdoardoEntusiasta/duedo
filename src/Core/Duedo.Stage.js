@@ -60,8 +60,8 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
             }
         }
         
-        Duedo.Global.CurrentEntity = ent;
-
+        Duedo.Global.PreviousEntity = ent;
+        
         /*Step entity*/
         this.__StepEntity(deltaT, ent, upLevel);
         
