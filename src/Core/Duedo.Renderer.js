@@ -11,6 +11,17 @@ Notes:
 ==============================
 */
 
+
+/*
+ * Duedo supported renderers
+*/
+Duedo.Renderers = {
+	CANVAS: 1,
+	WEBGL: 2
+}
+
+
+/*Main Renderer*/
 Duedo.Renderer = function( gameContext, canvas, renderer) {
 
 	this.Game;
@@ -19,17 +30,15 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	/*Canvas2d*/
 	this.Canvas;
 	this.Context;
-	
+
+	/*Rendering API's | @default canvas2d */
+	this.RenderType = Duedo.Renderers.CV;
+
 	/*Generic*/
 	this.FillColor = "rgba(141, 163, 193, 1)";
 	this.Alpha;
-	this.TransformationMatrix;
 	this._Angle = 0;
 	this.ClearBeforeRender = true;
-	
-	/*Smoothing*/
-	this.SmoothProperty;
-	this._EnableSmoothing = false;
 	
 	/*Blend mode*/
 	this.CurrenBlendMode = null;
@@ -58,28 +67,6 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 Duedo.Renderer.prototype.constructor = Duedo.Renderer;
 
 
-/*Canvas BlendModes*/
-Duedo.BlendModes = {
-	NORMAL:      null,
-	ADD:         null,
-	MULTIPLY:    null,
-	SCREEN:      null,
-	OVERLAY:     null,
-	DARKEN:      null,
-	LIGHTER:     null,
-	COLOR_DODGE: null,
-	COLOR_BURN:  null,
-	HARD_LIGHT:  null,
-	SOFT_LIGHT:  null,
-	DIFFERENCE:  null,
-	EXCLUSION:   null,
-	HUE:         null,
-	SATURATION:  null,
-	COLOR:       null,
-	LUMINOSITY:  null
-};
-
-
 
 /*
  * _init
@@ -95,64 +82,97 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 		throw "Duedo.Renderer._init: gameContext is undefined";
 	}
 
-	if(!Duedo.Utils.IsNull(canvas))
-	{
-		if(canvas.nodeName.toLowerCase() == 'canvas')
-			this.Canvas = canvas;
-		else
-		{
-			throw "Dued.Renderer._init: needs a canvas node";
-		}
-	}
-	else
-	{
-		throw "Duedo.Renderer._init: destination canvas is undefined";
-	}
-
-	if(!this.Canvas.getContext)
-	{
-		throw "Duedo.Renderer: your browser does not support the canvas rendering";
-	}
-
-	/*Instantiate context2d*/
-	this.Context = this.Canvas.getContext("2d");
-
 	/*Init std configuration*/
-	this.TransformationMatrix = [1, 0, 0, 1, 0, 0];
 	this.Alpha                = 1;
 	this.SortPlanes           = true;
-
 	
-	//Renderer type
-	if(Duedo.Utils.IsNull(renderer) || renderer !== "canvas" && renderer !== "webgl")
-	{
-		this.RendererType = "canvas";
-	}
-	else 
-	{
-		this.RendererType = renderer;
-	}
-		
-
-	/*SmoothProperty*/
-	if("imageSmoothingEnabled" in this.Context)
-		this.SmoothProperty = "imageSmoothingEnabled";
-	else if("webkitImageSmoothingEnabled" in this.Context)
-		this.SmoothProperty = "webkitImageSmoothingEnabled";
-	else if("mozImageSmoothingEnabled" in this.Context)
-		this.SmoothProperty = "mozImageSmoothingEnabled";
-	else if("oImageSmoothingEnabled" in this.Context)
-		this.SmoothProperty = "oImageSmoothingEnabled";
-	else
-		this.SmoothProperty = null;
-
-	/*Check blend modes support*/
-	this._PrepareBlendModes();
-
-	
+	this._InitializeRenderer(renderer, canvas);
 
 };
 
+
+/*
+ * _InitializeRenderer
+ * @private
+*/
+Duedo.Renderer.prototype._InitializeRenderer = function(renderer, canvas) {
+
+	this.Context = null;
+	this.Canvas = canvas;
+
+	//Renderer type
+	if(!Duedo.Utils.IsNull(renderer))
+		this.RenderType = renderer; else this.RenderType = Duedo.Renderers.CANVAS;
+
+	switch(this.RenderType) {
+		case Duedo.Renderers.CANVAS: this._InitializeCanvasRenderer(canvas); break;
+		case Duedo.Renderers.WEBGL: this._InitializeWebGLRenderer(canvas); break;
+		default: 
+			this.RenderType = Duedo.Renderers.CANVAS;
+			this._InitializeCanvasRenderer(canvas); 
+		break;
+	}
+
+};
+
+
+/*
+ * InitializeCanvasRenderer
+ * @private
+*/
+Duedo.Renderer.prototype._InitializeCanvasRenderer = function(canvas) {
+
+	this._r = new Duedo.CanvasRenderer(this, canvas);
+
+	if(this._r)
+	{
+		this._r.Join();
+	}
+	else
+	{
+		throw "Renderer: error during canvas renderer initialization";
+	}
+	
+};
+
+
+/*
+ * InitializeWebGLRenderer
+ * @private
+*/
+Duedo.Renderer.prototype._InitializeWebGLRenderer = function(canvas) {
+
+	try 
+	{
+		if(!(this.Context = canvas.getContext("webgl")))
+			this.Context = canvas.getContext("experimental-webgl");
+	}
+	catch(e)
+	{
+
+	}
+
+	if(!this.Context)
+	{
+		throw "Renderer._InitializeWebGLRenderer: error, your browser does not support webgl";
+		return false;
+	}
+
+	this.Context.save = function() {};
+	this.Context.measureText = function(a) { return {width:0, height:0} };
+	this.Context.restore = function() {};
+
+	this.Context.clearColor(0.0, 0.0, 0.0, 1.0);                      // Set clear color to black, fully opaque
+    this.Context.enable(this.Context.DEPTH_TEST);                               // Enable depth testing
+    this.Context.depthFunc(this.Context.LEQUAL);                                // Near things obscure far things
+    this.Context.clear(this.Context.COLOR_BUFFER_BIT|this.Context.DEPTH_BUFFER_BIT);      // Clear the color as well as the depth buffer.
+
+
+
+
+	return true;
+
+};
 
 
 /*
@@ -181,7 +201,7 @@ Duedo.Renderer.prototype.PreRender = function() {
 Duedo.Renderer.prototype.Render = function() {
 
 	/*Transform and scale*/
-	this.SetTransformationMatrix();
+	this.ApplyTransformationMatrix();
 
 	/*Translate by viewport/camera*/
 	this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
@@ -190,49 +210,13 @@ Duedo.Renderer.prototype.Render = function() {
 	if(this.ClearBeforeRender) 
 		this.Clear();
 
-	this._RenderGraphics(this.Game.Entities, this.Context);
-	
+	this.Draw(this.Game.Entities, null);
+
 	/*Render additional graphics from the current state*/
 	this.Game.StateManager.RenderState(this.Context);
 
 	return this;
 
-};
-
-
-
-
-/*
- * _RenderGraphics
- * Render all the graphics objects
-*/
-Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate) {
-
-	//Cycle
-	var lng = collection.length - 1;
-
-	while ((child = collection[lng--]) != null) {
-
-		if (child.ParentState != this.Game.StateManager.CurrentState()
-			&& child.ParentState != -1 && pstate != -1
-			|| !child["Draw"])
-			continue;
-
-		/*Mem render order id*/
-		child.RenderOrderID = this.CurrentRenderOrderID++;
-
-		/*Render the parent graphic object*/
-		child.Draw(context);
-
-		/*Update min and max */
-		if (this._Cache["_RequestMinMaxUpdate"])
-			this._UpdateMinMaxPlane(child);
-
-		/*Render sub-children*/
-		if (Duedo.IsArray(child.Children))
-			this._RenderGraphics(child.Children, context, -1);
-	}
-		
 };
 
 
@@ -265,10 +249,6 @@ Duedo.Renderer.prototype.PostRender = function() {
 	/*!Reset render order id counter*/
 	this.CurrentRenderOrderID = 0;
 
-	/*Render debug informations*/
-	if(this.Game.Debug)
-		this._RenderDebug();
-
 	/*No more MinMaxUpdate til the next entity*/
 	if (this._Cache["_RequestMinMaxUpdate"]) {
 		this._Cache["_RequestMinMaxUpdate"] = false;
@@ -283,22 +263,6 @@ Duedo.Renderer.prototype.PostRender = function() {
 
 
 /*
- * _RenderDebugInfo
- * @private
- * Render debug informations about viewport etc...
-*/
-Duedo.Renderer.prototype._RenderDebug = function() {
-
-	/*Viewport debug info*/
-	if(this.Game.Viewport.Debug)
-	{
-		this.Game.Viewport.RenderDebugInfo(this);
-	}
-};
-
-
-
-/*
  * RenderQuadTree
  * @public
  * Render a quad tree
@@ -306,34 +270,6 @@ Duedo.Renderer.prototype._RenderDebug = function() {
 Duedo.Renderer.prototype.RenderQuadTree = function(qt) {
 	if(qt.Type === Duedo.QUADTREE)
 		Duedo.QuadTree.Draw(qt, this.Context);
-};
-
-
-
-/*
- * Translate
- * Translate context by x/y
-*/
-Duedo.Renderer.prototype.Translate = function(x, y) {
-	this.Context.translate(x, y);
-};
-
-
-
-/*
- * SetTransformationMatrix
- *
-*/
-Duedo.Renderer.prototype.SetTransformationMatrix = function() {
-	
-	this.Context.setTransform(
-		this.TransformationMatrix[0],
-		this.TransformationMatrix[1],
-		this.TransformationMatrix[2],
-		this.TransformationMatrix[3],
-		this.TransformationMatrix[4],
-		this.TransformationMatrix[5]
-	);
 };
 
 
@@ -398,118 +334,6 @@ Object.defineProperty(Duedo.Renderer.prototype, "MinZPlane", {
 
 
 
-/*
- * Clear
-*/
-Duedo.Renderer.prototype.Clear = function() {
-
-	if( this.FillColor )
-	{
-		this.Context.fillStyle = this.FillColor;
-		this.Context.fillRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-	else
-	{
-		this.Context.clearRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-
-};
-
-
-
-/*
- * _PrepareBlendModes
- * Check support for blend modes
-*/
-Duedo.Renderer.prototype._PrepareBlendModes = function () {
-
-	/*Check blend modes support*/
-	if (Duedo.Utils.Can.BlendModes()) {
-		this.BlendModesEnabled = true;
-		Duedo.BlendModes.NORMAL = "source-over";
-		Duedo.BlendModes.ADD = "lighter";
-		Duedo.BlendModes.MULTIPLY = "multiply";
-		Duedo.BlendModes.SCREEN = "screen";
-		Duedo.BlendModes.OVERLAY = "overlay";
-		Duedo.BlendModes.DARKEN = "darken";
-		Duedo.BlendModes.LIGHTER = "lighter";
-		Duedo.BlendModes.COLOR_DODGE = "color-dodge";
-		Duedo.BlendModes.COLOR_BURN = "color-burn";
-		Duedo.BlendModes.HARD_LIGHT = "hard-light";
-		Duedo.BlendModes.SOFT_LIGHT = "soft-light";
-		Duedo.BlendModes.DIFFERENCE = "difference";
-		Duedo.BlendModes.EXCLUSION = "exclusion";
-		Duedo.BlendModes.HUE = "hue";
-		Duedo.BlendModes.SATURATION = "saturation";
-		Duedo.BlendModes.COLOR = "color";
-		Duedo.BlendModes.LUMINOSITY = "luminosity";
-	}
-	else {
-		Duedo.BlendModes.NORMAL = "source-over";
-		Duedo.BlendModes.ADD = "lighter";
-		Duedo.BlendModes.MULTIPLY = "source-over";
-		Duedo.BlendModes.SCREEN = "source-over";
-		Duedo.BlendModes.OVERLAY = "source-over";
-		Duedo.BlendModes.DARKEN = "source-over";
-		Duedo.BlendModes.LIGHTER = "source-over";
-		Duedo.BlendModes.COLOR_DODGE = "source-over";
-		Duedo.BlendModes.COLOR_BURN = "source-over";
-		Duedo.BlendModes.HARD_LIGHT = "source-over";
-		Duedo.BlendModes.SOFT_LIGHT = "source-over";
-		Duedo.BlendModes.DIFFERENCE = "source-over";
-		Duedo.BlendModes.EXCLUSION = "source-over";
-		Duedo.BlendModes.HUE = "source-over";
-		Duedo.BlendModes.SATURATION = "source-over";
-		Duedo.BlendModes.COLOR = "source-over";
-		Duedo.BlendModes.LUMINOSITY = "source-over";
-	}
-
-	return this;
-
-};
-
-
-
-/*
- * EnableSmoothing
-*/
-Object.defineProperty(Duedo.Renderer.prototype, "EnableSmoothing", {
-	
-	set:function(value) {
-
-		if(!Duedo.Utils.IsNull(this.SmoothProperty))
-		{
-			this.Context[this.SmoothProperty] = /*bool*/ value;
-			this._EnableSmoothing = value;
-		}
-		
-	},
-
-	get: function() {
-		return this._EnableSmoothing;
-	}
-});
-
-
-
-
-/*
- * BlendMode
- * Set gloabalCompositeOperation
-*/
-Object.defineProperty(Duedo.Renderer.prototype, "BlendMode", {
-	
-	get: function() {
-		return this.Context.globalCompositeOperation;
-	},
-
-	set: function(value) {
-		this.Context.globalCompositeOperation = value;
-	}
-
-});
-
-
 
 /*
  * Center
@@ -525,13 +349,3 @@ Object.defineProperty(Duedo.Renderer.prototype, "ViewCenter", {
 
 
 
-
-/*
- * Scale
- * ws: width scale
- * hs: height scale
-*/
-Duedo.Renderer.prototype.Scale = function(ws, hs) {
-	this.TransformationMatrix[0] = ws;
-	this.TransformationMatrix[3] = hs;
-};

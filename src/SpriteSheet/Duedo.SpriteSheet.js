@@ -441,12 +441,10 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
         return this;
     }
        
-
     var frame;
     var scaledDim;
     var fc;
     var drawLoc = location !== undefined ? location : this.Location;
-
 
     /*Single frame origin*/
     fc = this.CurrentFrame();
@@ -454,12 +452,8 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     fc[0] = Math.max(1, fc[0]);
     fc[1] = Math.max(1, fc[1]);
 
-    
-
     context.save();
-
     context.globalAlpha = this.Alpha * this.Game.World.Alpha;
-    
     
     /*
      * Rotate if needed
@@ -503,6 +497,19 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 };
 
 
+
+
+
+/*
+ * DrawGL
+ * @context: the context in use
+ * draw the spritesheet on the screen
+*/
+Duedo.SpriteSheet.prototype.DrawGL = function(context) {
+
+
+
+}
 
 
 
