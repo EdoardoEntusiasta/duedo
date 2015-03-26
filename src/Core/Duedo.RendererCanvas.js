@@ -26,8 +26,13 @@ Duedo.CanvasRenderer = function(renderer, canvas) {
 
 	this.SharedProperties = [
 		"SmoothProperty", "SmoothingEnabled",
-		"TransformationMatrix"
+		"TransformationMatrix",
+		"CurrentBlendMode", "BlendModesEnabled"
 	];
+
+	/*Blend mode*/
+	this.CurrenBlendMode = null;
+	this.BlendModesEnabled = false;
 
 	this.TransformationMatrix = [];
 	/*_initialize*/
@@ -72,6 +77,8 @@ Duedo.CanvasRenderer.prototype._init = function(renderer, canvas) {
 	this.TransformationMatrix = [1, 0, 0, 1, 0, 0];
 	this._PrepareSmoothing();
 	this._PrepareBlendModes();
+	
+	this.Renderer.ClearColor = "rgba(141, 163, 193, 1)";
 
 	return this;
 };
@@ -105,9 +112,9 @@ Duedo.BlendModes = {
 
 
 /*
- * Join/*
- * CanvasBlendModes
+ * Join
  * @public
+ * Extends the Duedo.Renderer
 */
 Duedo.CanvasRenderer.prototype.Join = function() {
 
@@ -132,9 +139,9 @@ Duedo.CanvasRenderer.prototype.Join = function() {
 */
 Duedo.CanvasRenderer.prototype.Clear = function() {
 
-	if( this.FillColor)
+	if( this.ClearColor)
 	{
-		this.Context.fillStyle = this.FillColor;
+		this.Context.fillStyle = this.ClearColor;
 		this.Context.fillRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
 	}
 	else
@@ -142,7 +149,7 @@ Duedo.CanvasRenderer.prototype.Clear = function() {
 		this.Context.clearRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
 	}
 
-};
+}
 
 
 

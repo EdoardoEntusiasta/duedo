@@ -35,14 +35,10 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this.RenderType = Duedo.Renderers.CV;
 
 	/*Generic*/
-	this.FillColor = "rgba(141, 163, 193, 1)";
+	this.ClearColor;
 	this.Alpha;
 	this._Angle = 0;
 	this.ClearBeforeRender = true;
-	
-	/*Blend mode*/
-	this.CurrenBlendMode = null;
-	this.BlendModesEnabled = false;
 	
 	/*Sorting*/
 	this.SortPlanes;
@@ -104,75 +100,21 @@ Duedo.Renderer.prototype._InitializeRenderer = function(renderer, canvas) {
 	if(!Duedo.Utils.IsNull(renderer))
 		this.RenderType = renderer; else this.RenderType = Duedo.Renderers.CANVAS;
 
-	switch(this.RenderType) {
-		case Duedo.Renderers.CANVAS: this._InitializeCanvasRenderer(canvas); break;
-		case Duedo.Renderers.WEBGL: this._InitializeWebGLRenderer(canvas); break;
-		default: 
-			this.RenderType = Duedo.Renderers.CANVAS;
-			this._InitializeCanvasRenderer(canvas); 
-		break;
-	}
+	if(this.RenderType == Duedo.Renderers.CANVAS)
+		this._r = new Duedo.CanvasRenderer(this, canvas);
+	else if(this.RenderType == Duedo.Renderers.WEBGL)
+		this._r = new Duedo.WebGLRenderer(this, canvas);
+	else throw "Renderer._InitializeRenderer: error, unrecognized renderer";
 
-};
-
-
-/*
- * InitializeCanvasRenderer
- * @private
-*/
-Duedo.Renderer.prototype._InitializeCanvasRenderer = function(canvas) {
-
-	this._r = new Duedo.CanvasRenderer(this, canvas);
-
-	if(this._r)
-	{
+	if(this._r) {
 		this._r.Join();
 	}
 	else
 	{
-		throw "Renderer: error during canvas renderer initialization";
+		throw "Renderer: error during renderer initialization";
 	}
-	
 };
 
-
-/*
- * InitializeWebGLRenderer
- * @private
-*/
-Duedo.Renderer.prototype._InitializeWebGLRenderer = function(canvas) {
-
-	try 
-	{
-		if(!(this.Context = canvas.getContext("webgl")))
-			this.Context = canvas.getContext("experimental-webgl");
-	}
-	catch(e)
-	{
-
-	}
-
-	if(!this.Context)
-	{
-		throw "Renderer._InitializeWebGLRenderer: error, your browser does not support webgl";
-		return false;
-	}
-
-	this.Context.save = function() {};
-	this.Context.measureText = function(a) { return {width:0, height:0} };
-	this.Context.restore = function() {};
-
-	this.Context.clearColor(0.0, 0.0, 0.0, 1.0);                      // Set clear color to black, fully opaque
-    this.Context.enable(this.Context.DEPTH_TEST);                               // Enable depth testing
-    this.Context.depthFunc(this.Context.LEQUAL);                                // Near things obscure far things
-    this.Context.clear(this.Context.COLOR_BUFFER_BIT|this.Context.DEPTH_BUFFER_BIT);      // Clear the color as well as the depth buffer.
-
-
-
-
-	return true;
-
-};
 
 
 /*
@@ -201,10 +143,12 @@ Duedo.Renderer.prototype.PreRender = function() {
 Duedo.Renderer.prototype.Render = function() {
 
 	/*Transform and scale*/
-	this.ApplyTransformationMatrix();
+	if(this.ApplyTransformationMatrix)
+		this.ApplyTransformationMatrix();
 
 	/*Translate by viewport/camera*/
-	this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
+	if(this.Translate)
+		this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
 
 	/*Clear*/
 	if(this.ClearBeforeRender) 
