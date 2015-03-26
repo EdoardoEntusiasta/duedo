@@ -32,7 +32,7 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this.Context;
 
 	/*Rendering API's | @default canvas2d */
-	this.RenderType = Duedo.Renderers.CV;
+	this.RenderType = Duedo.Renderers.CANVAS;
 
 	/*Generic*/
 	this.ClearColor;
