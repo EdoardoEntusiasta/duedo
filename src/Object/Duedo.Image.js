@@ -199,15 +199,3 @@ Duedo.Image.prototype.Draw = function(context) {
 };
 
 
-
-
-/*
- * DrawGL
-*/
-Duedo.Image.prototype.DrawGL = function(context) {
-
-    console.log("d");
-
-};
-
-

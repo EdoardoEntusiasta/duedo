@@ -96,9 +96,9 @@ Duedo.WebGLRenderer.prototype.Clear = function() {
 			this.ClearColor[3]);       
 
     // Enable depth testing
-    this.Context.enable(this.Context.DEPTH_TEST); 
+    //this.Context.enable(this.Context.DEPTH_TEST); 
   	// Near things obscure far things
-    this.Context.depthFunc(this.Context.LEQUAL);                          
+    //this.Context.depthFunc(this.Context.LEQUAL);                          
     // Clear the color as well as the depth buffer.      
     this.Context.clear(this.Context.COLOR_BUFFER_BIT|this.Context.DEPTH_BUFFER_BIT);      
 	
@@ -107,7 +107,93 @@ Duedo.WebGLRenderer.prototype.Clear = function() {
 };
 
 
+
+/*
+ * Draw
+ * @public
+ * Main rendering loop
+*/
 Duedo.WebGLRenderer.prototype.Draw = function(collection, pstate) {
+
+	//Cycle
+	var lng = collection.length - 1;
+
+	while ((ent = collection[lng--]) != null) {
+
+		if (ent.ParentState != this.Renderer.Game.StateManager.CurrentState()
+			&& ent.ParentState != -1 && pstate != -1)
+			continue;
+
+		/*Mem render order id*/
+		ent.RenderOrderID = this.Renderer.CurrentRenderOrderID++;
+
+		/*Render the parent graphic object*/
+		switch(ent.Type) 
+		{
+			case Duedo.IMAGE: 
+				this.DrawImage(ent);
+			break;
+			case Duedo.SPRITESHEET:
+				this.DrawSpritesheet(ent);
+			break;
+			case Duedo.PARTICLESYSTEM:
+				this.DrawParticleSystem(ent);
+			break;
+		}
+
+		/*Update min and max */
+		if(this.Renderer._Cache["_RequestMinMaxUpdate"])
+			this.Renderer._UpdateMinMaxPlane(ent);
+
+		/*Render sub-children*/
+		if(Duedo.IsArray(ent.Children))
+			this.Draw(ent.Children, this.Context, -1);
+	}
+
+
+};
+
+
+
+/*
+ * DrawImage
+ * @public
+ * Draw an image into the screen
+*/
+Duedo.WebGLRenderer.prototype.DrawImage = function(image) {
+
+};
+
+
+
+/*
+ * DrawSpritesheet
+ * @public
+ * Draw a spritesheet into the screen
+*/
+Duedo.WebGLRenderer.prototype.DrawSpritesheet = function(sprite) {
+
+};
+
+
+
+/*
+ * DrawParticleSystem
+ * @public
+ * Draw a particle system
+*/
+Duedo.WebGLRenderer.prototype.DrawParticleSystem = function() {
+
+};
+
+
+
+/*
+ * DrawParticle
+ * @public
+ * Draw a particle into the screen
+*/
+Duedo.WebGLRenderer.prototype.DrawParticle = function(part) {
 
 
 };

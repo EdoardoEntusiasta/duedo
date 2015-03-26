@@ -154,7 +154,7 @@ Duedo.Renderer.prototype.Render = function() {
 	if(this.ClearBeforeRender) 
 		this.Clear();
 
-	this.Draw(this.Game.Entities, null);
+	this.Draw.call(this._r, this.Game.Entities, null);
 
 	/*Render additional graphics from the current state*/
 	this.Game.StateManager.RenderState(this.Context);
