@@ -144,17 +144,17 @@ Duedo.Renderer.prototype.Render = function() {
 
 	/*Transform and scale*/
 	if(this.ApplyTransformationMatrix)
-		this.ApplyTransformationMatrix();
+		this.ApplyTransformationMatrix.call(this);
 
 	/*Translate by viewport/camera*/
 	if(this.Translate)
-		this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
+		this.Translate.call(this, -this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
 
 	/*Clear*/
 	if(this.ClearBeforeRender) 
-		this.Clear();
+		this.Clear.call(this);
 
-	this.Draw.call(this._r, this.Game.Entities, null);
+	this.Draw.call(this, this.Game.Entities, null);
 
 	/*Render additional graphics from the current state*/
 	this.Game.StateManager.RenderState(this.Context);
@@ -290,6 +290,8 @@ Object.defineProperty(Duedo.Renderer.prototype, "ViewCenter", {
 	}
 
 });
+
+
 
 
 

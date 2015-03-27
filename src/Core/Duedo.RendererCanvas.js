@@ -33,8 +33,8 @@ Duedo.CanvasRenderer = function(renderer, canvas) {
 	/*Blend mode*/
 	this.CurrenBlendMode = null;
 	this.BlendModesEnabled = false;
-
 	this.TransformationMatrix = [];
+	
 	/*_initialize*/
 	this._init(renderer, canvas);
 };
@@ -168,6 +168,9 @@ Duedo.CanvasRenderer.prototype.Translate = function(x, y) {
  * @public/shared
 */
 Duedo.CanvasRenderer.prototype.Draw = function(collection, pstate) {
+
+	/*Internal reference to this object (CanvasRenderer)*/
+	var cr = this._r;
 
 	//Cycle
 	var lng = collection.length - 1;
