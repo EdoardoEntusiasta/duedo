@@ -11,8 +11,8 @@ Duedo.TilemapLayer = function(game, image) {
 	this.Z = 0;
 	this.Location = new Duedo.Vector2(0, 0);
 	this.Tiles = [];
-
 	this.Renderable = true;
+
 	this.Alpha = 1;
 	this.Width = null;
 	this.Height = null;
@@ -67,30 +67,26 @@ Duedo.TilemapLayer.prototype.PostUpdate = function(dt) {
  * @public
 */
 Duedo.TilemapLayer.prototype.Draw = function(ctx) {
+	
 	if(!this.Renderable) return;
 
-	
-
+	ctx.save();
+	console.log("aa");
 	for(var i in this.Tiles) 
 	{
 		var l = this.Tiles[i];
 
 		if(l instanceof Array) {
-			for(var x in this.Tiles[i])
+			for(var x in l)
 			{
-				ctx.drawImage(this.Image,
-                         50 * ((this.Tiles[i][x]) % 2),
-                         50 * (((this.Tiles[i][x]) / 2) >> 0),
-                         50,
-                         50,
-                         50 * (i % 2),
-                         50 * ((i / 2) >> 0),
-                         50,
-                         50);
+				ctx.fillStyle = "white";
+				ctx.rect(this.Location.X + 55 * x, this.Location.Y + 55 * i, 50, 50);
+				ctx.fill();
+				console.log("aa");
 			}
 		}
 	}
 
-
+	ctx.restore();
 
 };

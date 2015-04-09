@@ -226,10 +226,8 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 
 		/*Mem render order id*/
 		child.RenderOrderID = this.CurrentRenderOrderID++;
-
 		/*Render the parent graphic object*/
 		child.Draw(context);
-
 		/*Update min and max */
 		if (this._Cache["_RequestMinMaxUpdate"])
 			this._UpdateMinMaxPlane(child);
@@ -284,6 +282,7 @@ Duedo.Renderer.prototype.PostRender = function() {
 	if (this.Game._Cache["FPS"])
 		this.Game._Cache["FPS"].Text = "FPS: " + this.Game.FPS().toFixed(2);
 
+	//Empty buffer array
 	this.Buffer = [];
 };
 

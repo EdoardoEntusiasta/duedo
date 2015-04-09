@@ -32,6 +32,14 @@ Duedo.Stage.prototype.PostUpdate = function (dt) {
 
 
 /*
+ * IsGraphical
+*/
+Duedo.Stage.prototype.IsGraphical = function(o) {
+    return (typeof o["Renderable"] != "undefined");
+};
+
+
+/*
  * __Update
  * @private
 */
@@ -59,7 +67,7 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
                 continue;
             }
 
-            if(ent["Renderable"])
+            if(this.IsGraphical(ent))
                 this.Game.Renderer.Buffer.push(ent);
         }
         
