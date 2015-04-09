@@ -101,10 +101,10 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     this.Loader = new Duedo.Loader(this, this.Cache);
     /*Prepare requestAnimationFrame*/
     this.UseRequestAnimationFrame();
+    /*Renderer*/
+    this.__NewRenderer(Duedo.Null(renderer) ? Duedo.Renderers.CANVAS : renderer, canvas);
     /*Instantiate a state manager*/
     this.StateManager = new Duedo.StateManager(this);
-    /*Renderer*/
-    this.Renderer = new Duedo.Renderer(this, canvas, renderer || "canvas2d");
     /*Input manager*/
     this.InputManager = new Duedo.InputManager(this);
     /*Interactivity manager*/
@@ -124,6 +124,9 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     if(bool_enablePhysics === true)
         this.PhysicsEngine.Enabled = true;
 
+    if(Duedo.Conf.SplashScreen)
+        this.StartSplashScreen();
+
     /*Currently running*/
     this._Paused = false;
 
@@ -140,6 +143,23 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
 
     this.__Booted = true;
     this._PostBoot();
+    return this;
+};
+
+
+/*
+ * __initRenderer
+ * @private
+ * Initialize renderer component
+*/
+Duedo.GameContext.prototype.__NewRenderer = function(r, c) {
+
+    if(Duedo.Utils.AreNull([r, c]))
+        throw "GameContext:__initRenderer: error while initializing renderer component";
+    
+    /*Renderer, canvas | webgl*/
+    this.Renderer = new Duedo.Renderer(this, c, r);
+
     return this;
 };
 
@@ -185,9 +205,18 @@ Duedo.GameContext.prototype._PostBoot = function () {
         fpst.ViewportOffset = new Duedo.Vector2(5, 2);
         this._Cache["FPS"] = this.Add(fpst);
     }
-
 };
 
+
+
+
+/*
+ * TODO:
+ * Create and add the Duedo Splash Screen
+*/
+Duedo.GameContext.prototype.StartSplashScreen = function() {
+
+};
 
 
 
@@ -257,6 +286,7 @@ Duedo.GameContext.prototype.__RunTicks = function() {
         return;
     
     this.__Step();
+
     //Call next tick and mem the current LoopID
     this._LoopID = requestAnimationFrame(this.__RunTicks.bind(this));
 
@@ -513,7 +543,7 @@ Object.defineProperty(Duedo.GameContext.prototype, "Debug", {
  * Cast
  * @public
  * Create an instance of a Duedo object (ex: Spritesheet, Rectangle, ParticleSystem etc...)
- * Game.Create("Rectangle", new Duedo.Vector2(10, 10), 100, 100);
+ * Game.Cast("Rectangle", new Duedo.Vector2(10, 10), 100, 100);
  *
  * OR apply a further collection of custom properties values:
  * Game.Create("Rectangle", new Duedo.Vector2(10, 10), 100, 100, {

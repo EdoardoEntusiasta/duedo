@@ -491,6 +491,22 @@ Duedo.Utils.IsNull = function( val ) {
 };
 
 
+/*
+ * AreNull
+ * Check if an array contains a null value
+ * all = true ? check if an array contains only null values
+*/
+Duedo.Utils.AreNull = function(ar, all) {
+
+    if(typeof both === "undefined")
+        both = false;
+
+    for(var i in ar)
+        if(Duedo.Null(ar[i]))
+            return true;
+};
+
+
 
 /*
  * MergeObjects

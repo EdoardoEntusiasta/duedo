@@ -12,7 +12,7 @@ Duedo.Tile = function(x, y, layer, width, height, image) {
 
 	/*Tile parent layer*/
 	this.Layer;
-
+	this.Texture;
 
 	this._init(x, y, layer, width, height, image);
 };
@@ -28,7 +28,7 @@ Duedo.Tile.prototype.constructor = Duedo.Tile;
  * _init
  * @private
 */
-Duedo.Tile.prototype._init = function(x, y, layer width, height, image) {
+Duedo.Tile.prototype._init = function(x, y, layer, width, height, image) {
 	this._super();
 
 	this.Dimension.Width  = width || 0;
@@ -38,6 +38,7 @@ Duedo.Tile.prototype._init = function(x, y, layer width, height, image) {
 	this.Location.Y = y || 0;
 
 	this.Layer = layer || 0;
+	this.Texture = image;
 
 };
 

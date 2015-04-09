@@ -11,6 +11,8 @@ website/
 00_BACKUP_BEFORE_GAME
 ECS/
 ComicPart/
+src/Core/Duedo.RendererCanvas.js
+src/Core/Duedo.RendererWebGL.js
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/

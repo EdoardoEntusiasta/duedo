@@ -6,29 +6,10 @@ Author: http://www.edoardocasella.it
 */
 
 
-Duedo.CanvasRenderer = function(renderer, canvas) {
+Duedo.CanvasRenderer = function(g, canvas) {
 
-	/*Main renderer object*/
+	this.Game = null;
 	this.Renderer;
-
-	/*Joinable methods*/
-	this.SharedMethods = [
-		"Translate",
-		"ApplyTransformationMatrix",
-		"Clear",
-		"Draw",
-		"Smoothing",
-		"BlendMode",
-		"Scale",
-		"Save",
-		"Restore"
-	];
-
-	this.SharedProperties = [
-		"SmoothProperty", "SmoothingEnabled",
-		"TransformationMatrix",
-		"CurrentBlendMode", "BlendModesEnabled"
-	];
 
 	/*Blend mode*/
 	this.CurrenBlendMode = null;
@@ -36,26 +17,29 @@ Duedo.CanvasRenderer = function(renderer, canvas) {
 	this.TransformationMatrix = [];
 	
 	/*_initialize*/
-	this._init(renderer, canvas);
+	this._init(g, canvas);
 };
-
 
 
 /*
  * _init
  * @private
 */
-Duedo.CanvasRenderer.prototype._init = function(renderer, canvas) {
+Duedo.CanvasRenderer.prototype._init = function(g, canvas) {
 
-	this.Renderer = renderer;
-	if(!this.Renderer)
-		throw "CanvasRenderer: null Rendererer";
-
+	this.Game = g;
+	if(this.Game)
+		this.Renderer = this.Game.Renderer;
+	else 
+	{
+		throw "CanvasRenderer: undefined game context";
+	}
 
 	if(!Duedo.Utils.IsNull(canvas))
 	{
-		if(canvas.nodeName.toLowerCase() == 'canvas')
+		if(canvas.nodeName.toLowerCase() == 'canvas') {
 			this.Canvas = canvas;
+		}
 		else
 		{
 			throw "Dued.Renderer._init: needs a canvas node";
@@ -78,7 +62,7 @@ Duedo.CanvasRenderer.prototype._init = function(renderer, canvas) {
 	this._PrepareSmoothing();
 	this._PrepareBlendModes();
 	
-	this.Renderer.ClearColor = "rgba(141, 163, 193, 1)";
+	this.ClearColor = "rgba(141, 163, 193, 1)";
 
 	return this;
 };
@@ -108,29 +92,6 @@ Duedo.BlendModes = {
 	COLOR:       null,
 	LUMINOSITY:  null
 };
-
-
-
-/*
- * Join
- * @public
- * Extends the Duedo.Renderer
-*/
-Duedo.CanvasRenderer.prototype.Join = function() {
-
-	for(var i in this.SharedMethods)
-		if(!this.Renderer[this.SharedMethods[i]])
-			this.Renderer[this.SharedMethods[i]] = this[this.SharedMethods[i]];
-
-	for(var i in this.SharedProperties)
-		if(!this.Renderer[this.SharedProperties[i]])
-			this.Renderer[this.SharedProperties[i]] = this[this.SharedProperties[i]];
-
-	this.Renderer.Context = this.Context;
-
-	return this;
-};
-
 
 
 /*
@@ -169,9 +130,6 @@ Duedo.CanvasRenderer.prototype.Translate = function(x, y) {
 */
 Duedo.CanvasRenderer.prototype.Draw = function(collection, pstate) {
 
-	/*Internal reference to this object (CanvasRenderer)*/
-	var cr = this._r;
-
 	//Cycle
 	var lng = collection.length - 1;
 
@@ -189,8 +147,10 @@ Duedo.CanvasRenderer.prototype.Draw = function(collection, pstate) {
 		ent.Draw(this.Context); 
 
 		/*Update min and max */
-		if (this._Cache["_RequestMinMaxUpdate"])
-			this._UpdateMinMaxPlane(ent);
+		if (this.Game.Renderer._Cache["_RequestMinMaxUpdate"]) {
+			this.Game.Renderer._UpdateMinMaxPlane(ent);
+			console.log(".--");
+		}
 
 		/*Render sub-children*/
 		if (Duedo.IsArray(ent.Children))
@@ -270,7 +230,7 @@ Duedo.CanvasRenderer.prototype._PrepareBlendModes = function() {
 
 	/*Check blend modes support*/
 	if (Duedo.Utils.Can.BlendModes()) {
-		this.Renderer.BlendModesEnabled = true;
+		this.BlendModesEnabled = true;
 		Duedo.BlendModes.NORMAL = "source-over";
 		Duedo.BlendModes.ADD = "lighter";
 		Duedo.BlendModes.MULTIPLY = "multiply";

@@ -58,6 +58,9 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
                 this.Game.Entities.splice(i, 1);
                 continue;
             }
+
+            if(ent["Renderable"])
+                this.Game.Renderer.Buffer.push(ent);
         }
         
         Duedo.Global.PreviousEntity = ent;
