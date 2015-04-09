@@ -11,13 +11,7 @@ website/
 00_BACKUP_BEFORE_GAME
 ECS/
 ComicPart/
-00_test/Projectile.js
-00_test/Cannon.js
-00_test/gamestate.js
-00_test/shotgun.js
-00_test/test.js
-00_test/loadingstate.js
-00_test/tweening/
+00_test/
 
 
 # Recycle Bin used on file shares
