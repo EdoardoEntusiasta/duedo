@@ -37,7 +37,6 @@ function ADD_QUADTREETEST() {
 
             game.InteractivityManager.UseQuadTree(q);
             prepareTilemap();
-            game.SoundManager.Play("ost_menu").Loop(1);
 
             var mbg = new Duedo.Image(game, game.Cache.GetImage("bg_menu"));
             mbg.Location.Y = -70;

@@ -64,7 +64,6 @@ function initGame() {
     
     //Add game states
     ADD_QUADTREETEST();
-
 }
 
 

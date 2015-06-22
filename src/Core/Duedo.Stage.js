@@ -35,7 +35,7 @@ Duedo.Stage.prototype.PostUpdate = function (dt) {
  * IsGraphical
 */
 Duedo.Stage.prototype.IsGraphical = function(o) {
-    return (typeof o["Renderable"] != "undefined");
+    return (typeof o["Draw"] !== "undefined");
 };
 
 
@@ -50,9 +50,10 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
 
     /*Cycle through all entities*/
     while ((ent = ents[len--]) != null) {
-
-        if (ent["NeedsUpdate"] && ent["NeedsUpdate"] == false)
+        
+        if (ent["NeedsUpdate"] && ent["NeedsUpdate"] == false) {
             continue;
+        }
 
         /*Check entity life*/
         if (!Duedo.Null(ent["InUse"])) {

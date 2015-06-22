@@ -253,7 +253,6 @@ Duedo.GameContext.prototype.Add = function( object ) {
         object._CallTriggers("stageadd");
     }
 
-
     return object;
 
 };
@@ -447,7 +446,7 @@ Duedo.GameContext.prototype.StopLooping = function() {
     
     this.Running = false;
 };
-
+Duedo.GameContext.prototype.Stop = Duedo.GameContext.prototype.StopLooping;
 
 
 /*

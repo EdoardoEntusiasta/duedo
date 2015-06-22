@@ -6,14 +6,19 @@ Author: http://www.edoardocasella.it
 */
 
 Duedo.Tilemap = function(game, image) {
-
+	Duedo.GraphicObject.call(this);
     this.Game = game || Duedo.Global.Games[0];
     this.Image = null;
 	this.Layers = [];
-
+	this.InUse = true;
 	this._init(image);
 
 };
+
+
+/*Inherit GraphicObject*/
+Duedo.Tilemap.prototype = Object.create(Duedo.GraphicObject.prototype);
+Duedo.Tilemap.prototype.constructor = Duedo.Tilemap;
 
 
 /*
@@ -28,6 +33,16 @@ Duedo.Tilemap.prototype._init = function(i) {
 
 	return this;
 
+};
+
+
+
+
+Duedo.Tilemap.prototype.PreUpdate = function() {
+};
+Duedo.Tilemap.prototype.Update = function() {
+};
+Duedo.Tilemap.prototype.PostUpdate = function() {
 };
 
 
@@ -55,12 +70,14 @@ Duedo.Tilemap.prototype.CreateLayer = function(data, x, y, z) {
  * JoinGame
 */
 Duedo.Tilemap.prototype.JoinGame = function() {
-
-	for(var i in this.Layers)
- 	{
-		this.Game.Add(this.Layers[i]);	 	
- 	}
-
  	this.Game.Add(this);
+};
 
+
+
+Duedo.Tilemap.prototype.Draw = function(ctx) {
+	console.log("draw");
+	for(var i in this.Layers) {
+		this.Layers[i].Draw(ctx);
+	}
 };

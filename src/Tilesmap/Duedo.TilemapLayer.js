@@ -71,7 +71,6 @@ Duedo.TilemapLayer.prototype.Draw = function(ctx) {
 	if(!this.Renderable) return;
 
 	ctx.save();
-	console.log("aa");
 	for(var i in this.Tiles) 
 	{
 		var l = this.Tiles[i];

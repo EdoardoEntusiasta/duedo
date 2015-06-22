@@ -122,9 +122,6 @@ Duedo.Object.prototype.Destroy = function () {
 */
 Duedo.Object.prototype.Bind = function (eventName, callback) {
 
-    //if(Duedo.MouseEvents.indexOf(eventName) !== -1)
-        //alert("ok");
-
     if ( typeof eventName !== "undefined" && typeof callback !== "undefined" )
     {
         eventName = eventName.toLowerCase();
