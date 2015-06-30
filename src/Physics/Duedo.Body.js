@@ -56,7 +56,7 @@ Duedo.Body.prototype._init = function(owner) {
 
 	if(Duedo.Utils.IsNull(owner))
 	{
-		return null;
+		this.Owner = null;
 	}
 	else
 	{

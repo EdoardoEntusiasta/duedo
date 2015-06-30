@@ -48,11 +48,20 @@ Duedo.Tilemap.prototype._init = function(i, tilewidth, tileheight) {
 
 
 
-Duedo.Tilemap.prototype.PreUpdate = function() {
+Duedo.Tilemap.prototype.PreUpdate = function(dt) {
+	for(var i in this.Layers) {
+		this.Layers[i].PreUpdate(dt);
+	}
 };
-Duedo.Tilemap.prototype.Update = function() {
+Duedo.Tilemap.prototype.Update = function(dt) {
+	for(var i in this.Layers) {
+		this.Layers[i].Update(dt);
+	}
 };
-Duedo.Tilemap.prototype.PostUpdate = function() {
+Duedo.Tilemap.prototype.PostUpdate = function(dt) {
+	for(var i in this.Layers) {
+		this.Layers[i].PostUpdate(dt);
+	}
 };
 
 

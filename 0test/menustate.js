@@ -76,15 +76,18 @@ function ADD_QUADTREETEST() {
 function prepareTilemap() {
 
     var map = new Duedo.Tilemap(game, game.Cache.Get("rock"), 50, 50);
+
+    var ph_rock = new Duedo.Body(game);
+
     map.CreateLayer(
         [
-            [0,   400, game.Cache.Get("rock"), true],
-            [50, 400, game.Cache.Get("rock"), true],
-            [100, 400, game.Cache.Get("rock"), true],
-            [150, 400, game.Cache.Get("rock"), true],
-            [200, 400, game.Cache.Get("rock"), true],
-            [250, 400, game.Cache.Get("rock"), true],
-            [300, 400, game.Cache.Get("rock"), true],
+            [0,   400, game.Cache.Get("rock"), ph_rock],
+            [50, 400, game.Cache.Get("rock"),  false],
+            [100, 400, game.Cache.Get("rock"), false],
+            [150, 400, game.Cache.Get("rock"), false],
+            [200, 400, game.Cache.Get("rock"), false],
+            [250, 400, game.Cache.Get("rock"), false],
+            [300, 400, game.Cache.Get("rock"), false]
         ],
     100, 0, 10);
 

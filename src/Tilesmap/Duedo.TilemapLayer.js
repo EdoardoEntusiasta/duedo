@@ -103,6 +103,10 @@ Duedo.TilemapLayer.prototype.Update = function(dt) {};
 */
 Duedo.TilemapLayer.prototype.PostUpdate = function(dt) {
 
+	for(var i in this.Tiles) {
+		this.Tiles[i].PostUpdate(dt);
+	}
+
 	//Is layer visible
 	this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
@@ -110,7 +114,7 @@ Duedo.TilemapLayer.prototype.PostUpdate = function(dt) {
             this.Width, 
             this.Height)
     ) && this.Alpha > 0);
-
+this.Renderable = true;
 };
 
 
