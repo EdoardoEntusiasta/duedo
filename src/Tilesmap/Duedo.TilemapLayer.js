@@ -34,7 +34,11 @@ Duedo.TilemapLayer.prototype.FormatLayer = function(data) {
 		if(!t[3]) 
 			t[3] = false;
 
-		this.Tiles.push(new Duedo.Tile(this.Game, t[0], t[1], this, this.Map.TileWidth, this.Map.TileHeight, t[2], t[3]));
+		var width = this.Map.TileWidth;
+		var height = this.Map.TileHeight;
+
+
+		this.Tiles.push(new Duedo.Tile(this.Game, t[0], t[1], this, width, height, t[2], t[3]));
 	}
 
 	this.ComputeWidth().ComputeHeight();
@@ -73,12 +77,11 @@ Duedo.TilemapLayer.prototype.ComputeHeight = function() {
 		/*TODO*/
 		if(this.Tiles[i].Location.Y + this.Tiles[i].Height > max) {
 			max = ((this.Location.Y - this.Tiles[i].Location.Y) + this.Tiles[i].Height);
-			console.log((this.Tiles[i].Location.Y + this.Tiles[i].Height) + "--" + this.Location.Y);
 		}
 	}
 
 	this.Height = max;
-	console.log(this.Height);
+
 	return this;
 };
 

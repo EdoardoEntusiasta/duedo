@@ -566,9 +566,9 @@ Duedo.Utils.SortArrayAscending = function(array, property) {
     return array.sort(function(a, b) {
             
             if(a[property] < b[property])
-                return 1;
-            else if(a[property] > b[property]) 
                 return -1;
+            else if(a[property] > b[property]) 
+                return 1;
             else 
                 return 0;
 
@@ -608,9 +608,9 @@ Duedo.Utils.SortArrayDescending = function(array, property) {
     return array.sort(function(a, b) {
 
             if(a[property] < b[property])
-                return -1;
-            else if(a[property] > b[property]) 
                 return 1;
+            else if(a[property] > b[property]) 
+                return -1;
             else 
                 return 0;
         });

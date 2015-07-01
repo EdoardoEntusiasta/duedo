@@ -206,10 +206,16 @@ var Body = {};
 
             if (body.isStatic || body.isSleeping)
                 continue;
-
+            
             // apply gravity
-            body.force.y += body.mass * gravity.y * 0.001;
-            body.force.x += body.mass * gravity.x * 0.001;
+            if(body.mass === Infinity) {
+                body.force.x = Infinity;
+                body.force.y = Infinity;
+            } else {
+                body.force.y += body.mass * gravity.y * 0.001;
+                body.force.x += body.mass * gravity.x * 0.001;
+            }
+
         }
     };
 
@@ -226,6 +232,7 @@ var Body = {};
         for (var i = 0; i < bodies.length; i++) {
             var body = bodies[i];
 
+            
             if (body.isStatic || body.isSleeping)
                 continue;
 
@@ -234,7 +241,7 @@ var Body = {};
             if (body.bounds.max.x < worldBounds.min.x || body.bounds.min.x > worldBounds.max.x
                 || body.bounds.max.y < worldBounds.min.y || body.bounds.min.y > worldBounds.max.y)
                 continue;
-
+            
             Body.update(body, deltaTime, timeScale, correction);
         }
     };
@@ -247,6 +254,7 @@ var Body = {};
      * @param {number} timeScale
      * @param {number} correction
      */
+     var p = false;
     Body.update = function(body, deltaTime, timeScale, correction) {
         var deltaTimeSquared = Math.pow(deltaTime * timeScale * body.timeScale, 2);
 
@@ -254,7 +262,7 @@ var Body = {};
         var frictionAir = 1 - body.frictionAir * timeScale * body.timeScale,
             velocityPrevX = body.position.x - body.positionPrev.x,
             velocityPrevY = body.position.y - body.positionPrev.y;
-
+            
         // update velocity with verlet integration
         body.velocity.x = (velocityPrevX * frictionAir * correction) + (body.force.x / body.mass) * deltaTimeSquared;
         body.velocity.y = (velocityPrevY * frictionAir * correction) + (body.force.y / body.mass) * deltaTimeSquared;
@@ -277,7 +285,8 @@ var Body = {};
         // track speed and acceleration
         body.speed = Vector.magnitude(body.velocity);
         body.angularSpeed = Math.abs(body.angularVelocity);
-
+        
+        
         // transform the body geometry
         Vertices.translate(body.vertices, body.velocity);
 
@@ -290,7 +299,6 @@ var Body = {};
                 Axes.rotate(body.axes, body.angularVelocity);
             }
         }
-            
 
         Bounds.update(body.bounds, body.vertices, body.velocity);
     };

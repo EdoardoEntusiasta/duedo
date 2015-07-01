@@ -447,7 +447,6 @@ Duedo.PhysicsEngine.prototype._StepPhysics = function(dt, correction) {
     // applies gravity to all bodies
     this.Body.applyGravityAll(allBodies, this._World.gravity);
 
-
     /*UPDATE PHASE*/
     this.Events.trigger(this._Engine, 'beforeUpdate', event);
 

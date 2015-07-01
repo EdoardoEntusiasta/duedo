@@ -16,6 +16,9 @@ Duedo.Tilemap = function(game, image, tilewidth, tileheight) {
 	this.TileWidth;
 	this.TileHeigh;
 	
+	this.DefaultTileWidth = 50;
+	this.DefaultTileHeight = 50;
+
 	this._init(image, tilewidth, tileheight);
 
 };
@@ -38,8 +41,8 @@ Duedo.Tilemap.prototype._init = function(i, tilewidth, tileheight) {
 	}
 
 	/*Tile dimension*/
-	this.TileWidth  = tilewidth   || 50;
-	this.TileHeight = tileheight  || 50;
+	this.TileWidth  = tilewidth   || this.DefaultTileWidth;
+	this.TileHeight = tileheight  || this.DefaultTileHeight;
 
 	return this;
 
@@ -47,7 +50,9 @@ Duedo.Tilemap.prototype._init = function(i, tilewidth, tileheight) {
 
 
 
-
+/*
+ * Update processes
+*/
 Duedo.Tilemap.prototype.PreUpdate = function(dt) {
 	for(var i in this.Layers) {
 		this.Layers[i].PreUpdate(dt);

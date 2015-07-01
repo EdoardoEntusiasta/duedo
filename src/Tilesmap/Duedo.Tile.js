@@ -27,7 +27,7 @@ Duedo.Tile.prototype.constructor = Duedo.Tile;
  * _init
  * @private
 */
-Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body) {
+Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body_options) {
 	this._super();
 
 	if(image)
@@ -46,10 +46,10 @@ Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body) {
 	this.Graphical.Location.Y = this.Layer.Location.Y + y;
 	this.Graphical.Width  = width;
 	this.Graphical.Height = height;
-
+	console.log(this.Graphical.Scale);
 	/*Is physic*/
-	if(body instanceof Duedo.Body) {
-		this._UseBody(body);
+	if(body_options) {
+		this._UseBody(body_options);
 	}
 
 	//**PERCHÈ???
@@ -61,15 +61,26 @@ Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body) {
  * UseBody
  * private
 */
-Duedo.Tile.prototype._UseBody = function(body) {
+Duedo.Tile.prototype._UseBody = function(body_options) {
 
-	this.Graphical.EnablePhysics = true;
-	this.Graphical.Body = body;
-	this.Graphical.Body.Shape = this.Game.PhysicsEngine.RectangleBody(this.Graphical.Location, this.Width, this.Height);
-	this.Graphical.Body.Owner = this.Graphical;
-	console.log(this.Graphical.Body);
+	/*Start location*/
+	var _tmp = this.Location.Add(this.Layer.Location).Clone();
+	var loc = new Duedo.Vector2(
+		_tmp.X + this.Graphical.HalfWidth,
+		_tmp.Y + this.Graphical.HalfHeight
+	);
+
+	/*Create rect body*/
+	this.Graphical.Body = new Duedo.Body(
+		this.Game, 
+		this.Graphical, 
+		this.Game.PhysicsEngine.RectangleBody(loc, this.Width, this.Height, body_options)
+	);
+
+	/*Add body*/
 	this.Game.PhysicsEngine.AddBody(this.Graphical.Body);
 	
+	return this;
 };
 
 

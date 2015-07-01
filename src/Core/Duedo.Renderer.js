@@ -28,7 +28,7 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this.Context;
 	
 	/*Generic*/
-	this.FillColor = "rgba(141, 163, 193, 1)";
+	this.FillColor = "rgba(255, 255, 255, 1)";
 	this.Alpha;
 	this.TransformationMatrix;
 	this._Angle = 0;
@@ -47,7 +47,7 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this._LastPlane;
 	this.Sorting = {
 		SortBy: "Z",
-		OrderType: "ascending",
+		OrderType: "descending",
 		MaxZPlane: 0,
 		MinZPlane: 0
 	};
@@ -165,12 +165,11 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 /*
  * PreRender
 */
-Duedo.Renderer.prototype.PreRender = function() {
+Duedo.Renderer.prototype.PreRender = function(sort) {
 
 	/*Check whether it is necessary to sort the objects by Z*/
-	if(this.SortPlanes) {
-		this.SortList(this.Buffer, this.Sorting.OrderType);
-		this._Cache["_RequestMinMaxUpdate"] = true;
+	if(this.SortPlanes || sort === true) {
+		this.SortBuffer();
 		this.SortPlanes = false;
 	}
 
@@ -178,6 +177,12 @@ Duedo.Renderer.prototype.PreRender = function() {
 
 };
 
+
+
+Duedo.Renderer.prototype.SortBuffer = function() {
+	this.SortList(this.Buffer, this.Sorting.OrderType);
+	this._Cache["_RequestMinMaxUpdate"] = true;
+};
 
 
 /*
@@ -196,6 +201,8 @@ Duedo.Renderer.prototype.Render = function() {
 	if(this.ClearBeforeRender) 
 		this.Clear();
 
+	this.SortBuffer(); /*each cycle? :( */
+
 	this._RenderGraphics(this.Buffer, this.Context);
 	
 	/*Render additional graphics from the current state*/
@@ -207,7 +214,7 @@ Duedo.Renderer.prototype.Render = function() {
 
 
 
-
+var ok = 0;
 /*
  * _RenderGraphics
  * Render all the graphics objects
@@ -216,7 +223,7 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 
 	//Cycle
 	var lng = collection.length - 1;
-
+	
 	while ((child = collection[lng--]) != null) {
 
 		if (child.ParentState != this.Game.StateManager.CurrentState()
@@ -236,7 +243,7 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 		if (Duedo.IsArray(child.Children))
 			this._RenderGraphics(child.Children, context, -1);
 	}
-		
+
 };
 
 

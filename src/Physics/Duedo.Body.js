@@ -19,9 +19,14 @@ http://brm.io/matter-js-docs/classes/Body.html
 ==============================
 */
 
-Duedo.Body = function(gameContext, owner) {
+/*
+ * Static bodies? options.isStatic = true;
+*/
+
+Duedo.Body = function(gameContext, owner, shape) {
     this.Game = gameContext || Duedo.Global.Games[0];
 
+    this.__Ready = false; /*only after the first frame*/
 	this.Type = Duedo.BODY;
 	/*Owner game object of this body (ex: spritesheet)*/
 	this.Owner;
@@ -44,7 +49,7 @@ Duedo.Body = function(gameContext, owner) {
 		Wireframes: true,
 	}
 
-	this._init(owner);	
+	this._init(owner, shape);	
 };
 
 
@@ -52,7 +57,7 @@ Duedo.Body = function(gameContext, owner) {
 /*
  * _init
 */
-Duedo.Body.prototype._init = function(owner) {
+Duedo.Body.prototype._init = function(owner, shape) {
 
 	if(Duedo.Utils.IsNull(owner))
 	{
@@ -63,12 +68,33 @@ Duedo.Body.prototype._init = function(owner) {
 		this.Owner = owner;
 	}
 
+	if(shape) {
+		this.Shape = shape;
+	}
 
 	this._Scale = new Duedo.Vector2(1, 1);
 
 };
 
 
+/*
+ * Clone
+ * todo
+*/
+Duedo.Body.prototype.Clone = function() {
+
+	var _tmp = new Duedo.Body(this.Game, this.Owner);
+	
+	for(var i in this) {
+		var prop = this[i];
+
+		if(prop == "function")
+			continue;
+		
+		_tmp[i] = this[i];
+	}
+	return _tmp;
+};
 
 /*
  * Link
@@ -77,6 +103,11 @@ Duedo.Body.prototype._init = function(owner) {
 */
 Duedo.Body.prototype.Link = function(dt) {
 	
+	if(!this.__Ready) {
+		this.__Ready = true;
+		return;
+	}
+
 	if(Duedo.Utils.IsNull(this.Shape) || !this.Game.PhysicsEngine.Enabled)
 		return;
 
@@ -132,9 +163,12 @@ Duedo.Body.prototype.SetLocation = function(x, y) {
 
 	var translation = {x: this.Shape.position.x - prev.x, y: this.Shape.position.y - prev.y};
 
+	this.Shape.position.x = x;
+	this.Shape.position.y = y;
+
 	Matter.Vertices.translate(this.Shape.vertices, translation);
 	Matter.Bounds.update(this.Shape.bounds, this.Shape.vertices, this.Shape.velocity);
-
+	
 	return this;
 };
 

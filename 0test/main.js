@@ -25,7 +25,7 @@ function duedoMain() {
     game.Debug = true;
     game.PhysicsEngine.Debug = true;
     game.PhysicsEngine.Enabled = true;
-    game.PhysicsEngine.UseQuadTree();
+    game.PhysicsEngine.SetGravity(0, 0);
     game.Viewport.Debug = false;
 
 
@@ -55,10 +55,7 @@ function initGame() {
     mouse = game.InputManager.Mouse;
 
     
-    rect = new Duedo.Rectangle(new Duedo.Vector2(50, 50), 100, 100);
-    rect.Z = 100;
-    rect.Draggable = true;
-    game.Add(rect);
+
     //Configure
     ConfigureGame();
     

@@ -359,7 +359,7 @@ Duedo.InteractivityManager.prototype._OnPointerOut = function (obj) {
 
 
 Duedo.InteractivityManager.prototype._SortElements = function (obs, by) {
-	obs = Duedo.Utils.SortArrayAscending(obs, by);
+	obs = Duedo.Utils.SortArrayDescending(obs, by);
 	/*ADD/FIX: se più oggetti hanno lo stesso Z chi viene usato per prima? Stessa cosa nel renderer*/
 	return obs;
 };
