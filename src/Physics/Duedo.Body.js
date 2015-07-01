@@ -173,6 +173,11 @@ Duedo.Body.prototype.SetLocation = function(x, y) {
 };
 
 
+Duedo.Body.prototype.ResetForces = function() {
+	Matter.Body.resetForcesAll(this.Shape);
+};
+
+
 
 /*
  * Rotate

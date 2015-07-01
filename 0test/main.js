@@ -32,7 +32,7 @@ function duedoMain() {
     px = game.PhysicsEngine;
     var Gamepath = "0test";
     Duedo.Require([
-    	Gamepath + "/menustate.js"
+    	Gamepath + "/teststate.js"
         ], 
    		initGame);
         

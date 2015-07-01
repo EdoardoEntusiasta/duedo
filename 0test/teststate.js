@@ -11,6 +11,9 @@ var Ph = game.PhysicsEngine;
 var PATH_GAME = "0test/";
 
 
+/* ======================
+ * Game state (test)
+*/
 function ADD_QUADTREETEST() {
 
 
@@ -27,6 +30,7 @@ function ADD_QUADTREETEST() {
             this.Game.Loader.AddResource(PATH_GAME + "src/music/ost1.mp3");
             this.Game.Loader.AddResource(PATH_GAME + "src/sprites/samus.png");
             this.Game.Loader.AddResource(PATH_GAME + "src/anims/metroidAnim.json");
+            this.Game.Loader.AddResource("src/ParticleSystem/Presets/PSFire.json");
         },
         Create: function () {
             var obs;
@@ -35,27 +39,17 @@ function ADD_QUADTREETEST() {
               //  game.World.Width, game.World.Height));
 
             //game.InteractivityManager.UseQuadTree(q);
-            prepareTilemap();
+            prepareMap();
 
             var player = new Player();
 
             game.Add(player.Sprite);
             game.Add(player);
-
+            game.Camera.Follow(player.Sprite);
             rect = new Duedo.Rectangle(new Duedo.Vector2(50, 50), 100, 100);
             rect.Z = 100;
             rect.Draggable = true;
             game.Add(rect);
-                
-            /*
-            bg1 = new Duedo.Image(game, game.Cache.GetImage("city1"));
-            bg1.Draggable = true;
-            bg1.Location.SetBoth(-400);
-            game.Add(bg1);
-        */
-
-
-
 
         },
         Enter: function () {
@@ -74,6 +68,16 @@ function ADD_QUADTREETEST() {
 }
 
 
+
+
+
+
+
+
+
+/* ======================
+ * Player (test)
+*/
 Player = function() {
 
     this.Body;
@@ -90,13 +94,13 @@ Player.prototype.Init = function() {
     this.Sprite.Load(game.Cache.GetJSON("metroidAnim"));
     this.Sprite.PlaySequence("standleft");
     this.Sprite.Name = "metroid";
-    this.Sprite.Z = 30;
+    this.Sprite.Z = 2;
     this.Sprite.Scale.SetBoth(1.3);
     this.Sprite.Location.X = 240;
     this.Sprite.Location.Y = 20;
 
     /*Add body*/
-    this.Body = new Duedo.Body(game, this.Sprite, Ph.RectangleBody(this.Sprite.Location.Clone(), this.Sprite.Width, this.Sprite.Height, {mass:10, friction:1000, airFriction:1000}));
+    this.Body = new Duedo.Body(game, this.Sprite, Ph.RectangleBody(this.Sprite.Location.Clone(), this.Sprite.Width, this.Sprite.Height, {mass:10, friction:1, airFriction:1000}));
     this.Sprite.Body = this.Body;
     this.Body.PreventRotation = true;
     Ph.AddBody(this.Body);
@@ -120,6 +124,7 @@ Player.prototype.Update = function() {
     }
     else {
         this.Sprite.PlaySequence("standright");
+        this.Body.ResetForces();
     }
     if(Keyboard.KeyState(Duedo.Keyboard.UP)) {
         this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(0, -0.02));
@@ -132,10 +137,15 @@ Player.prototype.Update = function() {
 
 
 
-function prepareTilemap() {
+
+
+/* ======================
+ * PrepareMap (test)
+*/
+function prepareMap() {
 
     var map = new Duedo.Tilemap(game, game.Cache.Get("rock"), 50, 50);
-    map.Z = 200;
+    map.Z = 30;
     /*Rock body*/
     var options = {
         angle: 0
@@ -176,6 +186,17 @@ function prepareTilemap() {
 
 
     map.JoinGame();
+
+
+
+
+    ps = new Duedo.ParticleSystem(game, "fire");
+    ps.Z = 10;
+    ps.Load(Cache.GetJSON("PSFire"));
+    ps.Location.X = 500;
+    ps.Location.Y = 370;
+    game.Add(ps);
+
 
 
 };
