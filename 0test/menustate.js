@@ -3,6 +3,7 @@ var select;
 var qz = 99;
 var line;
 var rect;
+
 var Cache = game.Cache;
 var Ph = game.PhysicsEngine;
 
@@ -36,19 +37,22 @@ function ADD_QUADTREETEST() {
             //game.InteractivityManager.UseQuadTree(q);
             prepareTilemap();
 
-            game.Add(CreatePlayer());
+            var player = new Player();
+
+            game.Add(player.Sprite);
+            game.Add(player);
 
             rect = new Duedo.Rectangle(new Duedo.Vector2(50, 50), 100, 100);
             rect.Z = 100;
             rect.Draggable = true;
             game.Add(rect);
                 
-
+            /*
             bg1 = new Duedo.Image(game, game.Cache.GetImage("city1"));
             bg1.Draggable = true;
             bg1.Location.SetBoth(-400);
             game.Add(bg1);
-
+        */
 
 
 
@@ -61,46 +65,68 @@ function ADD_QUADTREETEST() {
 
         },
         Update: function () {
-
+            
         }
 
     }
-
-
 
     game.StateManager.AddState("quadtree", quad, true);
 }
 
 
+Player = function() {
 
+    this.Body;
+    this.Sprite;
 
-
-function CreatePlayer() {
-
-    var player = new Duedo.SpriteSheet(game, Cache.GetImage("samus"), 'player');
-    //player.Load(game.Cache.GetJSON("metroidAnim"));
-    //player.PlaySequence("runright");
-    player.Name = "metroid";
-    player.Z = 30;
-    player.Width = 310;
-    player.Height = 200;
-    player.Scale.SetBoth(1.8);
-    player.Location.X = 130;
-    player.Location.Y = 20;
-            
-
-    /*
-    var ph_playerbody = new Duedo.Body(game, player, Ph.RectangleBody(new Duedo.Vector2(0, 0), 40, 100, {mass:10}));
-    player.Body = ph_playerbody;
-    Ph.AddBody(player.Body);
-    */
-    return player;
-
+    this.Init();
 };
 
 
+Player.prototype.Init = function() {
+    
+    /*Add spritesheet*/
+    this.Sprite = new Duedo.SpriteSheet(game, Cache.GetImage("samus"), 'player');
+    this.Sprite.Load(game.Cache.GetJSON("metroidAnim"));
+    this.Sprite.PlaySequence("standleft");
+    this.Sprite.Name = "metroid";
+    this.Sprite.Z = 30;
+    this.Sprite.Scale.SetBoth(1.3);
+    this.Sprite.Location.X = 240;
+    this.Sprite.Location.Y = 20;
+
+    /*Add body*/
+    this.Body = new Duedo.Body(game, this.Sprite, Ph.RectangleBody(this.Sprite.Location.Clone(), this.Sprite.Width, this.Sprite.Height, {mass:10, friction:1000, airFriction:1000}));
+    this.Sprite.Body = this.Body;
+    this.Body.PreventRotation = true;
+    Ph.AddBody(this.Body);
+
+    return this;
+
+};
+
+/*
+ * Update
+*/
+Player.prototype.Update = function() {
+
+    if(Keyboard.KeyState(Duedo.Keyboard.RIGHT)) {
+        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(0.03, 0));
+        this.Sprite.PlaySequence("runright");
+    }
+    else if(Keyboard.KeyState(Duedo.Keyboard.LEFT)) {
+        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(-0.03, 0));
+        this.Sprite.PlaySequence("runleft");
+    }
+    else {
+        this.Sprite.PlaySequence("standright");
+    }
+    if(Keyboard.KeyState(Duedo.Keyboard.UP)) {
+        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(0, -0.02));
+    }
 
 
+};
 
 
 
@@ -133,7 +159,18 @@ function prepareTilemap() {
 
     map.CreateLayer(
         [
-            [120,   400, game.Cache.Get("rock"), options],
+            [100,   400, game.Cache.Get("rock"), options],
+            [150,   400, game.Cache.Get("rock"), options],
+            [200,   400, game.Cache.Get("rock"), options],
+            [250,   400, game.Cache.Get("rock"), options],
+            [300,   400, game.Cache.Get("rock"), options],
+            [350,   400, game.Cache.Get("rock"), options],
+            [400,   400, game.Cache.Get("rock"), options],
+            [450,   400, game.Cache.Get("rock"), options],
+            [500,   400, game.Cache.Get("rock"), options],
+            [550,   350, game.Cache.Get("rock"), options],
+            [600,   350, game.Cache.Get("rock"), options],
+            [650,   400, game.Cache.Get("rock"), options],
         ],
     100, 0, 10);
 

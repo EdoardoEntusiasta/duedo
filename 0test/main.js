@@ -23,7 +23,6 @@ function duedoMain() {
 
     
     game.Debug = true;
-    game.PhysicsEngine.Debug = true;
     game.PhysicsEngine.Enabled = true;
     game.PhysicsEngine.SetGravity(0, 0);
     game.Viewport.Debug = false;
@@ -76,7 +75,7 @@ function ConfigureGame() {
     game.Viewport.EnableDragging = true;
     game.Viewport.DragSupportKey = Duedo.Keyboard.CONTROL;
     game.Viewport.DragPreventFollow = true;
-
+    game.Renderer.FillColor = "rgba(0, 0, 0, 1)";
     /*Se il mouse esce dalla canvas | annulla un possibile pulsante attivo*/
     mouse.OutCallback = function() {
         this.Null(this.ActiveButton);

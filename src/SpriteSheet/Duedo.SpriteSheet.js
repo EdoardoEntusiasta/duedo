@@ -304,7 +304,10 @@ Duedo.SpriteSheet.prototype.PauseSequence = function ( sequenceName ) {
 Duedo.SpriteSheet.prototype.Update = function ( deltaT ) {
     
     this.SuperUpdate(deltaT);
-        
+    
+    if(!this.Source) 
+        throw "Spritesheet: error - undefined buffered source";
+
     /*AutoDestroy*/
     if(this._Repeated >= this.Repeat)
     {
@@ -402,7 +405,7 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
 
     if(this.Body)
     {
-        //this.Body.Link();
+        this.Body.Link();
     }
 
 
@@ -435,8 +438,8 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
  * draw the spritesheet on the screen
 */
 Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
-     
-    if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 || !this.Source )
+
+    if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 )
     {
         return this;
     }
