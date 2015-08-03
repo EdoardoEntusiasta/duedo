@@ -432,13 +432,18 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	if(Duedo.Utils.IsNull(object))
 		return false;
 
-	if (object["Contains"])
+	if (object["Contains"]) //DA FIXARE IN BASE A PIXEL PER METERS
 	    return object.Contains(this.Location.X + this.Game.Viewport.View.Location.X, this.Location.Y + this.Game.Viewport.View.Location.Y);
 
-	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
+	//Get object location in pixels -> multiplyScalar PixelsInMeter
+	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() ).MultiplyScalar(Duedo.Conf.PixelsInMeter);
 
-	if (this.Location.X >= objLoc.X && this.Location.X <= objLoc.X + object.Width
-        && this.Location.Y >= objLoc.Y && this.Location.Y <= objLoc.Y + object.Height)
+	if(
+		   this.Location.X >= objLoc.X - object.HalfWidth 
+		&& this.Location.X <= objLoc.X + object.HalfWidth
+        && this.Location.Y >= objLoc.Y - object.HalfHeight 
+        && this.Location.Y <= objLoc.Y + object.HalfHeight
+    )
     {
         return true;
     } 

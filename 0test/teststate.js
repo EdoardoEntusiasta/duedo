@@ -47,14 +47,14 @@ function ADD_QUADTREETEST() {
             game.Add(player.Sprite);
             game.Add(player);
             game.Camera.Follow(player.Sprite);
-            rect = new Duedo.Rectangle(new Duedo.Vector2(50, 50), 100, 100);
+            rect = new Duedo.Rectangle(new Duedo.Vector2(4, 1), 100, 100);
             rect.Z = 100;
             rect.Draggable = true;
             game.Add(rect);
-            rect.FixedToViewport = true;
+            //rect.FixedToViewport = true;
 
             ball = new Duedo.Image(game, game.Cache.GetImage("ball"));
-            ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 1, {friction:100, restitution:0});
+            //ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 1, {friction:100, restitution:0});
             ball.Location.X = 1;
             ball.Location.Y = 1;
             ball.Scale.SetBoth(0.05);
@@ -69,20 +69,19 @@ function ADD_QUADTREETEST() {
                 this.Alpha = 1;
             };
 
+            rect.OnPointerOn = function() {
+                console.log(this);
+                this.Alpha = 0.4;
+            };
+            rect.OnPointerOut = function() {
+                this.Alpha = 1;
+            };
+
 
 
             //ground
             Ph.RectBody(new Duedo.Vector2(0, 5), 40, 2, {isStatic:true});
           
-            /*
-            * DA FARE:
-            * 
-            * DECIDERE COME UTILIZZARE I METRI AL POSTO DEI PIXEL, DURANTE IL DISEGNO O DURANTE LA LOGICA??
-
-
-
-            */
-
 
 
 
@@ -140,9 +139,9 @@ Player.prototype.Init = function() {
     this.Sprite.Location.Y = 0;
     this.Sprite.PlaySequence("standright");
     game.Camera.Follow(this.Sprite);
-    this.Sprite.Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:12, restitution:0, density:0.2});
+    this.Sprite.Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:0, restitution:0, density:0.2});
 
-    //this.Sprite.Body.SetFixedRotation(true);
+    this.Sprite.Body.SetFixedRotation(true);
     return this;
 
 };

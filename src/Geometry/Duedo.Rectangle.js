@@ -353,7 +353,7 @@ Object.defineProperty(Duedo.Rectangle.prototype, "HalfHeight", {
 
 Duedo.Rectangle.prototype.CreatePath = function(context) {
     context.beginPath();
-    context.rect(this.Location.X, this.Location.Y, this.Width, this.Height);
+    context.rect(DUnits.M2P(this.Location.X), DUnits.M2P(this.Location.Y), this.Width, this.Height);
 };
 
 
