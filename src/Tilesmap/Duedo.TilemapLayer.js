@@ -34,11 +34,15 @@ Duedo.TilemapLayer.prototype.FormatLayer = function(data) {
 		if(!t[3]) 
 			t[3] = false;
 
+		var label = "generic";
+		if(typeof t[4] != "undefined" && t[4] != null)
+			label = t[4];
+
 		var width = this.Map.TileWidth;
 		var height = this.Map.TileHeight;
 
 
-		this.Tiles.push(new Duedo.Tile(this.Game, t[0], t[1], this, width, height, t[2], t[3]));
+		this.Tiles.push(new Duedo.Tile(this.Game, t[0], t[1], this, width, height, t[2], t[3], label));
 	}
 
 	this.ComputeWidth().ComputeHeight();

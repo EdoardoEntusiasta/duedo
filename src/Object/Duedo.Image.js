@@ -7,6 +7,8 @@ Notes:
 Simple image
 ==============================
 */
+
+
 Duedo.Image = function(gameContext, bufferedImage) {
 	Duedo.GraphicObject.call(this);
 	this.Game = gameContext || Duedo.Global.Games[0];
@@ -63,9 +65,11 @@ Duedo.Image.prototype.Update = function(deltaT) {
 */
 Duedo.Image.prototype.PostUpdate = function(deltaT) {
 
-    if(this.Body)
-    {
-        this.Body.Link(deltaT);
+    if(this.Body) {
+        var bpos = this.Body.GetPosition();
+        this.Location.X = bpos.x;
+        this.Location.Y = bpos.y;
+        this.Rotation = this.Body.GetAngle();
     }
 
     //Update animations
@@ -74,7 +78,7 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
     /*Renderable*/
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
-            this.Location,
+            new Duedo.Vector2(this.Location.X, this.Location.Y),
             this.Width, 
             this.Height)
     ) && this.Alpha > 0);
@@ -170,9 +174,17 @@ Duedo.Image.prototype.Draw = function(context) {
     */    
     if( this.Rotation !== 0 )
     {
-        context.translate(this.Location.X + (this.Width * this.Anchor.X), this.Location.Y + (this.Height * this.Anchor.Y));
+        /*Get center based on PixelsInMeter and dimension*/
+        var mLocation = this.Location.Clone()
+            .MultiplyScalar(Duedo.Conf.PixelsInMeter)
+            .Subtract(new Duedo.Vector2(this.HalfWidth, this.HalfHeight))
+            .Add(
+                new Duedo.Vector2((this.Width * this.Anchor.X), (this.Height * this.Anchor.Y))
+            );
+        
+        context.translate(mLocation.X, mLocation.Y);
         context.rotate(this.Rotation);
-        context.translate(-(this.Location.X +  (this.Width * this.Anchor.X)), -(this.Location.Y + (this.Height * this.Anchor.Y)));
+        context.translate(-(mLocation.X), -(mLocation.Y));
     }
 
     if(this.BlendMode)
@@ -183,15 +195,12 @@ Duedo.Image.prototype.Draw = function(context) {
         this.Source,    
             0, 0,   
                 this.Source.width, this.Source.height, 
-                    this.Location.X, this.Location.Y,
+                    DUnits.M2P(this.Location.X) - this.HalfWidth, DUnits.M2P(this.Location.Y) - this.HalfHeight,
                         this.Width, this.Height); 
                             
 
     context.restore();
     
-    //DrawBody
-    if(this.Body && this.Game.PhysicsEngine.Debug)
-        this.Body.Draw(context);
 
 
     return this;

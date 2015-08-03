@@ -24,6 +24,9 @@ Duedo.Global = {
  * @WWMaxY        world max y
  * @enablePhysics (bool) request a physics world
  * @RendererType: canvas or webgl
+ *
+ *
+ * >>> IMPORTANT: this engine works with METERS <<<
 */
 Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, rendererType) {
     this._Cache = {};
@@ -57,6 +60,12 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
     this.Tick      = 0;
     this.ElapsedTime;
 
+    /*Space scale*/
+    this.SpaceScale = Duedo.Conf.PixelsInMeter; //pixels in a meter
+    if(!this.SpaceScale) {
+        throw "Error: you must specify a relationship between pixels and meters";
+    }
+    
     /*Core loop properties*/
     this._Running = true;
     this._LoopID = null;
@@ -71,7 +80,6 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
 
 /* Constructor */
 Duedo.GameContext.prototype.constructor = Duedo.GameContext;
-
 
 
 /*
@@ -120,10 +128,9 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     //Stage
     this.Stage = new Duedo.Stage(this);
     /*Instantiate physics engine*/
-    this.PhysicsEngine = new Duedo.PhysicsEngine(this);
-    if(bool_enablePhysics === true)
-        this.PhysicsEngine.Enabled = true;
-
+    if(bool_enablePhysics === true) {
+        this.PhysicsEngine = new Duedo.PhysicsEngine(this);
+    }
     if(Duedo.Conf.SplashScreen)
         this.StartSplashScreen();
 
@@ -201,8 +208,7 @@ Duedo.GameContext.prototype._PostBoot = function () {
     if (Duedo.Conf.DrawFPS) {
         var fpst = new Duedo.Text("FPS: -----");
         fpst.FixedToViewport = true;
-        fpst.Draggable = true;
-        fpst.ViewportOffset = new Duedo.Vector2(5, 2);
+        fpst.Style.Fill = "white";
         this._Cache["FPS"] = this.Add(fpst);
     }
 };
@@ -344,7 +350,8 @@ Duedo.GameContext.prototype.Simulate = function (Game, dt) {
 
         Game.InputManager.Update(dt);
         Game.StateManager.PreUpdate();
-        Game.PhysicsEngine.PreUpdate(dt);
+        if(Game.PhysicsEngine)
+            Game.PhysicsEngine.PreUpdate(dt);
         Game.Stage.PreUpdate(dt);
         Game.Viewport.PreUpdate();
         
@@ -357,17 +364,20 @@ Duedo.GameContext.prototype.Simulate = function (Game, dt) {
         Game.World.Update(dt);
         Game.Viewport.Update(dt);
         Game.SoundManager.Update(dt);
-        Game.PhysicsEngine.Update();
+        if(Game.PhysicsEngine)
+            Game.PhysicsEngine.Update(dt);
 
         Game.Stage.PostUpdate(dt);
         Game.InputManager.PostUpdate(dt);
         Game.Viewport.PostUpdate(dt);
+        if(Game.PhysicsEngine)
+            Game.PhysicsEngine.PostUpdate(dt);
 
         Game.Renderer
             .PreRender()
             .Render()
             .PostRender();
-    
+            
 };
 
 

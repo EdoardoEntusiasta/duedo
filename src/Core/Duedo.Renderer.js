@@ -28,7 +28,7 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this.Context;
 	
 	/*Generic*/
-	this.FillColor = "rgba(255, 255, 255, 1)";
+	this.FillColor = "rgba(0, 0, 0, 1)";
 	this.Alpha;
 	this.TransformationMatrix;
 	this._Angle = 0;
@@ -306,6 +306,13 @@ Duedo.Renderer.prototype._RenderDebug = function() {
 	if(this.Game.Viewport.Debug)
 	{
 		this.Game.Viewport.RenderDebugInfo(this);
+	}
+	//PhysicsEngine
+	if(this.Game.PhysicsEngine) {
+		if(this.Game.PhysicsEngine.Debug) 
+		{
+			this.Game.PhysicsEngine.RenderDebugInfo(this);
+		}
 	}
 };
 

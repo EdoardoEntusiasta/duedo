@@ -7,13 +7,13 @@ Author: http://www.edoardocasella.it
 
 
 
-Duedo.Tile = function(game, x, y, layer, width, height, image, body) {
+Duedo.Tile = function(game, x, y, layer, width, height, image, body, label) {
 	Duedo.GraphicObject.call(this);
 	this.Game = game || typeof undefined;
 	/*Tile parent layer*/
 	this.Layer;
 	this.Graphical;
-	this._init(x, y, layer, width, height, image, body);
+	this._init(x, y, layer, width, height, image, body, label);
 };
 
 
@@ -27,7 +27,7 @@ Duedo.Tile.prototype.constructor = Duedo.Tile;
  * _init
  * @private
 */
-Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body_options) {
+Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body_options, label) {
 	this._super();
 
 	if(image)
@@ -46,10 +46,10 @@ Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body_op
 	this.Graphical.Location.Y = this.Layer.Location.Y + y;
 	this.Graphical.Width  = width;
 	this.Graphical.Height = height;
-	console.log(this.Graphical.Scale);
+	
 	/*Is physic*/
 	if(body_options) {
-		this._UseBody(body_options);
+		this._UseBody(body_options, label);
 	}
 
 	//**PERCHÈ???
@@ -61,7 +61,7 @@ Duedo.Tile.prototype._init = function(x, y, layer, width, height, image, body_op
  * UseBody
  * private
 */
-Duedo.Tile.prototype._UseBody = function(body_options) {
+Duedo.Tile.prototype._UseBody = function(body_options, label) {
 
 	/*Start location*/
 	var _tmp = this.Location.Add(this.Layer.Location).Clone();
@@ -74,7 +74,8 @@ Duedo.Tile.prototype._UseBody = function(body_options) {
 	this.Graphical.Body = new Duedo.Body(
 		this.Game, 
 		this.Graphical, 
-		this.Game.PhysicsEngine.RectangleBody(loc, this.Width, this.Height, body_options)
+		this.Game.PhysicsEngine.RectangleBody(loc, this.Width, this.Height, body_options),
+		label
 	);
 
 	/*Add body*/

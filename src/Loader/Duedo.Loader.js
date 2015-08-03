@@ -245,6 +245,10 @@ Duedo.Loader.prototype.StartLoading = function () {
     {
         src = this.Resources[i];
 
+        if(typeof src.path === "undefined") {
+            continue;
+        }
+        
         ext = src.path.split('.').pop();
         
         this._LoadResource(src.path, src.name, src.complete, ext);      

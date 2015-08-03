@@ -25,16 +25,17 @@ function ADD_QUADTREETEST() {
         pssnow: null,
 
         Load: function () {
-            this.Game.Loader.AddResource(PATH_GAME + "src/bgs/city1.jpg");
             this.Game.Loader.AddResource(PATH_GAME + "src/tilemaps/rock.jpg");
-            this.Game.Loader.AddResource(PATH_GAME + "src/music/ost1.mp3");
+            this.Game.Loader.AddResource(PATH_GAME + "src/images/ball.png");
             this.Game.Loader.AddResource(PATH_GAME + "src/sprites/samus.png");
             this.Game.Loader.AddResource(PATH_GAME + "src/anims/metroidAnim.json");
+            this.Game.Loader.AddResource("src/ParticleSystem/Presets/PSFire.json");
             this.Game.Loader.AddResource("src/ParticleSystem/Presets/PSFire.json");
         },
         Create: function () {
             var obs;
-
+            if(px)
+            px.Debug = true;
             //q = new Duedo.QuadTree(this.Game, 0, new Duedo.Rectangle(new Duedo.Vector2(0, 0),
               //  game.World.Width, game.World.Height));
 
@@ -50,11 +51,47 @@ function ADD_QUADTREETEST() {
             rect.Z = 100;
             rect.Draggable = true;
             game.Add(rect);
+            rect.FixedToViewport = true;
+
+            ball = new Duedo.Image(game, game.Cache.GetImage("ball"));
+            ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 1, {friction:100, restitution:0});
+            ball.Location.X = 1;
+            ball.Location.Y = 1;
+            ball.Scale.SetBoth(0.05);
+            
+            game.Add(ball);
+            ball.Draggable = true;
+            ball.OnPointerOn = function() {
+                console.log(this);
+                this.Alpha = 0.4;
+            };
+            ball.OnPointerOut = function() {
+                this.Alpha = 1;
+            };
+
+
+
+            //ground
+            Ph.RectBody(new Duedo.Vector2(0, 5), 40, 2, {isStatic:true});
+          
+            /*
+            * DA FARE:
+            * 
+            * DECIDERE COME UTILIZZARE I METRI AL POSTO DEI PIXEL, DURANTE IL DISEGNO O DURANTE LA LOGICA??
+
+
+
+            */
+
+
+
+
+            //game.Add(rect);1
 
         },
         Enter: function () {
             //Play ost
-            this.Game.SoundManager.Play("ost1").Repeat = Infinity;
+            //this.Game.SoundManager.Play("ost1").Repeat = Infinity;
             
 
         },
@@ -83,6 +120,9 @@ Player = function() {
     this.Body;
     this.Sprite;
 
+    this.Jumping = false;
+    this.OnGround = false;
+    this.PrintCheck = true;
     this.Init();
 };
 
@@ -92,19 +132,17 @@ Player.prototype.Init = function() {
     /*Add spritesheet*/
     this.Sprite = new Duedo.SpriteSheet(game, Cache.GetImage("samus"), 'player');
     this.Sprite.Load(game.Cache.GetJSON("metroidAnim"));
-    this.Sprite.PlaySequence("standleft");
+    
     this.Sprite.Name = "metroid";
     this.Sprite.Z = 2;
     this.Sprite.Scale.SetBoth(1.3);
-    this.Sprite.Location.X = 240;
-    this.Sprite.Location.Y = 20;
+    this.Sprite.Location.X = 3;
+    this.Sprite.Location.Y = 0;
+    this.Sprite.PlaySequence("standright");
+    game.Camera.Follow(this.Sprite);
+    this.Sprite.Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:12, restitution:0, density:0.2});
 
-    /*Add body*/
-    this.Body = new Duedo.Body(game, this.Sprite, Ph.RectangleBody(this.Sprite.Location.Clone(), this.Sprite.Width, this.Sprite.Height, {mass:10, friction:1, airFriction:1000}));
-    this.Sprite.Body = this.Body;
-    this.Body.PreventRotation = true;
-    Ph.AddBody(this.Body);
-
+    //this.Sprite.Body.SetFixedRotation(true);
     return this;
 
 };
@@ -114,28 +152,44 @@ Player.prototype.Init = function() {
 */
 Player.prototype.Update = function() {
 
-    if(Keyboard.KeyState(Duedo.Keyboard.RIGHT)) {
-        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(0.03, 0));
-        this.Sprite.PlaySequence("runright");
+    if(!this.Sprite.Body) return;
+
+   if(Keyboard.KeyState(Duedo.Keyboard.RIGHT)) {
+       vel = this.Sprite.Body.GetLinearVelocity();
+       vel.x = 10;
+       this.Sprite.Body.SetLinearVelocity(vel);
+       this.Sprite.PlaySequence("runright");
     }
     else if(Keyboard.KeyState(Duedo.Keyboard.LEFT)) {
-        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(-0.03, 0));
-        this.Sprite.PlaySequence("runleft");
-    }
-    else {
+       vel = this.Sprite.Body.GetLinearVelocity();
+       this.Sprite.PlaySequence("runleft");
+       vel.x = -10;
+       this.Sprite.Body.SetLinearVelocity(vel);
+    } else {
+        vel = this.Sprite.Body.GetLinearVelocity();
+
+       if(vel.x > 0) {
         this.Sprite.PlaySequence("standright");
-        this.Body.ResetForces();
-    }
-    if(Keyboard.KeyState(Duedo.Keyboard.UP)) {
-        this.Body.ApplyForce(new Duedo.Vector2(0, 400), new Duedo.Vector2(0, -0.02));
+        }
+        else if(vel.x < 0) {
+            this.Sprite.PlaySequence("standleft");
+        }
+        
     }
 
+          vel = this.Sprite.Body.GetLinearVelocity();
+        //console.log(vel);
+
+    if(Keyboard.KeyState(Duedo.Keyboard.UP)) {
+        this.Sprite.Body.ApplyForce( new b2Vec2(0,-150), this.Sprite.Body.GetWorldCenter() );
+    } 
+
+    if(Keyboard.KeyState(Duedo.Keyboard.CONTROL)) {
+        var prj = Ph.RectBody(new Duedo.Vector2(this.Sprite.Location.X+0.7, this.Sprite.Location.Y), 0.5, 0.2, {density:1});
+        prj.ApplyForce(new b2Vec2(300,-140), prj.GetPosition());
+    } 
 
 };
-
-
-
-
 
 
 
@@ -144,59 +198,6 @@ Player.prototype.Update = function() {
 */
 function prepareMap() {
 
-    var map = new Duedo.Tilemap(game, game.Cache.Get("rock"), 50, 50);
-    map.Z = 30;
-    /*Rock body*/
-    var options = {
-        angle: 0
-    };
     
-
-    options.mass =2;
-    options.isStatic = false;
-     options.density = 10000000;
-     options.stiffness = 10;
-     options.chamfer = {};
-    options.chamfer.radius = 20;
-
-    map.CreateLayer(
-        [
-            [130,   0, game.Cache.Get("rock"), options]
-        ],
-    100, 0, 10);
-    
-    options.isStatic = true;
-
-    map.CreateLayer(
-        [
-            [100,   400, game.Cache.Get("rock"), options],
-            [150,   400, game.Cache.Get("rock"), options],
-            [200,   400, game.Cache.Get("rock"), options],
-            [250,   400, game.Cache.Get("rock"), options],
-            [300,   400, game.Cache.Get("rock"), options],
-            [350,   400, game.Cache.Get("rock"), options],
-            [400,   400, game.Cache.Get("rock"), options],
-            [450,   400, game.Cache.Get("rock"), options],
-            [500,   400, game.Cache.Get("rock"), options],
-            [550,   350, game.Cache.Get("rock"), options],
-            [600,   350, game.Cache.Get("rock"), options],
-            [650,   400, game.Cache.Get("rock"), options],
-        ],
-    100, 0, 10);
-
-
-    map.JoinGame();
-
-
-
-
-    ps = new Duedo.ParticleSystem(game, "fire");
-    ps.Z = 10;
-    ps.Load(Cache.GetJSON("PSFire"));
-    ps.Location.X = 500;
-    ps.Location.Y = 370;
-    game.Add(ps);
-
-
 
 };

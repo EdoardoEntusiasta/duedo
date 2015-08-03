@@ -23,7 +23,7 @@ http://brm.io/matter-js-docs/classes/Body.html
  * Static bodies? options.isStatic = true;
 */
 
-Duedo.Body = function(gameContext, owner, shape) {
+Duedo.Body = function(gameContext, owner, shape, label) {
     this.Game = gameContext || Duedo.Global.Games[0];
 
     this.__Ready = false; /*only after the first frame*/
@@ -38,6 +38,8 @@ Duedo.Body = function(gameContext, owner, shape) {
 	this.OnCollisionActive;
 	this.OnCollisionEnd;
 
+	this.Label = null;
+
 	/*Debug rendering options*/
 	this.Debug = {
 		/*Draw this body when is sleeping*/
@@ -49,7 +51,7 @@ Duedo.Body = function(gameContext, owner, shape) {
 		Wireframes: true,
 	}
 
-	this._init(owner, shape);	
+	this._init(owner, shape, label);	
 };
 
 
@@ -57,7 +59,7 @@ Duedo.Body = function(gameContext, owner, shape) {
 /*
  * _init
 */
-Duedo.Body.prototype._init = function(owner, shape) {
+Duedo.Body.prototype._init = function(owner, shape, label) {
 
 	if(Duedo.Utils.IsNull(owner))
 	{
@@ -70,6 +72,11 @@ Duedo.Body.prototype._init = function(owner, shape) {
 
 	if(shape) {
 		this.Shape = shape;
+	}
+
+	if(label) {
+		this.Label = label;
+		this.Shape.label = label;
 	}
 
 	this._Scale = new Duedo.Vector2(1, 1);
@@ -120,6 +127,10 @@ Duedo.Body.prototype.Link = function(dt) {
 };
 
 
+
+Duedo.Body.prototype.Collisions = function() {
+	return this.Shape.collisions;
+};
 
 
 /*
@@ -173,6 +184,9 @@ Duedo.Body.prototype.SetLocation = function(x, y) {
 };
 
 
+/*
+ * ResetForces
+*/
 Duedo.Body.prototype.ResetForces = function() {
 	Matter.Body.resetForcesAll(this.Shape);
 };
@@ -571,6 +585,21 @@ Object.defineProperty(Duedo.Body.prototype, "PreventRotation", {
 	}
 
 });
+
+
+/*
+ * PreventRotation
+ * bool
+ * Prevent the body rotation
+*/
+Object.defineProperty(Duedo.Body.prototype, "Velocity", {
+
+	get: function() {
+		return new Duedo.Vector2(this.Shape.velocity.x, this.Shape.velocity.y);
+	}
+
+});
+
 
 
 /*

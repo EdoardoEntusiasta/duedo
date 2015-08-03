@@ -61,6 +61,26 @@ Object.ExtendDeeply = function (destination, source) {
 };
 
 
+/*
+ * Extend
+ * simple
+*/
+Duedo.Extend = function(target, other) {
+
+    if(Duedo.Null(target)) {
+        target = {};
+    }
+
+    for(var i in other) {
+        if(typeof target[i] === "undefined") {
+            target[i] = other[i]; 
+        }
+    }
+
+    return target;
+};
+
+
 
 /*IE Ver*/
 Duedo.GetIEVersion = function() {

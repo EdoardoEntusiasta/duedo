@@ -94,6 +94,7 @@ var Body = {};
             groupId: 0,
             slop: 0.05,
             timeScale: 1,
+            collisions: [],
             render: {
                 visible: true,
                 sprite: {
@@ -973,6 +974,8 @@ var Detector = {};
             var bodyA = broadphasePairs[i][0], 
                 bodyB = broadphasePairs[i][1];
 
+                bodyA.collisions = [];
+                bodyB.collisions = [];
             // NOTE: could share a function for the below, but may drop performance?
 
             if (bodyA.groupId && bodyB.groupId && bodyA.groupId === bodyB.groupId)
@@ -1007,10 +1010,14 @@ var Detector = {};
 
                 if (collision.collided) {
                     collisions.push(collision);
+                    bodyA.collisions.push(collision);
                     metrics.narrowDetections += 1;
                 }
             }
         }
+
+        //Duedo: register collision to each body
+
 
         return collisions;
     };

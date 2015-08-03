@@ -49,7 +49,9 @@ Duedo.Conf = {
     /*Shows FPS in the canvas screen*/
     DrawFPS: true,
     /*Draw the initial Duedo splash image*/
-    SplashScreen: true
+    SplashScreen: true,
+    /*Pixels in meters // !default = 30 as Box2D */
+    PixelsInMeter: 30
 };
 
 

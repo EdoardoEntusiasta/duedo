@@ -418,7 +418,7 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	}
 	else
 	{
-		obj.Location.Add(DirVector);
+		obj.Location.Add(DirVector.DivideScalar(Duedo.Conf.PixelsInMeter));
 	}
 
 	//Keeps track of the last position of the pointer

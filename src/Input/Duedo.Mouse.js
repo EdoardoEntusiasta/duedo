@@ -441,8 +441,7 @@ Duedo.Mouse.prototype.Intersects = function(object) {
         && this.Location.Y >= objLoc.Y && this.Location.Y <= objLoc.Y + object.Height)
     {
         return true;
-    }
-
+    } 
 
     return false;
 };

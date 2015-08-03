@@ -403,9 +403,11 @@ Duedo.SpriteSheet.prototype.CurrentFrame = function() {
 */
 Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
 
-    if(this.Body)
-    {
-        this.Body.Link();
+    if(this.Body) {
+        var bpos = this.Body.GetPosition();
+        this.Location.X = bpos.x;
+        this.Location.Y = bpos.y;
+        this.Rotation = this.Body.GetAngle();
     }
 
 
@@ -415,7 +417,7 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
     /*Renderable*/
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
-            this.Location.Clone(),
+            new Duedo.Vector2(this.Location.X, this.Location.Y),
             this.FrameWidth(), 
             this.FrameHeight())
     ) && this.Alpha > 0);
@@ -461,14 +463,22 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     /*
      * Rotate if needed
     */    
-    if( this.Rotation !== 0 )
-    {
+    if( this.Rotation !== 0 ) {
+        
         var ScaledWidth  = this.FrameWidth();
         var ScaledHeight = this.FrameWidth();
 
-        context.translate(this.Location.X + (ScaledWidth * this.Anchor.X), this.Location.Y + (ScaledHeight * this.Anchor.Y));
+        /*Get center based on PixelsInMeter and dimension*/
+        var mLocation = this.Location.Clone()
+            .MultiplyScalar(Duedo.Conf.PixelsInMeter)
+            .Subtract(new Duedo.Vector2(this.HalfWidth, this.HalfHeight))
+            .Add(
+                new Duedo.Vector2((ScaledWidth * this.Anchor.X), (ScaledHeight * this.Anchor.Y))
+            );
+        
+        context.translate(mLocation.X, mLocation.Y);
         context.rotate(this.Rotation);
-        context.translate(-(this.Location.X +  (ScaledWidth * this.Anchor.X)), -(this.Location.Y + (ScaledHeight * this.Anchor.Y)));
+        context.translate(-(mLocation.X), -(mLocation.Y));
     }
 
     if(this.BlendMode)
@@ -481,7 +491,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
             this.Source,    
                 fc[0], fc[1],   
                     fc[2], fc[3], 
-                        drawLoc.X, drawLoc.Y,
+                        DUnits.M2P(drawLoc.X) - this.HalfWidth, DUnits.M2P(drawLoc.Y) - this.HalfHeight,
                             this.FrameWidth(), this.FrameHeight()); 
                             
     }
@@ -491,10 +501,6 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     }
 
     context.restore();
-
-    //DrawBody
-    if(this.Body && this.Game.PhysicsEngine.Debug)
-        this.Body.Draw(context);
     
     return this;
 };
