@@ -88,7 +88,6 @@ function prepareMap() {
     Sprite.Rotation = 5;
     
 
-
     var a = {};
     var player = new Duedo.Entity(game, Sprite);
     
