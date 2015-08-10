@@ -8,12 +8,21 @@ Manage all the core objects, calculate deltaTime, update and render the game
 ==============================
 */
 
+
 /*Global*/
 Duedo.Global = {
     //Game instances
     Games: [],
+    Id: 0,
     PreviousEntity: null
 };
+
+
+/*Next id*/
+Duedo.NextId = function() {
+    return ++Duedo.Global.Id;
+};
+
 
 
 /* GameContext

@@ -56,26 +56,44 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
         }
 
         /*Check entity life*/
-        if (!Duedo.Null(ent["InUse"])) {
-            if (ent.MustBeDead(this.Game))
+        if (!Duedo.Null(ent["InUse"])) 
+        {
+            
+            if (ent.MustBeDead(this.Game)) 
+            {
                 ent.InUse = false;
+                
+                if(ent instanceof Duedo.Entity) 
+                {
+                    ent.Kill();
+                }
+            }
 
             /*Entity is dead*/
-            if (!ent.InUse) {
-                if (!Duedo.Null(ent["_CallTriggers"]))
+            if (!ent.InUse) 
+            {
+                if (!Duedo.Null(ent["_CallTriggers"])) 
+                {
                     ent._CallTriggers("destroy");
-                this.Game.Entities.splice(i, 1);
+                }
+
+                this.Game.Entities.splice(ents.indexOf(ent), 1);
                 continue;
             }
 
-            if(this.IsGraphical(ent))
+
+            if(this.IsGraphical(ent)) 
+            {
                 this.Game.Renderer.Buffer.push(ent);
-        }
-        
-        Duedo.Global.PreviousEntity = ent;
+            }
+
+        } //#ENT-INUSE
         
         /*Step entity*/
         this.__StepEntity(deltaT, ent, upLevel);
+
+        /*Save previous updated entity*/
+        Duedo.Global.PreviousEntity = ent;
         
     }
 };
@@ -90,18 +108,23 @@ Duedo.Stage.prototype.__StepEntity = function (deltaT, ent, upLevel) {
     if (Duedo.Null(upLevel)) upLevel = "Update";
 
     /*Update entity*/
-    if (!Duedo.Null(ent[upLevel])) {
+    if (!Duedo.Null(ent[upLevel])) 
+    {
 
         /*SuperUpdate*/
-        if (!Duedo.Null(ent["Super" + upLevel]))
+        if (!Duedo.Null(ent["Super" + upLevel])) 
+        {
             ent["Super" + upLevel](deltaT);
+        }
 
         /*Update*/
         ent[upLevel](deltaT);
 
         /*Update sub-children*/
-        if (Duedo.IsArray(ent.Children))
+        if (Duedo.IsArray(ent.Children)) 
+        {
             this.__Update(deltaT, ent.Children, upLevel);
+        }
     }
 
 };

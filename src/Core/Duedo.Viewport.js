@@ -134,6 +134,10 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 			break;
 
 		default:
+		/*Set deadzone - both axis following */
+			var w = this.View.Width / 8;
+			var h = this.View.Height / 3;
+			this.Deadzone = new Duedo.Rectangle( new Duedo.Vector2( (this.View.Width - w) / 2, (this.View.Height - h) / 2 - h * 0.25), w, h);
 			break;
 	}
 	
@@ -201,11 +205,11 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
    this.UpdateAnimations( deltaT );
 
    /*Update offset*/
-   this.Offset.X = this.View.Location.X - 0;
-   this.Offset.Y = this.View.Location.Y - 0;
+   this.Offset.X = this.View.Location.X;
+   this.Offset.Y = this.View.Location.Y;
    
    /*Update translation*/
-   //this.Location = this.View.Location.Clone();
+   this.Location = this.View.Location.Clone();
    
    if (!Duedo.Vector2.Compare(this.LastLocation, this.Location))
    {
@@ -252,7 +256,7 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 			this.View.Location.X = this._Edge;
 		}
 
-		this._Edge = this.Target.Location.X + this.Target.Dimension.Width - this.Deadzone.Location.X - this.Deadzone.Width;
+		this._Edge = this.Target.Location.X + this.Target.Width - this.Deadzone.Location.X - this.Deadzone.Width;
 
 		if (this.View.Location.X < this._Edge)
 		{
@@ -266,7 +270,7 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 			this.View.Location.Y = this._Edge;
 		}
 
-		this._Edge = this.Target.Location.Y + this.Target.Dimension.Height - this.Deadzone.Location.Y - this.Deadzone.Height;
+		this._Edge = this.Target.Location.Y + this.Target.Height - this.Deadzone.Location.Y - this.Deadzone.Height;
 
 		if (this.View.Location.Y < this._Edge)
 		{

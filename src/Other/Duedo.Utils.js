@@ -47,7 +47,7 @@ if (!('bind' in Function.prototype)) {
  * Object.ExtendDeeply
  * Copy an object into another (adding subobjects)
 */
-Object.ExtendDeeply = function (destination, source) {
+Object.Extends = function (destination, source) {
     for (var property in source) {
         if (source[property] && source[property].constructor &&
          source[property].constructor === Object) {
@@ -60,6 +60,8 @@ Object.ExtendDeeply = function (destination, source) {
     return destination;
 };
 
+Object.ExtendDeeply = Object.Extends;
+Duedo.Extends = Object.Extends;
 
 /*
  * Extend
