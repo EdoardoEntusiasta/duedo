@@ -418,8 +418,8 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
             new Duedo.Vector2(this.Location.X, this.Location.Y),
-            this.FrameWidth(), 
-            this.FrameHeight())
+            DToPixels(this.FrameWidth()), 
+            DToPixels(this.FrameHeight()))
     ) && this.Alpha > 0);
     
     //Update location if it's fixed to viewport
@@ -490,9 +490,9 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
         context.drawImage(
             this.Source,    
                 fc[0], fc[1],   
-                    fc[2], fc[3], 
-                        DUnits.M2P(drawLoc.X) - this.HalfWidth, DUnits.M2P(drawLoc.Y) - this.HalfHeight,
-                            this.FrameWidth(), this.FrameHeight()); 
+                    DToPixels(fc[2]), DToPixels(fc[3]), 
+                         DToPixels(drawLoc.X) - DToPixels(this.HalfWidth),  DToPixels(drawLoc.Y) - DToPixels(this.HalfHeight),
+                            DToPixels(this.FrameWidth()), DToPixels(this.FrameHeight())); 
                             
     }
     catch (error)

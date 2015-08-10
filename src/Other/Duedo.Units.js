@@ -30,3 +30,4 @@ Duedo.Units.M2P = function(m) {
 
 
 DUnits = Duedo.Units;
+window.DToPixels = DUnits.M2P;

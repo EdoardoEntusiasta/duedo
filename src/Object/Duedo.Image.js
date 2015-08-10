@@ -79,8 +79,8 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
             new Duedo.Vector2(this.Location.X, this.Location.Y),
-            this.Width, 
-            this.Height)
+            DToPixels(this.Width), 
+            DToPixels(this.Height))
     ) && this.Alpha > 0);
 
     //Update location if it's fixed to viewport
@@ -104,7 +104,7 @@ Object.defineProperty(Duedo.Image.prototype, "Width", {
         return this._Width * this.Scale.X;
     },
     set:function(val) {
-        this.Scale.X = val / this._Width;
+        //this.Scale.X = val / this._Width;
         this._Width = val;
     }
 });
@@ -121,7 +121,7 @@ Object.defineProperty(Duedo.Image.prototype, "Height", {
         return this._Height * this.Scale.Y;
     },
     set:function(val) {
-        this.Scale.Y = val / this._Height;
+        //this.Scale.Y = val / this._Height;
         this._Height = val;
     }
 
@@ -189,14 +189,14 @@ Duedo.Image.prototype.Draw = function(context) {
 
     if(this.BlendMode)
         context.globalCompositeOperation = this.BlendMode;
-    
+
     /*Draw*/
     context.drawImage(
         this.Source,    
             0, 0,   
                 this.Source.width, this.Source.height, 
-                    DUnits.M2P(this.Location.X) - this.HalfWidth, DUnits.M2P(this.Location.Y) - this.HalfHeight,
-                        this.Width, this.Height); 
+                    DToPixels(this.Location.X) - DToPixels(this.HalfWidth), DToPixels(this.Location.Y) - DToPixels(this.HalfHeight),
+                        DToPixels(this.Width), DToPixels(this.Height)); 
                             
 
     context.restore();

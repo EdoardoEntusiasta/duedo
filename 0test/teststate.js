@@ -54,13 +54,13 @@ function ADD_QUADTREETEST() {
             //rect.FixedToViewport = true;
 
             ball = new Duedo.Image(game, game.Cache.GetImage("ball"));
-            //ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 1, {friction:100, restitution:0});
-            ball.Location.X = 1;
-            ball.Location.Y = 1;
-            ball.Scale.SetBoth(0.05);
+            ball.Width = 1;
+            ball.Height = 1;
+            ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 0.5, {restitution:1, density:10, friction:2});
+
             
             game.Add(ball);
-            ball.Draggable = true;
+    
             ball.OnPointerOn = function() {
                 console.log(this);
                 this.Alpha = 0.4;
@@ -134,13 +134,12 @@ Player.prototype.Init = function() {
     
     this.Sprite.Name = "metroid";
     this.Sprite.Z = 2;
-    this.Sprite.Scale.SetBoth(1.3);
     this.Sprite.Location.X = 3;
     this.Sprite.Location.Y = 0;
-    this.Sprite.PlaySequence("standright");
+    this.Sprite.PlaySequence("standleft");
     game.Camera.Follow(this.Sprite);
-    this.Sprite.Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:0, restitution:0, density:0.2});
-
+    this.Sprite.Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:10, restitution:0, density:0.2});
+    this.Sprite.Rotation = 5;
     this.Sprite.Body.SetFixedRotation(true);
     return this;
 

@@ -50,7 +50,7 @@ Duedo.Conf = {
     DrawFPS: true,
     /*Draw the initial Duedo splash image*/
     SplashScreen: true,
-    /*Pixels in meters // !default = 30 as Box2D */
+    /*Pixels in meters */
     PixelsInMeter: 30
 };
 
