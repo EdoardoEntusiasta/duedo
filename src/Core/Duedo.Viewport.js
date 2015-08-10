@@ -134,7 +134,7 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 			break;
 
 		default:
-		/*Set deadzone - both axis following */
+			/*Set deadzone - both axis following */
 			var w = this.View.Width / 8;
 			var h = this.View.Height / 3;
 			this.Deadzone = new Duedo.Rectangle( new Duedo.Vector2( (this.View.Width - w) / 2, (this.View.Height - h) / 2 - h * 0.25), w, h);
