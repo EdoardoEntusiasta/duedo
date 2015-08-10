@@ -436,13 +436,13 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	    return object.Contains(this.Location.X + this.Game.Viewport.View.Location.X, this.Location.Y + this.Game.Viewport.View.Location.Y);
 
 	//Get object location in pixels -> multiplyScalar PixelsInMeter
-	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() ).MultiplyScalar(Duedo.Conf.PixelsInMeter);
-
+	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
+	
 	if(
-		   this.Location.X >= objLoc.X - object.HalfWidth 
-		&& this.Location.X <= objLoc.X + object.HalfWidth
-        && this.Location.Y >= objLoc.Y - object.HalfHeight 
-        && this.Location.Y <= objLoc.Y + object.HalfHeight
+		   this.Location.X >= DToPixels(objLoc.X) - DToPixels(object.HalfWidth) 
+		&& this.Location.X <= DToPixels(objLoc.X) + DToPixels(object.HalfWidth)
+        && this.Location.Y >= DToPixels(objLoc.Y) - DToPixels(object.HalfHeight) 
+        && this.Location.Y <= DToPixels(objLoc.Y) + DToPixels(object.HalfHeight)
     )
     {
         return true;

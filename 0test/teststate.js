@@ -73,7 +73,7 @@ function ADD_QUADTREETEST() {
  * PrepareMap (test)
 */
 function prepareMap() {
-    game.Camera.View.X = 503;
+    game.Camera.View.Location.X = 503;
    
     var Sprite = new Duedo.SpriteSheet(game, Cache.GetImage("samus"), 'player');
     Sprite.Load(game.Cache.GetJSON("metroidAnim"));
@@ -160,8 +160,11 @@ function addBall() {
     ball = new Duedo.Image(game, game.Cache.GetImage("ball"));
     ball.Width = 1;
     ball.Height = 1;
-    ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 0.5, {restitution:1, density:10, friction:2});
-
+    ball.Location.X = 10;
+    ball.Location.Y = 10;
+    //ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 0.5, {restitution:1, density:10, friction:2});
+    ball.Draggable = true;
+    ball.FixedToViewport = true;
     
     game.Add(ball);
 
@@ -180,6 +183,5 @@ function addBall() {
     rect.OnPointerOut = function() {
         this.Alpha = 1;
     };
-
 
 };

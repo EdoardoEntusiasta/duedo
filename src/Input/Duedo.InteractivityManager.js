@@ -409,6 +409,8 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	}
 
 	//Update coordinates
+	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
+
 	if (obj.FixedToViewport) {
 		obj.ViewportOffset.Add(DirVector);
 	}
@@ -418,7 +420,7 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	}
 	else
 	{
-		obj.Location.Add(DirVector.DivideScalar(Duedo.Conf.PixelsInMeter));
+		obj.Location.Add(DirVector);
 	}
 
 	//Keeps track of the last position of the pointer
