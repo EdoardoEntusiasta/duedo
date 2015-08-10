@@ -37,15 +37,15 @@ Readme.md INCOMPLETE
 8. Spritesheets and image rendering
 9. Geometry and math support
 10. Parallax
-11. *Physics engine: matter.js, to be connected*
+11. *Physics engine: box2d, to be connected*
 12. *Tilemap: to develop*
 
 
 #Physics engine
-![Alt text](http://projects.edoardocasella.it/duedo/img/matter-js_logo.png "Matter.js")
+![Alt text](http://enigma-dev.org/docs/wiki/images/a/ab/Box2d.png "Box2d")
 
-Matter.js by Liam Brummit
-http://brm.io/matter-js/
+Box2d official page
+http://box2d.org/
 
 
 #Todo
