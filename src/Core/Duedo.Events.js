@@ -57,8 +57,8 @@ Duedo.Events.prototype.Update = function( deltaT ) {
 
 		Event.ElapsedTime += deltaT;
 
-		
-		var CallTime = (typeof Event.Time === "function" ? Event.RepeatEvery : Event.Time); 
+
+		var CallTime = (typeof Event.Time === "function" ? Event.RepeatEvery : Event.Time);
 
 		if(Event.ElapsedTime >= CallTime)
 		{
@@ -75,7 +75,7 @@ Duedo.Events.prototype.Update = function( deltaT ) {
 					Event.RepeatEvery = Event.Time.call(this);
 				}
 			}
-			
+
 			if(!Duedo.Utils.IsNull(Event.Function))
 			{
 				Event.Function.call(this);
@@ -87,7 +87,7 @@ Duedo.Events.prototype.Update = function( deltaT ) {
 			{
 				/*Call related triggers*/
 				Event._CallTriggers("expired");
-				
+
 				/*Remove the event*/
 				this.Children.splice(i, 1);
 				continue;
@@ -147,7 +147,7 @@ Duedo.Events.prototype._UpdateDoForEvents = function (deltaT) {
  * @name: name of the event
  * @func: function to call
  * @repeat: number of times this function will be called
- * @time: represent a time interval, this can be a custom function that returns a value (ex. return Duedo.Utils.RandInRange(0, 60))
+ * @time: represent a time interval (among many milliseconds does the action start?), this can be a custom function that returns a value (ex. return Duedo.Utils.RandInRange(0, 60))
  * Used for: an event that occurs repeatedly or every a random time (ex, a distant explosion sound... or a ship that flies every 2 minutes...)
 */
 Duedo.Events.prototype.AddEvent = function(name, func, repeat, time) {
@@ -160,11 +160,11 @@ Duedo.Events.prototype.AddEvent = function(name, func, repeat, time) {
 
 	Event.Repeat       = repeat || 1;
 	Event.Time         = time   || 0;
-	
+
 	if(Event.Repeat > 1)
 	{
 		if(typeof Event.Time === "function")
-		{	
+		{
 			/*Were using a personalized function*/
 			var CallTime = Event.Time.call(this);
 
@@ -325,7 +325,7 @@ Duedo.Event
 Duedo.Event = function(EventsManager) {
 	Duedo.Object.call(this);
 	this.Type = Duedo.EVENT;
-	
+
 	this.Parent = EventsManager || null;
 
 	this.Name;
@@ -349,7 +349,7 @@ Duedo.Event.prototype.constructor = Duedo.Event;
  * _init
 */
 Duedo.Event.prototype._init = function() {
-	
+
 	this.Name        = "event" + this.Parent.Children.length;
 	this.Time        = 0;
 	this.StartTime   = this.Parent.Game.ElapsedTime;
@@ -375,6 +375,6 @@ Duedo.Event.prototype.Repeat = function(times) {
 /*
  * Expired
 */
-Duedo.Event.prototype.Expired = function() {		
+Duedo.Event.prototype.Expired = function() {
 	return (this.Repeated >= this.Repeat);
 };

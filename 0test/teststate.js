@@ -16,8 +16,6 @@ var PATH_GAME = "0test/";
 */
 function ADD_QUADTREETEST() {
 
-
-
     var quad = {
 
         bbg: null,
@@ -26,6 +24,8 @@ function ADD_QUADTREETEST() {
 
         Load: function () {
             this.Game.Loader.AddResource(PATH_GAME + "src/tilemaps/rock.jpg");
+            this.Game.Loader.AddResource(PATH_GAME + "src/sounds/aug_gun.mp3");
+            this.Game.Loader.AddResource(PATH_GAME + "src/music/track.mp3");
             this.Game.Loader.AddResource(PATH_GAME + "src/images/ball.png");
             this.Game.Loader.AddResource(PATH_GAME + "src/sprites/samus.png");
             this.Game.Loader.AddResource(PATH_GAME + "src/anims/metroidAnim.json");
@@ -45,12 +45,12 @@ function ADD_QUADTREETEST() {
         },
         Enter: function () {
             //Play ost
-            //this.Game.SoundManager.Play("ost1").Repeat = Infinity;
-            
+            this.Game.SoundManager.Play("track").Repeat = Infinity;
+
 
         },
         Update: function () {
-            
+
         }
 
     }
@@ -74,23 +74,23 @@ function ADD_QUADTREETEST() {
 */
 function prepareMap() {
     game.Camera.View.Location.X = 503;
-   
+
     var Sprite = new Duedo.SpriteSheet(game, Cache.GetImage("samus"), 'player');
     Sprite.Load(game.Cache.GetJSON("metroidAnim"));
-    
+
     Sprite.Name = "metroid";
     Sprite.Z = 2;
     Sprite.Location.X = 3;
     Sprite.Location.Y = 0;
     Sprite.PlaySequence("standleft");
-    
+
     Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:10, restitution:0, density:0.2});
     Sprite.Rotation = 5;
-    
+
 
     var a = {};
     var player = new Duedo.Entity(game, Sprite);
-    
+
     player.AddBody(Body);
     player.Body.SetFixedRotation(true);
     player.Jumping = false;
@@ -121,7 +121,7 @@ function prepareMap() {
                 else if(vel.x < 0) {
                     this.Sprite.PlaySequence("standleft");
                 }
-                
+
             }
 
                   vel = this.Sprite.Body.GetLinearVelocity();
@@ -129,12 +129,17 @@ function prepareMap() {
 
             if(Keyboard.KeyState(Duedo.Keyboard.UP)) {
                 this.Sprite.Body.ApplyForce( new b2Vec2(0,-150), this.Sprite.Body.GetWorldCenter() );
-            } 
+            }
 
             if(Keyboard.KeyState(Duedo.Keyboard.CONTROL)) {
-                var prj = Ph.RectBody(new Duedo.Vector2(this.Sprite.Location.X+0.7, this.Sprite.Location.Y), 0.5, 0.2, {density:1});
-                prj.ApplyForce(new b2Vec2(300,-140), prj.GetPosition());
-            } 
+                var self = this;
+                //Event after 0.2ms (shot)
+                game.Events.AddEvent('shot', function() {
+                  var prj = Ph.RectBody(new Duedo.Vector2(self.Sprite.Location.X+0.7, self.Sprite.Location.Y), 0.5, 0.2, {density:1});
+                  prj.ApplyForce(new b2Vec2(300,-140), prj.GetPosition());
+                }, 1, 0.2);
+                this.Game.SoundManager.Play("aug_gun");
+            }
     };
 
     player.Generate();
@@ -164,7 +169,7 @@ function addBall() {
     //ball.Body = Ph.CircleBody(new Duedo.Vector2(10, 1), 0.5, {restitution:1, density:10, friction:2});
     ball.Draggable = true;
     ball.FixedToViewport = true;
-    
+
     game.Add(ball);
 
     ball.OnPointerOn = function() {
