@@ -11,7 +11,7 @@ Readme.md INCOMPLETE
 3. Renderer: canvas2d context
 
 #Compile
-Using 'gulp', folder dev will contains duedo.js and duedo.minified.js
+Using 'gulp' the build folder will contains duedo.js and duedo.minified.js
 
 #Engine and functionality
 1. Sound manager
