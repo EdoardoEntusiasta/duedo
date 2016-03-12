@@ -88,6 +88,7 @@ function ADD_QUADTREETEST() {
             }, 5, "Linear").Yoyo();
 
 
+
             var window = new Duedo.Rectangle(new Duedo.Vector2(20, 20), 300, 300);
             window.FillColor = "black";
             window.Z = 20;

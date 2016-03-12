@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Duedo</title>
+		<meta http-equiv='Content-Language' content='it' />
+		<script src="../../duedo.minified.js"></script>
+		<script>
+			function duedoMain() {
+				if(!Duedo.Utils.Can.Duedo())
+        			return alert("Your browser can't run Duedo");
+        		Duedo.Conf.DrawFPS = true;
+    			game = new Duedo.GameContext(
+    				document.getElementById("screen"), 2500, 1000, true);
+			}
+		</script>
+		<style>
+			#wrapper {
+				width:1200px;
+				margin:0 auto;
+				margin-top:60px;
+			}
+			#screen, #screen2 {
+				border:3px solid white;
+				margin:0 auto;
+			}
+			#screen2 { background: #DDD;}
+
+		</style>
+	</head>
+	<body>
+		<div id="wrapper">
+			<canvas id="screen" width="1200" height="500"></canvas>
+		</div>
+	</body>
+</html>

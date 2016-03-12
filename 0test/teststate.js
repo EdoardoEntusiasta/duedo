@@ -3,7 +3,7 @@ var select;
 var qz = 99;
 var line;
 var rect;
-
+var player;
 var Cache = game.Cache;
 var Ph = game.PhysicsEngine;
 
@@ -34,6 +34,7 @@ function ADD_QUADTREETEST() {
         },
         Create: function () {
             var obs;
+
             if(px)
             px.Debug = true;
             //q = new Duedo.QuadTree(this.Game, 0, new Duedo.Rectangle(new Duedo.Vector2(0, 0),
@@ -45,7 +46,7 @@ function ADD_QUADTREETEST() {
         },
         Enter: function () {
             //Play ost
-            this.Game.SoundManager.Play("track").Repeat = Infinity;
+           this.Game.SoundManager.Play("track").SetLocation(10, 10).Repeat = Infinity;
 
 
         },
@@ -80,16 +81,16 @@ function prepareMap() {
 
     Sprite.Name = "metroid";
     Sprite.Z = 2;
-    Sprite.Location.X = 3;
+    Sprite.Location.X = 50;
     Sprite.Location.Y = 0;
     Sprite.PlaySequence("standleft");
 
-    Body = Ph.RectBody(new Duedo.Vector2(3, 1), 0.5, 1, {friction:10, restitution:0, density:0.2});
+    Body = Ph.RectBody(new Duedo.Vector2(53, 1), 0.5, 1, {friction:10, restitution:0, density:0.2});
     Sprite.Rotation = 5;
 
 
     var a = {};
-    var player = new Duedo.Entity(game, Sprite);
+    player = new Duedo.Entity(game, Sprite);
 
     player.AddBody(Body);
     player.Body.SetFixedRotation(true);
@@ -132,7 +133,19 @@ function prepareMap() {
             }
 
             if(Keyboard.KeyState(Duedo.Keyboard.CONTROL)) {
+
                 var self = this;
+                if(!game.SpeechRecognition) {
+                game.StartSpeechRecognition(true);
+                game.SpeechRecognition.AddCommand('yes', function() {
+                        game.Events.AddEvent('shot', function() {
+                          var prj = Ph.RectBody(new Duedo.Vector2(self.Sprite.Location.X+0.7, self.Sprite.Location.Y), 0.5, 0.2, {density:1});
+                          prj.ApplyForce(new b2Vec2(300,-140), prj.GetPosition());
+                        }, 1, 0.2);
+                        game.SoundManager.Play("aug_gun");
+                });
+            }
+                
                 //Event after 0.2ms (shot)
                 game.Events.AddEvent('shot', function() {
                   var prj = Ph.RectBody(new Duedo.Vector2(self.Sprite.Location.X+0.7, self.Sprite.Location.Y), 0.5, 0.2, {density:1});
@@ -144,18 +157,18 @@ function prepareMap() {
 
     player.Generate();
 
-    game.Camera.Follow(player.Sprite);
+    //game.Camera.Follow(player.Sprite);
 
     addBall();
 
-    Ph.RectBody(new Duedo.Vector2(0, 5), 100, 2, {isStatic:true});
+    Ph.RectBody(new Duedo.Vector2(50, 5), 100, 2, {isStatic:true});
 };
 
 
 
 function addBall() {
 
-    rect = new Duedo.Rectangle(new Duedo.Vector2(4, 1), 100, 100);
+    rect = new Duedo.Rectangle(new Duedo.Vector2(1, 1), 100, 100);
     rect.Z = 100;
     rect.Draggable = true;
     game.Add(rect);
