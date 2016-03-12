@@ -1,7 +1,7 @@
 ![Alt text](http://projects.edoardocasella.it/duedo/img/logo.png?raw=true "Duedo")
 
 2D HTML5 game engine
-Duedo is currently under heavy development and actually does not have: physics engine, mobile supports and a minified version
+Duedo is currently under heavy development and actually does not have a physics engine and a mobile support
 
 Readme.md INCOMPLETE
 
@@ -9,6 +9,9 @@ Readme.md INCOMPLETE
 1. Project started: 01/2014  
 2. Actual version: 0.8.5
 3. Renderer: canvas2d context
+
+#Compile
+Using 'gulp', folder dev will contains duedo.js and duedo.minified.js
 
 #Engine and functionality
 1. Sound manager
