@@ -12,7 +12,9 @@ website/
 ECS/
 ComicPart/
 00_test/
-
+node_modules/
+0test/
+build/
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
