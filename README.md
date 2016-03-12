@@ -3,7 +3,7 @@
 2D HTML5 game engine
 Duedo is currently under heavy development and actually does not have a physics engine and a mobile support
 
-Readme.md INCOMPLETE
+Seeking collaborators
 
 #Version info
 1. Project started: 01/2014  
