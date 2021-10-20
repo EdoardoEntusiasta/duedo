@@ -21,9 +21,8 @@ function duedoMain() {
 
     game = new Duedo.GameContext(screen, 2500, 1000, true);
 
-    
-    game.Debug = true;
-    game.Viewport.Debug = false;
+    //game.Debug = true;
+    //game.Viewport.Debug = false;
 
     px = game.PhysicsEngine;
     

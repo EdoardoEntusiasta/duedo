@@ -1,0 +1,29 @@
+{
+  "name": "duedo",
+  "version": "1.0.0",
+  "description": "![Alt text](http://projects.edoardocasella.it/duedo/img/logo.png?raw=true \"Duedo\")",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-sass": "^2.2.0",
+    "gulp-uglify": "^1.5.3"
+  },
+  "devDependencies": {
+    "http-server": "^14.0.0"
+  },
+  "scripts": {
+    "start": "http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Civile/Duedo.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Civile/Duedo.js/issues"
+  },
+  "homepage": "https://github.com/Civile/Duedo.js#readme"
+}
