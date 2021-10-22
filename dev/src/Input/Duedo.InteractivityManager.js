@@ -219,6 +219,12 @@ _UpdatePointerInteractions
 */
 Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr) {
 
+	// ! TODO
+	/**
+	 * Se hover su un child Attached (parent.Attach())
+	 * vale l'hover sul parent
+	 */
+
 	if (Duedo.Utils.IsNull(ptr))
 		return;
 

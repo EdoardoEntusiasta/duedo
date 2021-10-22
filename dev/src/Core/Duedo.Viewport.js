@@ -11,6 +11,10 @@ Thanks to: Phaser.js
 
  ! To modify Camera Location use: mygame.Viewport.View <-
 
+ To drag:
+ press the support key while dragging
+ this.DragSupportKey
+
 ==============================
 */
 
@@ -44,7 +48,7 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 
 	/*Dragging properties*/
 	this.DragScale = 0.5;
-	this.DragSupportKey = Duedo.Keyboard.CONTROL;
+	this.DragSupportKey = Duedo.Keyboard.SHIFT;
 	this.DragPreventFollow = false;
 
 	/*Initialize*/
@@ -113,16 +117,9 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 		return null;
 
 	this.Target = object;
-
+	
 	switch (style)
 	{
-		case Duedo.Viewport.FOLLOW_XY:
-			/*Set deadzone - both axis following */
-			var w = this.View.Width / 8;
-			var h = this.View.Height / 3;
-			this.Deadzone = new Duedo.Rectangle( new Duedo.Vector2( (this.View.Width - w) / 2, (this.View.Height - h) / 2 - h * 0.25), w, h);
-			break;
-
 		case Duedo.Viewport.FOLLOW_X:
 			//TODO:
 			break;
@@ -131,6 +128,7 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 			//TODO:
 			break;
 
+		case Duedo.Viewport.FOLLOW_XY:
 		default:
 			/*Set deadzone - both axis following */
 			var w = this.View.Width / 8;
@@ -200,6 +198,8 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
    /*Update animations*/
    this.UpdateAnimations( deltaT );
+	 // View react animations
+	 this.View.UpdateAnimations( deltaT );
 
    /*Update offset*/
    this.Offset.X = this.View.Location.X;
@@ -246,9 +246,9 @@ Duedo.Viewport.prototype.PostUpdate = function(deltaT) {
 Duedo.Viewport.prototype.UpdateTranslation = function () {
 
 	//Pixel to meters location
-	this.mLocation = this.Target.Location.Clone().MultiplyScalar(30);
+	this.mLocation = this.Target.Location.Clone().MultiplyScalar(Duedo.Conf.PixelsInMeter); // location is always scaled by meters per pixel
 
-	/*...follow target*/
+	/*...follow target - there is a Deadzone */
 	if( this.Deadzone )
 	{
 		this._Edge = this.mLocation.X - this.Deadzone.Location.X;

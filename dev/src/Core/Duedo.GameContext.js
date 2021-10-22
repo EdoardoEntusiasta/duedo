@@ -5,6 +5,16 @@ Author: http://www.edoardocasella.it
 
 Notes:
 Manage all the core objects, calculate deltaTime, update and render the game
+
+Exposed objects:
+Viewport
+InputManager (Keyboard...)
+StateManager
+SoundManager
+Loader
+Cache
+Time
+...
 ==============================
 */
 
@@ -568,9 +578,9 @@ Object.defineProperty(Duedo.GameContext.prototype, "Debug", {
     Z: 99,
     FillStyle: "rgba(255, 255, 255, 1)"
  });
- * PERCHé NON E' COMPLETA? 
- * Non tutti gli oggetti Duedo accettano il parametro GameContext, ma in molti è necessario
- * quindi è impossibile capire quali di questi hanno bisogno di un primo parametro game e quali no
+ * PERCHï¿½ NON E' COMPLETA? 
+ * Non tutti gli oggetti Duedo accettano il parametro GameContext, ma in molti ï¿½ necessario
+ * quindi ï¿½ impossibile capire quali di questi hanno bisogno di un primo parametro game e quali no
  *
  * SOLUZIONE:
  * GLI OGGETTI CHE RICHIEDONO IL PARAMETRO GAME SONO QUELLI CHE HANNO UNA PROPRIETA' GameContext

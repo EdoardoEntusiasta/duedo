@@ -266,7 +266,7 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
 
         child.Z = this.Z + child.Z;
         child.Scale = this.Scale;
-        child.Alpha = this.Alpha;
+        // child.Alpha = this.Alpha;
     }
 
     return this;

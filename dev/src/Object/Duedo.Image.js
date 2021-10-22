@@ -13,7 +13,8 @@ Duedo.Image = function(gameContext, bufferedImage) {
 	Duedo.GraphicObject.call(this);
 	this.Game = gameContext || Duedo.Global.Games[0];
 	this.Type = Duedo.IMAGE;
-    
+    this.CenterRelative = true;
+
 	this._init(bufferedImage);
 };
 
@@ -168,7 +169,7 @@ Duedo.Image.prototype.Draw = function(context) {
     
 	context.save();
     context.globalAlpha = this.Alpha * this.Game.World.Alpha;
-    
+ 
     /*
      * Rotate if needed
     */    
@@ -195,10 +196,9 @@ Duedo.Image.prototype.Draw = function(context) {
         this.Source,    
             0, 0,   
                 this.Source.width, this.Source.height, 
-                    DToPixels(this.Location.X) - DToPixels(this.HalfWidth), DToPixels(this.Location.Y) - DToPixels(this.HalfHeight),
-                        DToPixels(this.Width), DToPixels(this.Height)); 
-                            
-
+                    DToPixels(this.Location.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0), DToPixels(this.Location.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0),
+                        DToPixels(this.Width), DToPixels(this.Height));
+    
     context.restore();
     
 

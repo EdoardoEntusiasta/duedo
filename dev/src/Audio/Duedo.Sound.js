@@ -38,7 +38,7 @@ Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
     this._PausedTime;
 
     this.DynamicSound = false;
-    this.MaxDistance = 500;
+    this.MaxDistance = 800;
 
     this.Repeat = 0;
     this._Repeated = 0;
@@ -232,9 +232,9 @@ Duedo.Sound.prototype.Update = function (deltaT) {
         /*Sound volume based on distance*/
         if( this.DynamicSound === true )
         {
-
+            
             var distanceFromViewportCenter = this.Location.Clone().Subtract(this._SoundManager.GameContext.Viewport.Center).Magnitude();
-
+            // If you don't hear the audio, try setting a higher value for MaxDistance
             if( distanceFromViewportCenter > 0 )
             {
                 this.SetVolume( (Math.max(0, 1 - (1 / this.MaxDistance) * distanceFromViewportCenter)) );
@@ -282,7 +282,6 @@ Duedo.Sound.prototype.SetVolume = function ( volumeValue ) {
         this._Source.volume = this.Volume;
     }
     
-
     this._CallTriggers("volume");
 
 

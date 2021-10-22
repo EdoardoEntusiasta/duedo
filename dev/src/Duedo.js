@@ -51,7 +51,7 @@ Duedo.Conf = {
     /*Draw the initial Duedo splash image*/
     SplashScreen: true,
     /*Pixels in meters |don't change it! */
-    PixelsInMeter: 30
+    PixelsInMeter: 1
 };
 
 

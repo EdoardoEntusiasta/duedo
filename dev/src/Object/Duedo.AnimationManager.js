@@ -53,7 +53,7 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
 
     Duration  = Duration != null ? Duration : 1 /*second*/;
     Animation = new Duedo.Animation(this.Game, this.Parent);
-
+    
     for (var PropertyName in AffectedProperties) {
         
         Animation.StartTime           = this.Game.ElapsedTime;
@@ -96,7 +96,6 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         
         /*Push animation in stack*/
         this.Animations.push(Animation);
-         
     }
 
 
@@ -115,10 +114,10 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
 Duedo.AnimationManager.prototype.Update = function (deltaT) {
 
     var /*int*/ aStatus;
-    
+
     for (var i = this.Animations.length -1; i >=0; i--)
     {
-
+        console.log(this.Animations);
         /*Animation has started*/
         if (this.Animations[i]._AnimStatus === null)
         {
