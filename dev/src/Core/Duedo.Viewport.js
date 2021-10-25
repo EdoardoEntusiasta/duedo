@@ -158,11 +158,17 @@ Duedo.Viewport.prototype.Reset = function(width, height) {
 }
 
 
+
+/**
+ * Zoom
+ * @param {*} value 
+ */
 Duedo.Viewport.prototype.Zoom = function(value) {
 	// TODO
 	// decrease or increase viewport size
 	// update renderer ctx.scale(value, value)
 }
+
 
 
 /*
