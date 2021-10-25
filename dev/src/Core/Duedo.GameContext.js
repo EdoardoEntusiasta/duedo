@@ -93,6 +93,8 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
 
     this._ClientInfoInitialized = false;
 
+    this._Breakpoints = null;
+
     //Setup
     this._Boot(canvas, WWMaxX, WWMaxY, bool_enablePhysics, rendererType);
 };
@@ -167,6 +169,8 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
         //using your own custom looping function that calls MyGame.Simulate(game, deltatime)
     }
 
+    this.StartBreakpointsListener();
+
     this.__Booted = true;
     this._PostBoot();
     return this;
@@ -188,6 +192,49 @@ Duedo.GameContext.prototype.__NewRenderer = function(r, c) {
 
     return this;
 };
+
+
+/**
+ * StartBreakpointsListener
+ * @returns 
+ */
+Duedo.GameContext.prototype.StartBreakpointsListener = function() {
+
+    if(!this._Breakpoints) {
+        return false;
+    }
+
+    const wCheck = () => {
+        const windowWidth = window.innerWidth;
+        Object.keys(this._Breakpoints).forEach(breakPointKey => {
+            // todo other sizes
+            // TAXE THE NEXT BIGGER NUMBER THAN INNERWIDTH
+            if(windowWidth < breakPointKey) {
+                this._ResizeCanvas(this.Breakpoints[breakPointKey].Width, this.Breakpoints[breakPointKey].Height);
+            } else {
+                
+            }
+        })
+    }
+    window.addEventListener('resize', () => {
+        wCheck.call(this);
+    });
+    wCheck();
+}
+
+
+
+/**
+ * _ResizeCanvas
+ * @param {*} width 
+ * @param {*} height 
+ */
+Duedo.GameContext.prototype._ResizeCanvas = function(width, height) {
+    this.Renderer.Canvas.width = width;
+    this.Renderer.Canvas.height = height;
+    // Reset viewport
+    this.Viewport.Reset(width, height);
+}
 
 
 
@@ -456,7 +503,6 @@ Duedo.GameContext.prototype.UseRequestAnimationFrame = function() {
 };
 
 
-
 /*
  * StopLooping
  * public
@@ -531,8 +577,6 @@ Object.defineProperty(Duedo.GameContext.prototype, "Running", {
 });
 
 
-
-
 /*
  * Debug
  * @public
@@ -562,7 +606,22 @@ Object.defineProperty(Duedo.GameContext.prototype, "Debug", {
 });
 
 
+/*
+ * Breakpoints
+ * public
+*/
+Object.defineProperty(Duedo.GameContext.prototype, "Breakpoints", {
 
+    get: function() {
+        return this._Breakpoints;
+    },
+
+    set: function( value ) {
+        this._Breakpoints = value;
+        this.StartBreakpointsListener();
+    }
+
+});
 
 
 

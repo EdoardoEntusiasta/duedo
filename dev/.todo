@@ -1,0 +1,13 @@
+
+Extensions:
+
+    ☐ Duedo.Object.prototype.Unbind 
+    ☐ cmd+enter
+    ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
+    ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
+    ☐ Duedo.Viewport.prototype.Zoom
+
+
+    Fatto
+    ☐ Entity : non si può ordinare per Z perché non è un graphic Object
+

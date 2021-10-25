@@ -117,7 +117,6 @@ Duedo.AnimationManager.prototype.Update = function (deltaT) {
 
     for (var i = this.Animations.length -1; i >=0; i--)
     {
-        console.log(this.Animations);
         /*Animation has started*/
         if (this.Animations[i]._AnimStatus === null)
         {

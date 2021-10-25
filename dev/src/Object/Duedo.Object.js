@@ -134,11 +134,14 @@ Duedo.Object.prototype.Bind = function (eventName, callback) {
         this._Triggers[eventName].push(callback);
     }
 
-
-
     return this;
 };
 
+
+
+Duedo.Object.prototype.Unbind = function (eventName) {
+    // ! todo
+};
 
 
 

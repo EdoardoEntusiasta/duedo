@@ -98,6 +98,7 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 	this.Location     = this.View.Location;
 	this.LastLocation = new Duedo.Vector2(0, 0);
 
+	
 	return this;
 };
 
@@ -146,6 +147,22 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 	return this;
 };
 
+
+/**
+ * Reset viewport with new dimension
+ * @param {*} width 
+ * @param {*} height 
+ */
+Duedo.Viewport.prototype.Reset = function(width, height) {
+	this._init(width, height);
+}
+
+
+Duedo.Viewport.prototype.Zoom = function(value) {
+	// TODO
+	// decrease or increase viewport size
+	// update renderer ctx.scale(value, value)
+}
 
 
 /*
@@ -301,18 +318,22 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	if(!this._DragMouseLastLocation)
 		if(!Duedo.Vector2.Compare(this._DragMouseLastLocation, mouse.Location))
 			this._DragMouseLastLocation = mouse.Location.Clone();
-
+	
 	//Should be pressed both LEFT_BUTTON and at least a Duedo key {ex: Duedo.Keyboard.CONTROL}
 	if(!mouse.IsDown(Duedo.Mouse.LEFT_BUTTON) || !this.Game.InputManager.Keyboard.KeyState(this.DragSupportKey))
 	{
 		this._Dragging = false;
+		document.body.style.cursor = 'auto';
 		return this._DragMouseLastLocation = mouse.Location.Clone();
 	}
 
 
 	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation);
-	if(DeltaMouse.Magnitude() != 0)
+	if(DeltaMouse.Magnitude() != 0) {
+		document.body.style.cursor = 'grab';
 		this._Dragging = true;
+		console.log("Dragging");
+	}
 
 	var DirVector = DeltaMouse.Clone();
 
@@ -460,7 +481,14 @@ Duedo.Viewport.prototype.Detach = function ( gobj ) {
 };
 
 
-
+/*
+ * Animate
+ * @public
+ * Animate the View
+*/
+Duedo.Viewport.prototype.Animate = function ( AffectedProperties, Duration, Tweening, name ) {
+	return this.View.Animate(AffectedProperties, Duration, Tweening, name);
+};
 
 /*
  * Width

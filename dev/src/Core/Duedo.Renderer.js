@@ -225,7 +225,7 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 	var lng = collection.length - 1;
 	
 	while ((child = collection[lng--]) != null) {
-
+		
 		if (child.ParentState != this.Game.StateManager.CurrentState()
 			&& child.ParentState != -1 && pstate != -1
 			|| !child["Draw"])

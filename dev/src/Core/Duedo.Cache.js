@@ -145,9 +145,11 @@ Duedo.Cache.prototype.AddJSON = function( bufferedData, name ) {
  * GetJSON
 */
 Duedo.Cache.prototype.GetJSON = function( name ) {
-		
-	return this._Data._JSON[name];
-
+	try {
+		return JSON.parse(this._Data._JSON[name]);
+	} catch(e) {
+		return this._Data._JSON[name];
+	}
 };
 
 

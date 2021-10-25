@@ -10,7 +10,7 @@ Author: http://www.edoardocasella.it
 
 
 Duedo.Entity = function ( gameContext, sprite ) { 
-	Duedo.Object.call(this);
+	Duedo.GraphicObject.call(this);
 
 	this.Game = gameContext || null;
 	this._Id = Duedo.NextId();
@@ -23,7 +23,7 @@ Duedo.Entity = function ( gameContext, sprite ) {
 
 
 /*Inherit GraphicObject*/
-Duedo.Entity.prototype = Object.create(Duedo.Object.prototype);
+Duedo.Entity.prototype = Object.create(Duedo.GraphicObject.prototype);
 Duedo.Entity.prototype.constructor = Duedo.Entity;
 
 
@@ -109,6 +109,11 @@ Duedo.Entity.prototype.Update     = function() {};
 Duedo.Entity.prototype.PreUpdate  = function() {};
 Duedo.Entity.prototype.PostUpdate = function() {};
 
+/*
+ * Draw
+ * Must/can be overwritten
+*/
+Duedo.Entity.prototype.Draw     = function() {};
 
 
 /*

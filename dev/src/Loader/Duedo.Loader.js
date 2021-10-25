@@ -127,7 +127,7 @@ Duedo.Loader.prototype._setup = function () {
  * AddResource
  * @public
  */
-Duedo.Loader.prototype.AddResource = function ( _path, /*callback*/ _complete) {
+Duedo.Loader.prototype.AddResource = function ( _path, slugName, /*callback*/ _complete) {
 
     if (Duedo.Utils.IsNull(_path)) return;
 
@@ -138,7 +138,7 @@ Duedo.Loader.prototype.AddResource = function ( _path, /*callback*/ _complete) {
 
         for( var i in resPaths )
         {
-            this.AddResource(resPaths[i], _complete);
+            this.AddResource(resPaths[i], slugName, _complete);
         }
 
         return;
@@ -146,7 +146,7 @@ Duedo.Loader.prototype.AddResource = function ( _path, /*callback*/ _complete) {
 
 
 
-    var name = _path.substring(_path.lastIndexOf("/") + 1, _path.lastIndexOf("."));
+    var name = slugName ? slugName : _path.substring(_path.lastIndexOf("/") + 1, _path.lastIndexOf("."));
 
 
     if( this.Queued.indexOf(name) !== -1 )

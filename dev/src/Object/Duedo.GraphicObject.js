@@ -67,7 +67,7 @@ Duedo.GraphicObject = function () {
         Z - Ordering
         Used for rendering order
     */
-    this._Z;
+    this._Z = 0;
     this.RenderOrderID = 0;
 
     /*
