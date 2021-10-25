@@ -6,6 +6,7 @@ Extensions:
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
     ☐ Duedo.Viewport.prototype.Zoom
+    ☐ this.CenterRelative = false in tutti gli oggetti grafici
 
 
     Fatto

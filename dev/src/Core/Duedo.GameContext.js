@@ -50,6 +50,11 @@ Duedo.NextId = function() {
 Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, rendererType) {
     this._Cache = {};
 
+    this.Status = {
+        HoveringObject: false, // TODO usa per mostrare il cursore giusto
+        DraggingCanvas: false
+    }
+
     //GameContext
     this.Renderer;
     this.Loader;
@@ -97,6 +102,20 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
 
     // Breakpoints
     this._Breakpoints = null;
+    /*
+    {
+        1200: {
+            Width: 1000
+        },
+        1400: {
+            Width: 1200
+        },
+		600: {
+            Width: 430,
+            Height: 800
+        }
+	};
+    */
     this._CurrentBreakpoint = null;
 
     //Setup
@@ -229,13 +248,10 @@ Duedo.GameContext.prototype.StartBreakpointsListener = function() {
 
     const wCheck = () => {
         const windowWidth = this.IsMobile ? window.screen.width : window.innerWidth;
-        console.log(window.screen.width, window.innerWidth, this.IsMobile);
         const breakpointKeys = Object.keys(this._Breakpoints);
         for(let i = 0; i <= breakpointKeys.length; i++) {
             const sizeKey = breakpointKeys[i];
             if(windowWidth < sizeKey) {
-                console.log('Ww', windowWidth);
-                console.log('Valuto', sizeKey);
                 if(this._CurrentBreakpoint === sizeKey && this._CurrentBreakpoint != null) {
                     break;
                 } else {

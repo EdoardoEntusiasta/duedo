@@ -15,6 +15,8 @@ Thanks to: Phaser.js
  press the support key while dragging
  this.DragSupportKey
 
+ ? To prevent scaling on mobile
+ <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,       user-scalable=0' >
 ==============================
 */
 
@@ -328,17 +330,17 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	//Should be pressed both LEFT_BUTTON and at least a Duedo key {ex: Duedo.Keyboard.CONTROL}
 	if(!mouse.IsDown(Duedo.Mouse.LEFT_BUTTON) || !this.Game.InputManager.Keyboard.KeyState(this.DragSupportKey))
 	{
+		if(this._Dragging) {
+			document.body.style.cursor = 'auto';
+		}
 		this._Dragging = false;
-		document.body.style.cursor = 'auto';
 		return this._DragMouseLastLocation = mouse.Location.Clone();
 	}
-
 
 	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation);
 	if(DeltaMouse.Magnitude() != 0) {
 		document.body.style.cursor = 'grab';
 		this._Dragging = true;
-		console.log("Dragging");
 	}
 
 	var DirVector = DeltaMouse.Clone();

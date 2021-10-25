@@ -26,6 +26,7 @@ Duedo.SpriteSheet = function ( gameContext, bufferedImage, name ) {
     this.AutoDestroy;
     this.ActiveSequence;
     this.Playing;
+    this.Debug = false;
     this.Rate; /*0.05s*/
     this.FrameIndex;
     /*Current frame*/
@@ -63,6 +64,7 @@ Duedo.SpriteSheet.prototype._init = function ( bufferedImage, name ) {
     this.FrameIndex      = 0;
     this.Frame           = null;
     this.SequencesLength = 0;
+    this.CenterRelative  = false;
 
     if( !Duedo.Utils.IsNull(bufferedImage) )
     {
@@ -440,7 +442,7 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
  * draw the spritesheet on the screen
 */
 Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
-console.log(this.Renderable);
+    // console.log(this.Renderable);
     if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 )
     {
         return this;
@@ -488,16 +490,36 @@ console.log(this.Renderable);
     try
     {
         context.drawImage(
-            this.Source,    
-                fc[0], fc[1],   
-                    DToPixels(fc[2]), DToPixels(fc[3]), 
-                         DToPixels(drawLoc.X) - DToPixels(this.HalfWidth),  DToPixels(drawLoc.Y) - DToPixels(this.HalfHeight),
-                            DToPixels(this.FrameWidth()), DToPixels(this.FrameHeight())); 
+            this.Source,
+            fc[0], fc[1],
+            DToPixels(fc[2]), DToPixels(fc[3]),
+            // Location
+            DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0),  DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0),
+            DToPixels(this.FrameWidth()), DToPixels(this.FrameHeight())
+        ); 
                             
     }
     catch (error)
     {
         throw error;
+    }
+
+    if(this.Debug) {
+        // Draw wrapper
+        context.beginPath();
+        context.rect(
+            DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0),
+            DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0), this.FrameWidth(), this.FrameHeight()
+        );
+        context.stroke();
+        // Draw center
+        context.beginPath();
+        const centerSize = 1;
+        context.rect(
+            (DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0)) + this.HalfWidth - (centerSize / 2),
+            (DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0)) + this.HalfHeight - (centerSize / 2), centerSize, centerSize);
+        context.fillStyle = "red";
+        context.fill();
     }
 
     context.restore();

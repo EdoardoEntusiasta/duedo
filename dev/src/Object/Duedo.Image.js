@@ -30,6 +30,9 @@ Duedo.Image.prototype.constructor = Duedo.Image;
 */
 Duedo.Image.prototype._init = function(bufferedImage) {
 	this._super();
+    
+    // todo questo provoca un bug
+   // this.CenterRelative  = false;
 
 	if(!Duedo.Utils.IsNull(bufferedImage))
 	{
