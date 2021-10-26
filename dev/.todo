@@ -7,6 +7,8 @@ Extensions:
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
     ☐ Duedo.Viewport.prototype.Zoom
     ☐ this.CenterRelative = false in tutti gli oggetti grafici
+    ☐ StateManager non permette proprietà nell'oggetto
+    ☐ CenterRelative ?
 
 
     Fatto

@@ -57,6 +57,7 @@ Duedo.StateManager.prototype._init = function () {
     this._STDStateMethods = {
         "Load"        : null,
         "LoadUpdate"  : null,
+        "Added"         : null,
         "Update"      : null,
         "Create"      : null,
         "Enter"       : null,
@@ -151,7 +152,6 @@ Duedo.StateManager.prototype.AddState = function( stateName, DUEDOState, start )
             this._ForthcomingState = stateName;
         }
     }
-
     
     return DUEDOState;
 
@@ -250,7 +250,7 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
             if(this._CurrentState !== null)
             {
                 if(!Duedo.Utils.IsNull(this["Exit"]))
-                    this.Exit.call(this);
+                    this.Exit.call(this._States[this._CurrentState]);
 
                 this.FreeFromState();
             }
@@ -262,7 +262,7 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
             /*Preload or start state*/
             if(!Duedo.Utils.IsNull(this["Load"]) && !this._CreatedStates[this._ForthcomingState])
             {
-                this.Load.call(this);
+                this.Load.call(this._States[this._CurrentState]);
                 this.Game.Loader.StartLoading();
                 this._StateLoading = this._ForthcomingState; 
             }
@@ -291,7 +291,7 @@ Duedo.StateManager.prototype._UpdateLoading = function() {
 
     if(!Duedo.Utils.IsNull(this["LoadUpdate"]))
     {
-        this.LoadUpdate.call(this, this.Game.DeltaT);
+        this.LoadUpdate.call(this._States[this._CurrentState], this.Game.DeltaT);
     }
 
     if(!this.Game.Loader.Loading)
@@ -313,7 +313,7 @@ Duedo.StateManager.prototype._LoadCompleted = function() {
     if( !this._Ready && !Duedo.Utils.IsNull(this["Create"]) && !this._CreatedStates[this._StateLoading])
     {
         this._Ready = true;
-        this["Create"].call(this);
+        this["Create"].call(this._States[this._CurrentState]);
     }
     else
     {
@@ -337,7 +337,7 @@ Duedo.StateManager.prototype._EnterState = function() {
 
     if( !Duedo.Utils.IsNull(this["Enter"]) )
     {
-        this["Enter"].call(this);
+        this["Enter"].call(this._States[this._CurrentState]);
     }
 
 }
@@ -353,7 +353,7 @@ Duedo.StateManager.prototype.UpdateState = function() {
 
     if( !Duedo.Utils.IsNull(this["Update"]) && this._Ready)
     {
-        this["Update"].call(this, this.Game.DeltaT);
+        this["Update"].call(this._States[this._CurrentState], this.Game.DeltaT);
     }
 
 
@@ -368,7 +368,7 @@ Duedo.StateManager.prototype.UpdateState = function() {
 Duedo.StateManager.prototype.RenderState = function (ctx) {
 
     if (!Duedo.Utils.IsNull(this["Render"]) && this._Ready) {
-        this["Render"].call(this, ctx);
+        this["Render"].call(this._States[this._CurrentState], ctx);
     }
 
 };

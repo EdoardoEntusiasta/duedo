@@ -247,7 +247,7 @@ Duedo.GameContext.prototype.StartBreakpointsListener = function() {
     }
 
     const wCheck = () => {
-        const windowWidth = this.IsMobile ? window.screen.width : window.innerWidth;
+        const windowWidth = this.IsMobile ? window.screen.width : document.body.clientWidth;
         const breakpointKeys = Object.keys(this._Breakpoints);
         for(let i = 0; i <= breakpointKeys.length; i++) {
             const sizeKey = breakpointKeys[i];
@@ -264,10 +264,10 @@ Duedo.GameContext.prototype.StartBreakpointsListener = function() {
             }
         }
     }
+    wCheck();
     window.addEventListener('resize', () => {
         wCheck.call(this);
     });
-    wCheck();
 }
 
 

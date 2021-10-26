@@ -194,8 +194,15 @@ Duedo.Renderer.prototype.Render = function() {
 	/*Transform and scale*/
 	this.SetTransformationMatrix();
 
+	if(this.Game.Viewport.Zoom) {
+		this.Context.scale(this.Game.Viewport.Zoom, this.Game.Viewport.Zoom);
+	}
+
 	/*Translate by viewport/camera*/
-	this.Translate(-this.Game.Viewport.Offset.X, -this.Game.Viewport.Offset.Y);
+	this.Translate(
+		-this.Game.Viewport.Offset.X/* * this.Game.Viewport.Zoom*/,
+		-this.Game.Viewport.Offset.Y/* * this.Game.Viewport.Zoom*/
+	);
 
 	/*Clear*/
 	if(this.ClearBeforeRender) 

@@ -87,6 +87,7 @@ Duedo.Mouse = function(gameContext, InputManager) {
 	this.RightUpCallback;
 	this.MiddleUpCallback;
 
+	this.Debug = false;
 
 	//DoubleClickInterval
 	this.DoubleClickInterval = 0.5;
@@ -320,7 +321,10 @@ Duedo.Mouse.prototype._ProcessMouseMove = function(event) {
 	this.Location.X = (this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width);
 	this.Location.Y = (this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height);
 
-
+	if(this.Debug) {
+		console.log(`Mouse location in canvas: ${this.Location.X}, ${this.Location.Y}`);
+		console.log(`Mouse location in world: ${this.Location.X + this.Game.Viewport.Location.X}, ${this.Location.Y  + this.Game.Viewport.Location.Y}`);
+	}
 };
 
 
@@ -437,7 +441,7 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	    return object.Contains(this.Location.X + this.Game.Viewport.View.Location.X, this.Location.Y + this.Game.Viewport.View.Location.Y);
 
 	//Get object location in pixels -> multiplyScalar PixelsInMeter
-	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
+	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() )/*.MultiplyScalar(this.Game.Viewport.Zoom)*/;
 
 	// TODO fix
 	if(

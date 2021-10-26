@@ -489,6 +489,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     /*Draw*/
     try
     {
+        // TODO usa anchor
         context.drawImage(
             this.Source,
             fc[0], fc[1],

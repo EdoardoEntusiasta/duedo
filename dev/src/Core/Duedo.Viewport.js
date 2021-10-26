@@ -15,6 +15,9 @@ Thanks to: Phaser.js
  press the support key while dragging
  this.DragSupportKey
 
+ About zooming
+ https://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
+
  ? To prevent scaling on mobile
  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,       user-scalable=0' >
 ==============================
@@ -47,6 +50,13 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	this.Bounds;
 
 	this._Edge;
+
+	this._Zoom = 1;
+
+	this.OriginalView = {
+		Width: null,
+		Height: null
+	}
 
 	/*Dragging properties*/
 	this.DragScale = 0.5;
@@ -88,6 +98,13 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 
 	/*Viewport location/dimension*/
 	this.View = new Duedo.Rectangle(new Duedo.Vector2(0, 0), ViewWidth, ViewHeight);
+
+	this.OriginalView = {
+		Width: ViewWidth,
+		Height: ViewHeight,
+		X: this.View.Location.X,
+		Y: this.View.Location.Y
+	}
 
 	/*Reference to the world bounds*/
 	this.Bounds            = new Duedo.Rectangle();
@@ -215,21 +232,21 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
    this._UpdateTargetDependancy();
 
+	/*Update animations*/
+	this.UpdateAnimations( deltaT );
+	// View react animations
+	this.View.UpdateAnimations( deltaT );
+
    /*Check camera collision*/
    if( this.Bounds )
    {
 	   this.UpdateBoundsCollision();
    }
-
-   /*Update animations*/
-   this.UpdateAnimations( deltaT );
-	 // View react animations
-	 this.View.UpdateAnimations( deltaT );
-
+	 
    /*Update offset*/
    this.Offset.X = this.View.Location.X;
    this.Offset.Y = this.View.Location.Y;
-
+	 console.log(this.Offset, this.View.Width);
    /*Update translation*/
    this.Location = this.View.Location.DivideScalar(Duedo.Conf.PixelsInMeter).Clone();
 
@@ -241,12 +258,7 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
    {
 	   this.Translation.MultiplyScalar(0);
    }
-/*
-   console.log("Viewport", this.Location); //Questa è ancora in pixel
-   if(this.Target)
-   console.log("Target", this.Target.Location);
-   this._CallTriggers("update");
-*/
+
    return this;
 
 };
@@ -350,7 +362,6 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	this.View.Location.X += DirVector.X;
 	this.View.Location.Y += DirVector.Y;
 
-
 	this._DragMouseLastLocation = mouse.Location.Clone();
 
 };
@@ -394,7 +405,6 @@ Duedo.Viewport.prototype.UpdateBoundsCollision = function () {
 		this.AtLimitY = true;
 		this.View.Location.Y = (this.Bounds.Location.Y + this.Bounds.Height) - this.View.Height;
 	}
-
 
 	return this;
 
@@ -559,6 +569,31 @@ Object.defineProperty(Duedo.Viewport.prototype, "HalfWidth", {
 Object.defineProperty(Duedo.Viewport.prototype, "HalfHeight", {
 	get: function () {
 		return this.View.Height / 2;
+	}
+
+});
+
+
+
+/*
+ * Zoom
+ * @public
+ * Manage Zoom property
+*/
+Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
+
+	set: function ( value ) {
+		this._Zoom = value;
+		if(this._Zoom <= 0) {
+			this._Zoom = 1;
+		}
+		// Change camera size
+		this.View.Width = this.OriginalView.Width / this._Zoom;
+		this.View.Height = this.OriginalView.Height / this._Zoom;
+	},
+
+	get: function () {
+		return this._Zoom;
 	}
 
 });
