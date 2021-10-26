@@ -246,7 +246,7 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
    /*Update offset*/
    this.Offset.X = this.View.Location.X;
    this.Offset.Y = this.View.Location.Y;
-	 console.log(this.Offset, this.View.Width);
+
    /*Update translation*/
    this.Location = this.View.Location.DivideScalar(Duedo.Conf.PixelsInMeter).Clone();
 
@@ -584,7 +584,8 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 
 	set: function ( value ) {
 		this._Zoom = value;
-		if(this._Zoom <= 0) {
+		// Allow only 1 (Rendrer.this.Context.scale(Zoom))
+		if(this._Zoom < 1) {
 			this._Zoom = 1;
 		}
 		// Change camera size
