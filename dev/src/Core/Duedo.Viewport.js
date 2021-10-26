@@ -59,7 +59,10 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	}
 
 	/*Dragging properties*/
-	this.DragScale = 0.5;
+	this.DragScale = 50;
+	this.Slide = false;
+	this._DragAcceleration = new Duedo.Vector2(0, 0);
+	this._Velocity = new Duedo.Vector2(0, 0);
 	// this.DragMouseOnly = 
 	this.DragSupportKey = Duedo.Keyboard.SHIFT;
 	this.DragPreventFollow = false;
@@ -334,6 +337,8 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 */
 Duedo.Viewport.prototype._FavorsDragging = function() {
 
+	// ! ATTENTO, SEI SU BRANCH VIEWPORT ACCELERATION
+
 	var mouse = this.Game.InputManager.Mouse;
 
 	if(!this._DragMouseLastLocation)
@@ -349,10 +354,14 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 			document.body.style.cursor = 'auto';
 		}
 		this._Dragging = false;
-		return this._DragMouseLastLocation = mouse.Location.Clone();
+		this._DragMouseLastLocation = mouse.Location.Clone();
+
+		if(!this.Slide) {
+			return;
+		}
 	}
 
-	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation);
+	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation)/*.MultiplyScalar(20)*/;
 	if(DeltaMouse.Magnitude() != 0) {
 		document.body.style.cursor = 'grab';
 		this._Dragging = true;
@@ -360,13 +369,39 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DirVector = DeltaMouse.Clone();
 
-	DirVector.MultiplyScalar(this.DragScale).Negate();
+	if(this.Slide) {
+		// Reset velocity if mouse down
+		if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
+			this._Velocity.MultiplyScalar(0);
+		}
 
-	// Prevent sliding too much when zooming in
-	DirVector.DivideScalar(this.Zoom);
+		// Slide only for
+		if(DeltaMouse.Magnitude() >= 5) {
+			this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
+		}
+	
+		let relFriction = this._Velocity.Clone()
+			.MultiplyScalar(-1)
+			.Normalize()
+			.MultiplyScalar( /*coefficient of friction*/ 0.1 * /*normal force (perpendicular to object)*/ 1);
+		
+		var forceR = relFriction.DivideScalar( /*this.mass*/ 5);
+		this._DragAcceleration.Add(forceR);
 
-	this.View.Location.X += DirVector.X;
-	this.View.Location.Y += DirVector.Y;
+		this._Velocity.Add(this._DragAcceleration).Limit(3);
+		this.View.Location.Add(this._Velocity);
+
+		// Reset acceleration
+		this._DragAcceleration.MultiplyScalar(0);
+	} else {
+		DirVector.MultiplyScalar(this.DragScale).Negate();
+
+		// Prevent sliding too much when zooming in
+		DirVector.DivideScalar(this.Zoom);
+
+		this.View.Location.X += DirVector.X;
+		this.View.Location.Y += DirVector.Y;
+	}
 
 	this._DragMouseLastLocation = mouse.Location.Clone();
 

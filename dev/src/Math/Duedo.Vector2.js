@@ -266,3 +266,14 @@ Duedo.Vector2.prototype.Abs = function () {
     return this;
 };
 
+Duedo.Vector2.prototype.Limit = function ( /*scalar*/ l) {
+    if (this.Magnitude() > l)
+        this.SetMagnitude(l);
+    return this;
+}
+
+Duedo.Vector2.prototype.SetMagnitude = function ( /*scalar*/ m) {
+    this.Normalize();
+    this.MultiplyScalar(m);
+    return this;
+}
