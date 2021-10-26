@@ -60,6 +60,7 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 
 	/*Dragging properties*/
 	this.DragScale = 0.5;
+	// this.DragMouseOnly = 
 	this.DragSupportKey = Duedo.Keyboard.SHIFT;
 	this.DragPreventFollow = false;
 
@@ -340,7 +341,9 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 			this._DragMouseLastLocation = mouse.Location.Clone();
 	
 	//Should be pressed both LEFT_BUTTON and at least a Duedo key {ex: Duedo.Keyboard.CONTROL}
-	if(!mouse.IsDown(Duedo.Mouse.LEFT_BUTTON) || !this.Game.InputManager.Keyboard.KeyState(this.DragSupportKey))
+	if(
+		(!mouse.IsDown(Duedo.Mouse.LEFT_BUTTON) || !this.Game.InputManager.Keyboard.KeyState(this.DragSupportKey)) && this.DragSupportKey
+		|| !mouse.IsDown(Duedo.Mouse.LEFT_BUTTON))
 	{
 		if(this._Dragging) {
 			document.body.style.cursor = 'auto';
@@ -358,6 +361,9 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	var DirVector = DeltaMouse.Clone();
 
 	DirVector.MultiplyScalar(this.DragScale).Negate();
+
+	// Prevent sliding too much when zooming in
+	DirVector.DivideScalar(this.Zoom);
 
 	this.View.Location.X += DirVector.X;
 	this.View.Location.Y += DirVector.Y;
@@ -588,9 +594,21 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 		if(this._Zoom < 1) {
 			this._Zoom = 1;
 		}
+
 		// Change camera size
 		this.View.Width = this.OriginalView.Width / this._Zoom;
 		this.View.Height = this.OriginalView.Height / this._Zoom;
+
+		// Move camera toward the mouse
+		if(!this.Game.IsMobile) {
+			const mouseLocation = this.Game.InputManager.Mouse.Location.Clone();
+			const distance = this.View.Location.Clone().Subtract(mouseLocation);
+			distance.Normalize().MultiplyScalar(5);
+			const toAdd = this.Location.Clone().Add(distance);
+			console.log(this.Game.InputManager.Mouse.LocationInTheWorld());
+			// this.FocusOnXY(mouseLocation.X, mouseLocation.Y);
+			// this.SetPosition(toAdd.X, toAdd.Y);
+		}
 	},
 
 	get: function () {

@@ -12,6 +12,12 @@ Duedo.Shape = function () {
     this.StrokeStyle = 'rgba(255, 253, 208, 0.9)';
     this._FillStyle = 'rgba(162, 204, 0, 1)';
     this.BlendMode   = Duedo.BlendModes.NORMAL;
+    /*
+    this.shadowOffsetX = 10;
+    this.shadowOffsetY = 0;
+    this.shadowColor = 'black';
+    this.shadowBlur = 6;
+    */
     this.Points = []; //outerclockwise
     this._init();
 };
@@ -216,6 +222,12 @@ Fill
 */
 Duedo.Shape.prototype.Fill = function (context) {
     context.save();
+    /*
+    context.shadowBlur = 2;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+    context.shadowColor = "red";
+    */
     context.globalCompositeOperation = this.BlendMode;
     context.globalAlpha = this.Alpha;
     context.fillStyle = this.FillStyle;

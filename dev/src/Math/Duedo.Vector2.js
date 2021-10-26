@@ -259,3 +259,10 @@ Duedo.Vector2.prototype.ApplyMatrix2 = function (matrix2) {
 Duedo.Vector2.prototype.GetAngle = function () {
     return Math.atan2(this.Y, this.X);
 };
+
+Duedo.Vector2.prototype.Abs = function () {
+    this.X = Math.abs(this.X);
+    this.Y = Math.abs(this.Y);
+    return this;
+};
+

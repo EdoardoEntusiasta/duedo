@@ -21,7 +21,7 @@ Duedo.Keyboard = function(gameContext) {
     //-UNUSED
 	this.Events;
 
-	this.Latency = 0.05;
+	this.Latency = 0.03;
 
 	this._init();
 

@@ -192,6 +192,15 @@ Duedo.Mouse.prototype.Connect = function(target) {
 };
 
 
+/**
+ * LocationInTheWorld
+ * @returns Duedo.Vector2
+ */
+Duedo.Mouse.prototype.LocationInTheWorld = function() {
+	// TODO se zoommo il mouse non è corretto
+	return this.Game.Viewport.Location.Clone().DivideScalar(this.Game.Viewport.Zoom).Add(this.Location);
+};
+
 
 /*
  * _ProcessMouseDown
@@ -318,12 +327,16 @@ Duedo.Mouse.prototype._ProcessMouseMove = function(event) {
 	/*Location inside the canvas*/
 	var cvBRect = this.Game.Renderer.Canvas.getBoundingClientRect();
 
-	this.Location.X = (this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width);
-	this.Location.Y = (this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height);
+	this.Location.X = (this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width) / this.Game.Viewport.Zoom;
+	this.Location.Y = (this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height) / this.Game.Viewport.Zoom;
 
 	if(this.Debug) {
+		// console.log('Zoom', this.Game.Viewport.Zoom);
 		console.log(`Mouse location in canvas: ${this.Location.X}, ${this.Location.Y}`);
-		console.log(`Mouse location in world: ${this.Location.X + this.Game.Viewport.Location.X}, ${this.Location.Y  + this.Game.Viewport.Location.Y}`);
+		console.log(`Mouse location in world: ${this.Location.X + this.Game.Viewport.View.Location.X}, ${this.Location.Y  + this.Game.Viewport.View.Location.Y}`);
+		if(this.Location.X + this.Game.Viewport.View.Location.X > this.Game.World.Bounds.Width || this.Location.Y  + this.Game.Viewport.View.Location.Y > this.Game.World.Bounds.Height ) {
+			console.error('Warning: mouse location outside of world bounds')
+		}
 	}
 };
 
@@ -441,10 +454,10 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	    return object.Contains(this.Location.X + this.Game.Viewport.View.Location.X, this.Location.Y + this.Game.Viewport.View.Location.Y);
 
 	//Get object location in pixels -> multiplyScalar PixelsInMeter
-	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() )/*.MultiplyScalar(this.Game.Viewport.Zoom)*/;
+	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
 
-	// Multiply by Viewport.Zoom level
-	const mouseLoc = this.Location.Clone().DivideScalar(this.Game.Viewport.Zoom);
+	// Divide by Viewport.Zoom level
+	const mouseLoc = this.Location.Clone()/*.DivideScalar(this.Game.Viewport.Zoom)*/;
 
 	// TODO fix
 	if(

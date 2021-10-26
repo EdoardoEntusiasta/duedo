@@ -55,6 +55,9 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
         DraggingCanvas: false
     }
 
+    // Canvas reference
+    this.Canvas = null;
+
     //GameContext
     this.Renderer;
     this.Loader;
@@ -144,6 +147,8 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     this.ElapsedTime = 0;
     this.DeltaT      = 0;
     this.Tick        = 0;
+
+    this.Canvas = canvas;
 
     //Instantiate time manager, start counting
     this.Time = new Duedo.Time(true);
