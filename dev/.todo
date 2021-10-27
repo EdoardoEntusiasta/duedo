@@ -1,14 +1,13 @@
 
 Extensions:
 
-    ☐ Duedo.Object.prototype.Unbind 
+    ☐ Duedo.Object.prototype.Unbind
+    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora
     ☐ cmd+enter
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
-    ☐ Duedo.Viewport.prototype.Zoom
     ☐ this.CenterRelative = false in tutti gli oggetti grafici
     ☐ StateManager non permette proprietà nell'oggetto
-    ☐ CenterRelative ?
 
 
     Fatto

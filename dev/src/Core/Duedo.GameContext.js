@@ -55,6 +55,8 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
         DraggingCanvas: false
     }
 
+    this._Messages = {};
+
     // Canvas reference
     this.Canvas = null;
 
@@ -273,6 +275,38 @@ Duedo.GameContext.prototype.StartBreakpointsListener = function() {
     window.addEventListener('resize', () => {
         wCheck.call(this);
     });
+}
+
+
+
+/**
+ * _Message
+ * Use to exchange messages between core components
+ * @param {*} messageString 
+ * @param {*} value 
+ * @returns 
+ */
+Duedo.GameContext.prototype._Message = function(messageString, value = true) {
+    this._Messages[messageString] = value;
+    return this;
+}
+
+
+
+/**
+ * _ReadMessage
+ * @param {*} messageString 
+ * @param {*} value 
+ * @returns 
+ */
+Duedo.GameContext.prototype._ReadMessage = function(messageString) {
+    const exists = this._Messages.hasOwnProperty(messageString);
+    if(exists) {
+        delete this._Messages[messageString];
+        return true;
+    } else {
+        return false;
+    }
 }
 
 

@@ -631,7 +631,10 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 		this.View.Width = this.OriginalView.Width / this._Zoom;
 		this.View.Height = this.OriginalView.Height / this._Zoom;
 
-		// Move camera toward the mouse
+		this.Game._Message('zoomed');
+
+		// TODO Move camera toward the mouse
+		/*
 		if(!this.Game.IsMobile) {
 			const mouseLocation = this.Game.InputManager.Mouse.Location.Clone();
 			const distance = this.View.Location.Clone().Subtract(mouseLocation);
@@ -641,6 +644,7 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 			// this.FocusOnXY(mouseLocation.X, mouseLocation.Y);
 			// this.SetPosition(toAdd.X, toAdd.Y);
 		}
+		*/
 	},
 
 	get: function () {

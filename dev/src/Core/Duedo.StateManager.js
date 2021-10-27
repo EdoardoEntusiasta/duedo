@@ -57,7 +57,8 @@ Duedo.StateManager.prototype._init = function () {
     this._STDStateMethods = {
         "Load"        : null,
         "LoadUpdate"  : null,
-        "Added"         : null,
+        "Added"       : null,
+        "Zoom"        : null, // When camera has been zoomed @param - zoomLevel
         "Update"      : null,
         "Create"      : null,
         "Enter"       : null,
@@ -233,7 +234,6 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
 
                 if(this.Game.ElapsedTime <= (this._DelayStartTime + this._DelayStateChange))
                 {
-                    
                     return;
                 }
                 else
@@ -274,6 +274,16 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
 
             this._ForthcomingState = null;
 
+        } else {
+            // Check messages
+            if(this.Game._ReadMessage('zoomed')) {
+                Object.keys(this._States).forEach(stateKey => {
+                    const state = this._States[stateKey];
+                    if(!Duedo.Utils.IsNull(state['Zoom'])) {
+                        state.Zoom.call(this._States[this._CurrentState], this.Game.Viewport.Zoom);
+                    }
+                });
+            }
         }
     }
 
