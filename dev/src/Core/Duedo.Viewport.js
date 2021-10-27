@@ -337,8 +337,6 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 */
 Duedo.Viewport.prototype._FavorsDragging = function() {
 
-	// ! ATTENTO, SEI SU BRANCH VIEWPORT ACCELERATION
-
 	var mouse = this.Game.InputManager.Mouse;
 
 	if(!this._DragMouseLastLocation)
@@ -380,13 +378,12 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 			this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
 		}
 	
-		let relFriction = this._Velocity.Clone()
+		const relFriction = this._Velocity.Clone()
 			.MultiplyScalar(-1)
 			.Normalize()
 			.MultiplyScalar( /*coefficient of friction*/ 0.1 * /*normal force (perpendicular to object)*/ 1);
 		
-		var forceR = relFriction.DivideScalar( /*this.mass*/ 5);
-		this._DragAcceleration.Add(forceR);
+		this._DragAcceleration.Add(relFriction.DivideScalar( /*this.mass*/ 5));
 
 		this._Velocity.Add(this._DragAcceleration).Limit(3);
 		this.View.Location.Add(this._Velocity);
