@@ -330,6 +330,30 @@ Object.defineProperty(Duedo.GraphicObject.prototype, "Animating", {
 
 
 /*
+ * ShouldBeRendered
+ * @public
+ * Check if one or more children should be rendered even if parent not
+*/
+Object.defineProperty(Duedo.GraphicObject.prototype, 'ShouldBeRendered', {
+
+    get: function() {
+        if(this.Renderable) {
+            return true;
+        }
+        let forceRender = false;
+        this.Children.forEach(element => {
+            if(element.ShouldBeRendered) {
+                forceRender = true;
+            }
+        });
+        return forceRender;
+    },
+
+});
+
+
+
+/*
  * Rotation
  * @public
  * Set the rotation angle in radians

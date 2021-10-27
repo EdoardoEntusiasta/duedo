@@ -442,7 +442,7 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
  * draw the spritesheet on the screen
 */
 Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
-    // console.log(this.Renderable);
+    
     if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 )
     {
         return this;

@@ -52,6 +52,8 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 		MinZPlane: 0
 	};
 
+	this._RenderingList = [];
+
 	/*important*/
 	this.CurrentRenderOrderID = 0;
 
@@ -156,8 +158,6 @@ Duedo.Renderer.prototype._init = function(gameContext, canvas, renderer) {
 	/*Check blend modes support*/
 	this._PrepareBlendModes();
 
-	
-
 };
 
 
@@ -209,7 +209,7 @@ Duedo.Renderer.prototype.Render = function() {
 		this.Clear();
 
 	this.SortBuffer(); /*each cycle? :( */
-
+	
 	this._RenderGraphics(this.Buffer, this.Context);
 	
 	/*Render additional graphics from the current state*/

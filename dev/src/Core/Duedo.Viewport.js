@@ -385,7 +385,7 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 		
 		this._DragAcceleration.Add(relFriction.DivideScalar( /*this.mass*/ 5));
 
-		this._Velocity.Add(this._DragAcceleration).Limit(3);
+		this._Velocity.Add(this._DragAcceleration).Limit(4.5);
 		this.View.Location.Add(this._Velocity);
 
 		// Reset acceleration
@@ -634,7 +634,8 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 		this.Game._Message('zoomed');
 
 		// TODO Move camera toward the mouse
-		/*
+		// Modifica OFFSET
+		
 		if(!this.Game.IsMobile) {
 			const mouseLocation = this.Game.InputManager.Mouse.Location.Clone();
 			const distance = this.View.Location.Clone().Subtract(mouseLocation);
@@ -644,7 +645,7 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 			// this.FocusOnXY(mouseLocation.X, mouseLocation.Y);
 			// this.SetPosition(toAdd.X, toAdd.Y);
 		}
-		*/
+		
 	},
 
 	get: function () {

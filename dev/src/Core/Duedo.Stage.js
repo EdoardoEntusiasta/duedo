@@ -27,7 +27,7 @@ Duedo.Stage.prototype.Update = function (dt) {
     this.__Update(dt, this.Game.Entities, "Update");
 };
 Duedo.Stage.prototype.PostUpdate = function (dt) {
-    this.__Update(dt, this.Game.Entities, "PostUpdate");
+    this.__Update(dt, this.Game.Entities, "PostUpdate", true);
 };
 
 
@@ -43,11 +43,11 @@ Duedo.Stage.prototype.IsGraphical = function(o) {
  * __Update
  * @private
 */
-Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
+Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel, considerRendering = false) {
 
     /*Update entities*/
     var len = ents.length - 1;
-
+    
     /*Cycle through all entities*/
     while ((ent = ents[len--]) != null) {
         
@@ -82,7 +82,7 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
             }
 
 
-            if(this.IsGraphical(ent)) 
+            if(this.IsGraphical(ent) && ent.ShouldBeRendered && considerRendering)
             {
                 this.Game.Renderer.Buffer.push(ent);
             }
@@ -91,10 +91,8 @@ Duedo.Stage.prototype.__Update = function (deltaT, ents, upLevel) {
         
         /*Step entity*/
         this.__StepEntity(deltaT, ent, upLevel);
-
         /*Save previous updated entity*/
         Duedo.Global.PreviousEntity = ent;
-        
     }
 };
 

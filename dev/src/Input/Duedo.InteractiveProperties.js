@@ -59,6 +59,7 @@ Duedo.InteractiveProperties = {
     ======================*/
 
     OnPointerDown: null,
+		OnClick: null,
     OnPointerUp: null,
     OnPointerOut: null,
     OnPointerOn: null,

@@ -270,6 +270,13 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 				//First: MouseHover
 				obj.MouseIsOver = true;
 				obj._PointerWasOver = true;
+				
+				// Clicked
+				if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && obj.LeftClicked) {
+					obj.LeftClicked = false;
+					if (obj.OnClick)
+						obj.OnClick.call(obj);
+				}
 
 				if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj.LeftClicked) {
 					obj.LeftClicked = true;
