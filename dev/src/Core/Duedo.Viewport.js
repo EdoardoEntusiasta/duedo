@@ -374,8 +374,8 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 		}
 
 		// Slide only for
-		if(DeltaMouse.Magnitude() >= 5) {
-			this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
+		if(DeltaMouse.Magnitude() >= 4.5) {
+			this._DragAcceleration = DeltaMouse.DivideScalar(0.6).MultiplyScalar(-1);
 		}
 	
 		const relFriction = this._Velocity.Clone()
