@@ -25,7 +25,7 @@ Duedo.MouseButton = function() {
  * Mouse
 */
 Duedo.Mouse = function(gameContext, InputManager) {
-    this.Game = gameContext || Duedo.Global.Games[0];
+	this.Game = gameContext || Duedo.Global.Games[0];
 	this.Manager = InputManager || null;
 
 	this.Enabled;
@@ -35,7 +35,7 @@ Duedo.Mouse = function(gameContext, InputManager) {
 	this.ClientLoc;
 	/*Pointer location inside the canvas*/
 	this.Location;
-    /**/
+  /* Previous frame's location */
 	this.LastLocation;
 	/*Pointer location relative to the whole html document*/
 	this.PageLoc;
@@ -54,10 +54,12 @@ Duedo.Mouse = function(gameContext, InputManager) {
 	this._NextHistoryPush = 0;
 	this._PHistory = [];
 
-    /*Callbacks*/
-    /*
-     * Mouse out from canvas
-    */
+	this._PreviousWorldLocation = new Duedo.Vector2(0, 0);
+
+	/*Callbacks*/
+	/*
+		* Mouse out from canvas
+	*/
 	this.OutCallback;
 
     /*
@@ -324,17 +326,17 @@ Duedo.Mouse.prototype._ProcessMouseMove = function(event) {
 	this.PageLoc.X   = event.pageX;
 	this.PageLoc.Y   = event.pageY;
 
-	/*Location inside the canvas*/
 	var cvBRect = this.Game.Renderer.Canvas.getBoundingClientRect();
 
-	this.Location.X = (this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width) / this.Game.Viewport.Zoom;
-	this.Location.Y = (this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height) / this.Game.Viewport.Zoom;
+	// Location in the canvas
+	this.Location.X = (this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width);
+	this.Location.Y = (this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height);
 
 	if(this.Debug) {
 		// console.log('Zoom', this.Game.Viewport.Zoom);
-		console.log(`Mouse location in canvas: ${this.Location.X}, ${this.Location.Y}`);
-		console.log(`Mouse location in world: ${this.Location.X + this.Game.Viewport.View.Location.X}, ${this.Location.Y  + this.Game.Viewport.View.Location.Y}`);
-		if(this.Location.X + this.Game.Viewport.View.Location.X > this.Game.World.Bounds.Width || this.Location.Y  + this.Game.Viewport.View.Location.Y > this.Game.World.Bounds.Height ) {
+		console.info(`Mouse location in canvas: ${this.Location.X}, ${this.Location.Y}`);
+		console.info(`Mouse location in world: ${this.WorldLocation.X}, ${this.WorldLocation.Y}`);
+		if(this.WorldLocation.X > this.Game.World.Bounds.Width || this.WorldLocation.Y + this.Game.Viewport.View.Location.Y > this.Game.World.Bounds.Height ) {
 			console.error('Warning: mouse location outside of world bounds')
 		}
 	}
@@ -379,10 +381,13 @@ Duedo.Mouse.prototype.Update = function(deltaT) {
  * @public
 */
 Duedo.Mouse.prototype.PostUpdate = function (dt) {
+		
+		this.LastLocation.Copy(this.Location);
 
-    this.LastLocation.X = this.Location.X;
-    this.LastLocation.Y = this.Location.Y;
-
+		this._PreviousWorldLocation = new Duedo.Vector2(
+			this.LastLocation.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X,
+			this.LastLocation.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y
+		)
 };
 
 
@@ -450,18 +455,25 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	if(Duedo.Utils.IsNull(object))
 		return false;
 
+	// Get location relative to the canvas / zoom
+	const cvBRect = this.Game.Renderer.Canvas.getBoundingClientRect();
+	const LocationToCompare =  new Duedo.Vector2(
+		(this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width) / this.Game.Viewport.Zoom,
+		(this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height) / this.Game.Viewport.Zoom
+	);
+
 	if(object["Contains"]) //DA FIXARE IN BASE A PIXEL PER METERS
-	    return object.Contains(this.Location.X + this.Game.Viewport.View.Location.X, this.Location.Y + this.Game.Viewport.View.Location.Y);
+	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
 
 	//Get object location in pixels -> multiplyScalar PixelsInMeter
 	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
 
 	// TODO fix
 	if(
-		this.Location.X >= DToPixels(objLoc.X) /* - DToPixels(object.Width)*/
-		&& this.Location.X <= DToPixels(objLoc.X) + DToPixels(object.Width)
-        && this.Location.Y >= DToPixels(objLoc.Y) /*- DToPixels(object.Height)*/
-        && this.Location.Y <= DToPixels(objLoc.Y) + DToPixels(object.Height)
+		LocationToCompare.X >= DToPixels(objLoc.X) /* - DToPixels(object.Width)*/
+		&& LocationToCompare.X <= DToPixels(objLoc.X) + DToPixels(object.Width)
+        && LocationToCompare.Y >= DToPixels(objLoc.Y) /*- DToPixels(object.Height)*/
+        && LocationToCompare.Y <= DToPixels(objLoc.Y) + DToPixels(object.Height)
     )
     {
         return true;
@@ -566,3 +578,26 @@ Object.defineProperty(Duedo.Mouse.prototype, "Height", {
     }
 
 });
+
+
+
+Object.defineProperty(Duedo.Mouse.prototype, "WorldLocation", {
+
+	get: function() {
+		return new Duedo.Vector2(
+			this.Location.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X,
+			this.Location.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y
+		);
+	}
+
+});
+
+Object.defineProperty(Duedo.Mouse.prototype, "PreviousWorldLocation", {
+
+	get: function() {
+		return this._PreviousWorldLocation.Clone();
+	}
+
+});
+
+

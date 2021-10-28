@@ -48,6 +48,11 @@ Duedo.Vector2.prototype.ToGenericObject = function() {
     return {x: this.X, y: this.Y};
 }
 
+Duedo.Vector2.prototype.Reset = function () {
+    this.X = 0;
+    this.Y = 0;
+    return this;
+}
 
 Duedo.Vector2.prototype.ToArray = function () {
     return new Array(this.X, this.Y);

@@ -493,7 +493,7 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
         if( this.Rotation !== 0 )
         {
             context.translate(this.Location.X + (this.ScaledWidth * this.Anchor.X), this.Location.Y + (this.ScaledHeight * this.Anchor.Y));
-            context.rotate(this.Rotation);
+            context.rotate(Duedo.Units.DegToRadians(this.Rotation));
             context.translate(-(this.Location.X +  (this.ScaledWidth * this.Anchor.X)), -(this.Location.Y + (this.ScaledHeight * this.Anchor.Y)));
         }
         

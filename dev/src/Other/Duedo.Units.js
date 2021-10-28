@@ -28,6 +28,10 @@ Duedo.Units.M2P = function(m) {
 	return m * Duedo.Conf.PixelsInMeter;
 };
 
+Duedo.Units.DegToRadians = function(degrees) {
+	return degrees * Math.PI / 180;
+};
+
 
 DUnits = Duedo.Units;
 window.DToPixels = DUnits.M2P;

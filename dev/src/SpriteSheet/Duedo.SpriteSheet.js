@@ -479,7 +479,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
             );
         
         context.translate(mLocation.X, mLocation.Y);
-        context.rotate(this.Rotation);
+        context.rotate(Duedo.Units.DegToRadians(this.Rotation));
         context.translate(-(mLocation.X), -(mLocation.Y));
     }
 

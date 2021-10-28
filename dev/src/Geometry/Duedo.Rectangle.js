@@ -129,6 +129,8 @@ Duedo.Rectangle.IntersectsInfo = function (a, b, output) {
         output = new Duedo.Rectangle();
     }
 
+    // Todo, if rotated...
+
     if (Duedo.Rectangle.Intersects(a, b))
     {
         output.Location.X = Math.max(a.Location.X, b.Location.X);

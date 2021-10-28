@@ -458,7 +458,7 @@ Duedo.GameContext.prototype.__RunTicks = function() {
 */
 Duedo.GameContext.prototype.__Step = function() {
 
-    /*Get deltaT*/
+    /*Get deltaT - microseconds */
     var DeltaT = this.Time.Delta();
 
     if (Duedo.Null(DeltaT) || DeltaT < 0)

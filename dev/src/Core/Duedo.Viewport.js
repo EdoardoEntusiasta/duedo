@@ -46,12 +46,14 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	this.AtLimitX = false;
 	this.AtLimitY = false;
 
-	this.Offset = new Duedo.Vector2(0, 0);
+	this.Offset = new Duedo.Vector2(null, null);
 	this.Bounds;
 
 	this._Edge;
 
+	// Zoom
 	this._Zoom = 1;
+	this._Zoomed = false;
 
 	this.OriginalView = {
 		Width: null,
@@ -59,7 +61,7 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	}
 
 	/*Dragging properties*/
-	this.DragScale = 50;
+	this.DragScale = 0.5;
 	this.Slide = false;
 	this._DragAcceleration = new Duedo.Vector2(0, 0);
 	this._Velocity = new Duedo.Vector2(0, 0);
@@ -241,32 +243,71 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 	// View react animations
 	this.View.UpdateAnimations( deltaT );
 
-   /*Check camera collision*/
-   if( this.Bounds )
-   {
-	   this.UpdateBoundsCollision();
-   }
-	 
-   /*Update offset*/
-   this.Offset.X = this.View.Location.X;
-   this.Offset.Y = this.View.Location.Y;
+	/*Check camera collision*/
+	if( this.Bounds )
+	{
+		this.UpdateBoundsCollision();
+	}
 
-   /*Update translation*/
-   this.Location = this.View.Location.DivideScalar(Duedo.Conf.PixelsInMeter).Clone();
+	// Calculate camera size based on zoom
+	this.View.Width = this.OriginalView.Width / this._Zoom;
+	this.View.Height = this.OriginalView.Height / this._Zoom;
 
-   if (!Duedo.Vector2.Compare(this.LastLocation, this.Location))
-   {
-	   this.Translation = this.Location.Clone().Subtract(this.LastLocation);
-   }
-   else
-   {
-	   this.Translation.MultiplyScalar(0);
-   }
+	this._UpdateOffset();
 
-   return this;
+	/*Update translation*/ // TODO QUESTO NON DOVREBBE ESSERCI 
+	this.Location = this.View.Location.DivideScalar(Duedo.Conf.PixelsInMeter).Clone();
+
+
+	if (!Duedo.Vector2.Compare(this.LastLocation, this.Location))
+	{
+		this.Translation = this.Location.Clone().Subtract(this.LastLocation);
+	}
+	else
+	{
+		this.Translation.MultiplyScalar(0);
+	}
+
+	return this;
 
 };
 
+
+
+/**
+ * _UpdateOffset
+ * @returns 
+ */
+Duedo.Viewport.prototype._UpdateOffset = function() {
+
+	let FinalOffset = new Duedo.Vector2(0, 0);
+
+	if(this._Zoomed && !this.Game.IsMobile) {
+		// Zoom toward the mouse	
+		const CameraTranslation = this.Game.InputManager.Mouse.PreviousWorldLocation
+			.Clone()
+			.Subtract(this.Game.InputManager.Mouse.WorldLocation);
+		
+		const FinalPosition = this.View.Location.Clone().Add(CameraTranslation);
+		
+		this.SetPosition(
+			FinalPosition.X,
+			FinalPosition.Y
+		)
+
+		this._Zoomed = false;
+
+		this._Velocity.Reset();
+
+	}
+
+	FinalOffset.Copy(this.View.Location);
+
+	this.Offset.X = FinalOffset.X;
+	this.Offset.Y = FinalOffset.Y;
+
+	return this;
+}
 
 
 
@@ -276,7 +317,6 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 Duedo.Viewport.prototype.PostUpdate = function(deltaT) {
    this.LastLocation = this.Location.Clone();
 };
-
 
 
 
@@ -353,13 +393,11 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 		}
 		this._Dragging = false;
 		this._DragMouseLastLocation = mouse.Location.Clone();
-
-		if(!this.Slide) {
-			return;
-		}
 	}
 
 	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation)/*.MultiplyScalar(20)*/;
+
+
 	if(DeltaMouse.Magnitude() != 0) {
 		document.body.style.cursor = 'grab';
 		this._Dragging = true;
@@ -367,35 +405,34 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DirVector = DeltaMouse.Clone();
 
-	if(this.Slide) {
+	const deltaSlideMinimumThreshold = 4;
+	const cameraMass = 5;
+
+	if(this.Slide && DeltaMouse.Magnitude() >= deltaSlideMinimumThreshold ||  this._Velocity.Magnitude()) {
 		// Reset velocity if mouse down
 		if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
 			this._Velocity.MultiplyScalar(0);
 		}
 
 		// Slide only for
-		if(DeltaMouse.Magnitude() >= 4.5) {
-			this._DragAcceleration = DeltaMouse.DivideScalar(0.6).MultiplyScalar(-1);
-		}
+		this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
 	
 		const relFriction = this._Velocity.Clone()
 			.MultiplyScalar(-1)
 			.Normalize()
 			.MultiplyScalar( /*coefficient of friction*/ 0.1 * /*normal force (perpendicular to object)*/ 1);
 		
-		this._DragAcceleration.Add(relFriction.DivideScalar( /*this.mass*/ 5));
+		this._DragAcceleration.Add(relFriction.DivideScalar(cameraMass));
 
-		this._Velocity.Add(this._DragAcceleration).Limit(4.5);
+		this._Velocity.Add(this._DragAcceleration).Limit(8.5);
 		this.View.Location.Add(this._Velocity);
 
 		// Reset acceleration
 		this._DragAcceleration.MultiplyScalar(0);
 	} else {
+		
 		DirVector.MultiplyScalar(this.DragScale).Negate();
-
-		// Prevent sliding too much when zooming in
-		DirVector.DivideScalar(this.Zoom);
-
+		
 		this.View.Location.X += DirVector.X;
 		this.View.Location.Y += DirVector.Y;
 	}
@@ -546,6 +583,36 @@ Duedo.Viewport.prototype.Animate = function ( AffectedProperties, Duration, Twee
 	return this.View.Animate(AffectedProperties, Duration, Tweening, name);
 };
 
+
+
+/*
+ * Zoom
+ * @public
+ * Manage Zoom property
+*/
+Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
+
+	set: function ( value ) {
+		
+		this._Zoom = value;
+		// Allow only 1 (Rendrer.this.Context.scale(Zoom))
+
+		if(this._Zoom < 1) {
+			this._Zoom = 1;
+		}
+
+		this.Game._Message('zoomed');
+		this._Zoomed = true;
+	},
+
+	get: function () {
+		return this._Zoom;
+	}
+
+});
+
+
+
 /*
  * Width
  * @public
@@ -607,49 +674,6 @@ Object.defineProperty(Duedo.Viewport.prototype, "HalfWidth", {
 Object.defineProperty(Duedo.Viewport.prototype, "HalfHeight", {
 	get: function () {
 		return this.View.Height / 2;
-	}
-
-});
-
-
-
-/*
- * Zoom
- * @public
- * Manage Zoom property
-*/
-Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
-
-	set: function ( value ) {
-		this._Zoom = value;
-		// Allow only 1 (Rendrer.this.Context.scale(Zoom))
-		if(this._Zoom < 1) {
-			this._Zoom = 1;
-		}
-
-		// Change camera size
-		this.View.Width = this.OriginalView.Width / this._Zoom;
-		this.View.Height = this.OriginalView.Height / this._Zoom;
-
-		this.Game._Message('zoomed');
-
-		// TODO Move camera toward the mouse
-		// Modifica OFFSET
-		
-		if(!this.Game.IsMobile) {
-			const mouseLocation = this.Game.InputManager.Mouse.Location.Clone();
-			const distance = this.View.Location.Clone().Subtract(mouseLocation);
-			distance.Normalize().MultiplyScalar(5);
-			const toAdd = this.Location.Clone().Add(distance);
-			console.log(this.Game.InputManager.Mouse.LocationInTheWorld());
-			// this.FocusOnXY(mouseLocation.X, mouseLocation.Y);
-			// this.SetPosition(toAdd.X, toAdd.Y);
-		}
-		
-	},
-
-	get: function () {
-		return this._Zoom;
 	}
 
 });

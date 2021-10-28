@@ -12,6 +12,7 @@ Duedo.Shape = function () {
     this.StrokeStyle = 'rgba(255, 253, 208, 0.9)';
     this._FillStyle = 'rgba(162, 204, 0, 1)';
     this.BlendMode   = Duedo.BlendModes.NORMAL;
+    this.Rotation = 0;
     /*
     this.shadowOffsetX = 10;
     this.shadowOffsetY = 0;
@@ -221,7 +222,7 @@ Fill
 ===================
 */
 Duedo.Shape.prototype.Fill = function (context) {
-    context.save();
+    // context.save();
     /*
     context.shadowBlur = 2;
     context.shadowOffsetX = 0;
@@ -233,7 +234,7 @@ Duedo.Shape.prototype.Fill = function (context) {
     context.fillStyle = this.FillStyle;
     this.CreatePath(context);
     context.fill();
-    context.restore();
+    // context.restore();
 };
 
 
@@ -242,13 +243,11 @@ Stroke
 ===================
 */
 Duedo.Shape.prototype.Stroke = function (context) {
-    context.save();
     context.globalCompositeOperation = this.BlendMode;
     context.globalAlpha = this.Alpha;
     context.strokeStyle = this.StrokeStyle;
     this.CreatePath(context);
     context.stroke();
-    context.restore();
 };
 
 
@@ -269,10 +268,23 @@ Duedo.Shape.prototype.Draw = function ( context ) {
     {
         return false;
     }
+    context.save();
+
+    if( this.Rotation !== 0 ) {  
+        const origin = new Duedo.Vector2(
+            this.Location.X + (this.Width * this.Anchor.X), 
+            this.Location.Y + (this.Height * this.Anchor.Y)
+        );
+        context.translate(origin.X, origin.Y);
+        context.rotate(Duedo.Units.DegToRadians(this.Rotation));
+        context.translate(-(origin.X), -(origin.Y));
+    }
 
     this.Fill(context);
     this.Stroke(context);
 
+    context.restore();
+    
     return this;
 
 };

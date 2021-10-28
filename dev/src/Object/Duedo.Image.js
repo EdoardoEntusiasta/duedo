@@ -187,7 +187,7 @@ Duedo.Image.prototype.Draw = function(context) {
             );
         
         context.translate(mLocation.X, mLocation.Y);
-        context.rotate(this.Rotation);
+        context.rotate(Duedo.Units.DegToRadians(this.Rotation));
         context.translate(-(mLocation.X), -(mLocation.Y));
     }
 

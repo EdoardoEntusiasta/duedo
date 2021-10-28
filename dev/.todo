@@ -2,7 +2,7 @@
 Extensions:
 
     ☐ Duedo.Object.prototype.Unbind
-    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora
+    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
     ☐ cmd+enter
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
