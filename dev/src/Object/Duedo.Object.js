@@ -66,7 +66,6 @@ Duedo.Object.prototype.constructor = Duedo.Object;
 
 
 
-
 /*
  * LiveFor
  * An object lives for a limited time (milliseconds) : ex myobject.LiveFor(0.5);
@@ -113,13 +112,6 @@ Duedo.Object.prototype.Destroy = function () {
 };
 
 
-
-
-/*
-============================
- Binding
-============================
-*/
 
 /*
  * Bind event
@@ -186,9 +178,6 @@ Duedo.Object.prototype._CallTriggers = function (eventName, caller) {
     return this;
 
 };
-
-
-
 
 
 

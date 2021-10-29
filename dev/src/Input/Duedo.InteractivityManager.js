@@ -358,9 +358,13 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			
 			if (this._LastOvered != null && this._LastOvered != obj) {
 				this._OnPointerOut(this._LastOvered);
-				// PARENT
-				if(this._LastOvered.Parent && obj.PropagateEvents) {
-					this._OnPointerOut(this._LastOvered.Parent)
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = this._LastOvered.Parent;
+					while(next) {
+						this._OnPointerOut(next);
+						next = next.Parent;
+					}
 				}
 			}
 
@@ -375,10 +379,15 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				if (obj.OnPointerMove) {
 					obj.OnPointerMove.call(obj);
 				}
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					if(obj.Parent.OnPointerMove)
-						obj.Parent.OnPointerMove.call(obj);
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						if(next.OnPointerMove) {
+							next.OnPointerMove.call(next);
+						}
+						next = next.Parent;
+					}
 				}
 			}
 
@@ -386,11 +395,15 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
 				obj.OnPointerOn.call(obj);
 				obj._OnPointerOnCalled = true;
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					if(obj.Parent.OnPointerOn) {
-						obj.Parent.OnPointerOn.call(obj.Parent);
-						obj.Parent._OnPointerOnCalled = true;
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						if(next.OnPointerOn) {
+							next.OnPointerOn.call(next);
+							next._OnPointerOnCalled = true;
+						}
+						next = next.Parent;
 					}
 				}
 			}
@@ -399,22 +412,32 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			obj.MouseIsOver = true;
 			obj._PointerWasOver = true;
 			
-			// PARENT
-			if(obj.Parent && obj.PropagateEvents) {
-				obj.Parent.MouseIsOver = true;
-				obj.Parent._PointerWasOver = true;
+			// Propagate
+			if(obj.PropagateEvents) {
+				let next = obj.Parent;
+				while(next) {
+					next.MouseIsOver = true;
+					next._PointerWasOver = true;
+					next = next.Parent;
+				}
 			}
+
 
 			// Clicked
 			if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && obj.LeftClicked) {
 				obj.LeftClicked = false;
 				if (obj.OnClick)
 					obj.OnClick.call(obj);
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					obj.Parent.LeftClicked = false;
-					if (obj.Parent.OnClick)
-						obj.Parent.OnClick.call(obj.Parent);
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						next.LeftClicked = false;
+						if(next.OnClick) {
+							next.OnClick.call(next);
+						}
+						next = next.Parent;
+					}
 				}
 			}
 
@@ -422,11 +445,16 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				obj.LeftClicked = true;
 				if (obj.OnPointerDown)
 					obj.OnPointerDown.call(obj);
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					obj.Parent.LeftClicked = true;
-					if (obj.Parent.OnPointerDown)
-						obj.Parent.OnPointerDown.call(obj.Parent);
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						next.LeftClicked = true;
+						if(next.OnPointerDown) {
+							next.OnPointerDown.call(next);
+						}
+						next = next.Parent;
+					}
 				}
 			}
 
@@ -435,11 +463,16 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				obj.RightClicked = true;
 				if (obj.OnRightClick)
 					obj.OnRightClick.call(obj);
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					obj.Parent.RightClicked = true;
-					if (obj.Parent.OnRightClick)
-						obj.Parent.OnRightClick.call(obj.Parent);
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						next.RightClicked = true;
+						if(next.OnRightClick) {
+							next.OnRightClick.call(next);
+						}
+						next = next.Parent;
+					}
 				}
 			}
 
@@ -460,9 +493,13 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			if (obj._PointerWasOver)
 			{
 				this._OnPointerOut(obj);
-				// PARENT
-				if(obj.Parent && obj.PropagateEvents) {
-					this._OnPointerOut(obj.Parent);
+				// Propagate
+				if(obj.PropagateEvents) {
+					let next = obj.Parent;
+					while(next) {
+						this._OnPointerOut(next);
+						next = next.Parent;
+					}
 				}
 			}
 		}
