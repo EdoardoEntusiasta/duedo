@@ -35,7 +35,13 @@ Duedo.Object = function () {
     /*
      Children
     */
-    this.Children = [];
+    this.ChildrenList = new Duedo.ChildrenList();
+
+    /**
+     * Propagate events
+     * Decide whether to propagate mouse events to the parent object as well
+     */
+    this.PropagateEvents = false;
 
     /*
     Name
@@ -139,13 +145,19 @@ Duedo.Object.prototype.Bind = function (eventName, callback) {
 
 
 
+/**
+ * Unbind an event
+ * @param {*} eventName 
+ * @returns 
+ */
 Duedo.Object.prototype.Unbind = function (eventName) {
-    // ! todo
+    if(this._Triggers.hasOwnProperty(eventName)) {
+        delete this._Triggers[eventName];
+    } else {
+        console.warn(`Duedo.Object.Unbind: attempt to delete an unknown event "${eventName}"`);
+    }
+    return this;
 };
-
-
-
-
 
 
 

@@ -247,8 +247,9 @@ Duedo.Renderer.prototype._RenderGraphics = function (collection, context, pstate
 			this._UpdateMinMaxPlane(child);
 
 		/*Render sub-children*/
-		if (Duedo.IsArray(child.Children))
-			this._RenderGraphics(child.Children, context, -1);
+		if (Duedo.IsArray(child.ChildrenList.List)) {
+			this._RenderGraphics(child.ChildrenList.List, context, -1);
+		}
 	}
 
 };

@@ -37,8 +37,6 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 
 	this.Translation;
 
-	this.Children = new Array();
-
 	this.Target;
 
 	this.Deadzone;
@@ -54,7 +52,9 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	// Zoom
 	this._Zoom = 1;
 	this._Zoomed = false;
-
+	this.ZoomMax = 5;
+	this.ZoomMin = 1;
+	
 	this.OriginalView = {
 		Width: null,
 		Height: null
@@ -397,11 +397,12 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation)/*.MultiplyScalar(20)*/;
 
-
 	if(DeltaMouse.Magnitude() != 0) {
 		document.body.style.cursor = 'grab';
 		this._Dragging = true;
 	}
+	
+	DeltaMouse.DivideScalar(this.Zoom);
 
 	var DirVector = DeltaMouse.Clone();
 
@@ -595,10 +596,14 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 	set: function ( value ) {
 		
 		this._Zoom = value;
+		
 		// Allow only 1 (Rendrer.this.Context.scale(Zoom))
+		if(this._Zoom < this.ZoomMin) {
+			this._Zoom = this.ZoomMin;
+		}
 
-		if(this._Zoom < 1) {
-			this._Zoom = 1;
+		if(this._Zoom > this.ZoomMax) {
+			this._Zoom = this.ZoomMax;
 		}
 
 		this.Game._Message('zoomed');

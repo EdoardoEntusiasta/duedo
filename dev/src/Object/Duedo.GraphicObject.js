@@ -163,11 +163,11 @@ Duedo.GraphicObject.prototype.SetLocation = function(x, y) {
  * Attach a children to this GraphicObject
  * Useful to create parents elements or groups
 */
-Duedo.GraphicObject.prototype.Attach = function (gobject) {
+Duedo.GraphicObject.prototype.Attach = function (gobject, name = null) {
     gobject.Offset = gobject.Location.Clone();
     gobject.ParentState = this.ParentState;
     gobject.Parent = this;
-    this.Children.push(gobject);
+    this.ChildrenList.Add(gobject, name);
     return this;
 };
 
@@ -178,12 +178,7 @@ Duedo.GraphicObject.prototype.Attach = function (gobject) {
  * Detach a children graphic object
 */
 Duedo.GraphicObject.prototype.Detach = function (gobject) {
-    
-    var index = this.Children.indexOf(gobject);
-    if (index != -1)
-        return this.Children.splice(i, 1)[0];
-
-    return null;
+    this.ChildrenList.RemoveObject(gobject);
 };
 
 
@@ -253,8 +248,8 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
 
 
     //Update graphic children
-    for (var i = this.Children.length - 1; i >= 0; i--) {
-        var child = this.Children[i];
+    for (var i = this.ChildrenList.List.length - 1; i >= 0; i--) {
+        var child = this.ChildrenList.List[i];
 
         //Update based on this parent
         child.Location.X = this.Location.X + child.Offset.X;
@@ -341,7 +336,7 @@ Object.defineProperty(Duedo.GraphicObject.prototype, 'ShouldBeRendered', {
             return true;
         }
         let forceRender = false;
-        this.Children.forEach(element => {
+        this.ChildrenList.List.forEach(element => {
             if(element.ShouldBeRendered) {
                 forceRender = true;
             }

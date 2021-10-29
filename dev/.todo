@@ -1,15 +1,18 @@
 
 Extensions:
 
-    ☐ Duedo.Object.prototype.Unbind
-    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
-    ☐ cmd+enter
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
+    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
     ☐ this.CenterRelative = false in tutti gli oggetti grafici
+    ☐ Scaling del testo e delle immagini
     ☐ StateManager non permette proprietà nell'oggetto
+    ☐ Unità di misura in metri
+
 
 
     Fatto
     ☐ Entity : non si può ordinare per Z perché non è un graphic Object
+    ☐ Object.Children deve essere una istanza di Tipo Childres.prototype in modo da poter utilizzare funzioni di ricerca
+    ☐ Duedo.Object.prototype.Unbind
 

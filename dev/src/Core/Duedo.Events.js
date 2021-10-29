@@ -32,7 +32,6 @@ Duedo.Events.prototype.constructor = Duedo.Events;
  * _init
 */
 Duedo.Events.prototype._init = function() {
-    this.Children     = [];
     this._DoForEvents = [];
     this._Cache = [];
 };
@@ -45,10 +44,10 @@ Duedo.Events.prototype._init = function() {
 */
 Duedo.Events.prototype.Update = function( deltaT ) {
 
-	for(var i = this.Children.length -1; i >= 0; i--)
+	for(var i = this.ChildrenList.List.length -1; i >= 0; i--)
 	{
 
-		var Event = this.Children[i];
+		var Event = this.ChildrenList.List[i];
 
 		if(Duedo.Utils.IsNull(this.Game.StateManager.CurrentState()) || Event.ParentState !== this.Game.StateManager.CurrentState())
 		{
@@ -89,7 +88,7 @@ Duedo.Events.prototype.Update = function( deltaT ) {
 				Event._CallTriggers("expired");
 
 				/*Remove the event*/
-				this.Children.splice(i, 1);
+				this.ChildrenList.List.splice(i, 1);
 				continue;
 			}
 		}
@@ -156,7 +155,7 @@ Duedo.Events.prototype.AddEvent = function(name, func, repeat, time) {
 	/*New time base event*/
 	var Event = new Duedo.Event(this);
 
-	Event.Name         = name   || "event" + this.Children.length;
+	Event.Name         = name   || "event" + this.ChildrenList.List.length;
 	Event.Function     = func   || null;
 
 	Event.Repeat       = repeat || 1;
@@ -184,7 +183,7 @@ Duedo.Events.prototype.AddEvent = function(name, func, repeat, time) {
 
 	Event.ParentState  = this.Game.StateManager.CurrentState();
 
-	this.Children.push(Event);
+	this.ChildrenList.List.push(Event);
 
 
 	return Event;
@@ -270,22 +269,22 @@ Duedo.Events.prototype.RemoveEvent = function(name) {
 
 	if(name instanceof Object)
 	{
-		for(var i in this.Children)
+		for(var i in this.ChildrenList.List)
 		{
-			if(this.Children[i] === name)
+			if(this.ChildrenList.List[i] === name)
 			{
-				this.RemoveEvent(this.Children[i]);
+				this.RemoveEvent(this.ChildrenList.List[i]);
 				break;
 			}
 		}
 	}
 	else
 	{
-		for(var i in this.Children)
+		for(var i in this.ChildrenList.List)
 		{
-			if(this.Children[i].Name === name)
+			if(this.ChildrenList.List[i].Name === name)
 			{
-				return this.Children.splice(i, 1);
+				return this.ChildrenList.List.splice(i, 1);
 			}
 		}
 	}
@@ -299,11 +298,11 @@ Duedo.Events.prototype.RemoveEvent = function(name) {
 */
 Duedo.Events.prototype.GetEvent = function( name ) {
 
-	for( var i in this.Children )
+	for( var i in this.ChildrenList.List )
 	{
-		if(this.Children[i].Name === name)
+		if(this.ChildrenList.List[i].Name === name)
 		{
-			return this.Children[i];
+			return this.ChildrenList.List[i];
 		}
 	}
 

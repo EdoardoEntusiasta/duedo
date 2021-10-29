@@ -244,7 +244,7 @@ Duedo.Text.prototype.Draw = function (context) {
     context.lineWidth       = this.Style.LineHeight;
     context.strokeThickness = this.Style.StrokeThickness;
 
-    context.font = this.Style.Font;
+    context.font = this.Style.Font; // todo scaling
     context.fillStyle = this.Style.Fill;
 
     //Shadow

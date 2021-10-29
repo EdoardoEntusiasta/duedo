@@ -26,8 +26,6 @@ Duedo.Bucket.prototype.constructor = Duedo.Bucket;
 */
 Duedo.Bucket.prototype._init = function() {
 	this._super();
-
-	this.Children = [];
 	return this;
 };
 
@@ -80,7 +78,7 @@ Duedo.Bucket.prototype.Add = function(child) {
 
         this.AddChild(child);
 
-        child.Z = this.Children.length;
+        child.Z = this.ChildrenList.List.length;
 
         if (this.Cursor === null)
         {

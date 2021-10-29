@@ -246,8 +246,18 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 
 		if (obj.ParentState == this.Game.StateManager.CurrentState() || obj.ParentState == -1)
 		{
-			if (Pointer.Intersects(obj)) {
+			this._TriggerEvents(obj, Pointer);
+		}
+/*
+		var obj = this._Cache["SortedByZ"][i];
+		
+		if (!obj.InteractionEnabled)
+			continue;
 
+		if (obj.ParentState == this.Game.StateManager.CurrentState() || obj.ParentState == -1)
+		{
+			if (Pointer.Intersects(obj)) {
+				
 				if (this._LastOvered != null && this._LastOvered != obj)
 					this._OnPointerOut(this._LastOvered);
 
@@ -258,8 +268,9 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 					continue;
 
 				if (!Duedo.Vector2.Compare(Pointer.Location, Pointer.LastLocation))
-					if (obj.OnPointerMove)
+					if (obj.OnPointerMove) {
 						obj.OnPointerMove.call(obj);
+					}
 
 				//OnPointerOn
 				if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
@@ -311,6 +322,8 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 				}
 			}
 		}
+		*/
+
 	}
 
 
@@ -333,6 +346,128 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 	return;
 
 };
+
+
+
+/**
+ * _TriggerEventss
+ */
+Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
+	
+		if (Pointer.Intersects(obj)) {
+			
+			if (this._LastOvered != null && this._LastOvered != obj) {
+				this._OnPointerOut(this._LastOvered);
+				// PARENT
+				if(this._LastOvered.Parent && obj.PropagateEvents) {
+					this._OnPointerOut(this._LastOvered.Parent)
+				}
+			}
+
+			this._LastOvered = obj;
+
+			//Mouse was clicked elsewhere
+			if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj._PointerWasOver) {
+				return;
+			}
+
+			if (!Duedo.Vector2.Compare(Pointer.Location, Pointer.LastLocation)) {
+				if (obj.OnPointerMove) {
+					obj.OnPointerMove.call(obj);
+				}
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					if(obj.Parent.OnPointerMove)
+						obj.Parent.OnPointerMove.call(obj);
+				}
+			}
+
+			//OnPointerOn
+			if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
+				obj.OnPointerOn.call(obj);
+				obj._OnPointerOnCalled = true;
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					if(obj.Parent.OnPointerOn) {
+						obj.Parent.OnPointerOn.call(obj.Parent);
+						obj.Parent._OnPointerOnCalled = true;
+					}
+				}
+			}
+
+			//First: MouseHover
+			obj.MouseIsOver = true;
+			obj._PointerWasOver = true;
+			
+			// PARENT
+			if(obj.Parent && obj.PropagateEvents) {
+				obj.Parent.MouseIsOver = true;
+				obj.Parent._PointerWasOver = true;
+			}
+
+			// Clicked
+			if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && obj.LeftClicked) {
+				obj.LeftClicked = false;
+				if (obj.OnClick)
+					obj.OnClick.call(obj);
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					obj.Parent.LeftClicked = false;
+					if (obj.Parent.OnClick)
+						obj.Parent.OnClick.call(obj.Parent);
+				}
+			}
+
+			if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj.LeftClicked) {
+				obj.LeftClicked = true;
+				if (obj.OnPointerDown)
+					obj.OnPointerDown.call(obj);
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					obj.Parent.LeftClicked = true;
+					if (obj.Parent.OnPointerDown)
+						obj.Parent.OnPointerDown.call(obj.Parent);
+				}
+			}
+
+
+			if (Pointer.IsDown(Duedo.Mouse.RIGHT_BUTTON) && !obj.RightClicked) {
+				obj.RightClicked = true;
+				if (obj.OnRightClick)
+					obj.OnRightClick.call(obj);
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					obj.Parent.RightClicked = true;
+					if (obj.Parent.OnRightClick)
+						obj.Parent.OnRightClick.call(obj.Parent);
+				}
+			}
+
+
+			if (Pointer.IsDown(this.DragButton)) {
+				if (obj.Draggable) {
+					this._HookedObject = obj;
+					this._HookedObject.Pointer = Pointer;
+					this._HookedObject._Dragging = true;
+					Pointer.Dragging = true;
+				}
+			}
+
+			return;
+		}
+		else
+		{
+			if (obj._PointerWasOver)
+			{
+				this._OnPointerOut(obj);
+				// PARENT
+				if(obj.Parent && obj.PropagateEvents) {
+					this._OnPointerOut(obj.Parent);
+				}
+			}
+		}
+
+}
 
 
 

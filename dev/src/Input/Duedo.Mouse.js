@@ -484,6 +484,27 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 
 
 
+/**
+ * Check if the mouse intersects the object or any of its children connected to it
+ * @param {*} object 
+ * @returns 
+ */
+Duedo.Mouse.prototype.IntersectsRecursive = function(object) {
+	if(this.Intersects(object)) {
+		return true;
+	} else {
+		if(object.ChildrenList.HasChildren()) {
+			for(let i = 0; i <= object.ChildrenList.Length; i++) {
+				return this.IntersectsRecursive(object.ChildrenList.List[i]);
+			}
+		} else {
+			return false;
+		}
+	}
+};
+
+
+
 /*
  * Disconnect
  * @public

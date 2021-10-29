@@ -50,12 +50,12 @@ Duedo.Parallax.prototype.AddLayer = function ( layer ) {
     {
         if(Duedo.Utils.IsNull(layer.Source.Z) || layer.Source.Z === 0)
         {
-            layer.Source.Z = (this.Z + this.Children.length);
+            layer.Source.Z = (this.Z + this.ChildrenList.List.length);
         }
         
         layer.Parent = this;
         /*Get a reference to the layer*/
-        this.Children.push(layer);
+        this.ChildrenList.Add(layer);
         /*...then free it into the world*/
         this.Game.Add(layer.Source);
     }
@@ -77,10 +77,10 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
     offset = new Duedo.Vector2(0, 0);
     relVel = this.Distance;
     
-    for (var i = this.Children.length - 1; i >= 0; i--)
+    for (var i = this.ChildrenList.List.length - 1; i >= 0; i--)
     {
 
-        Layer = this.Children[i];
+        Layer = this.ChildrenList.List[i];
 
         /*Translate layer*/
         if (this.Game.Viewport.Translation.Magnitude() > 0)
