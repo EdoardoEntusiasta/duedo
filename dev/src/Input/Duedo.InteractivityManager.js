@@ -219,12 +219,6 @@ _UpdatePointerInteractions
 */
 Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr) {
 
-	// ! TODO
-	/**
-	 * Se hover su un child Attached (parent.Attach())
-	 * vale l'hover sul parent
-	 */
-
 	if (Duedo.Utils.IsNull(ptr))
 		return;
 
@@ -248,81 +242,6 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 		{
 			this._TriggerEvents(obj, Pointer);
 		}
-/*
-		var obj = this._Cache["SortedByZ"][i];
-		
-		if (!obj.InteractionEnabled)
-			continue;
-
-		if (obj.ParentState == this.Game.StateManager.CurrentState() || obj.ParentState == -1)
-		{
-			if (Pointer.Intersects(obj)) {
-				
-				if (this._LastOvered != null && this._LastOvered != obj)
-					this._OnPointerOut(this._LastOvered);
-
-				this._LastOvered = obj;
-
-				//Mouse was clicked elsewhere
-				if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj._PointerWasOver)
-					continue;
-
-				if (!Duedo.Vector2.Compare(Pointer.Location, Pointer.LastLocation))
-					if (obj.OnPointerMove) {
-						obj.OnPointerMove.call(obj);
-					}
-
-				//OnPointerOn
-				if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
-					obj.OnPointerOn.call(obj);
-					obj._OnPointerOnCalled = true;
-				}
-
-				//First: MouseHover
-				obj.MouseIsOver = true;
-				obj._PointerWasOver = true;
-				
-				// Clicked
-				if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && obj.LeftClicked) {
-					obj.LeftClicked = false;
-					if (obj.OnClick)
-						obj.OnClick.call(obj);
-				}
-
-				if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj.LeftClicked) {
-					obj.LeftClicked = true;
-					if (obj.OnPointerDown)
-						obj.OnPointerDown.call(obj);
-				}
-
-
-				if (Pointer.IsDown(Duedo.Mouse.RIGHT_BUTTON) && !obj.RightClicked) {
-					obj.RightClicked = true;
-					if (obj.OnRightClick)
-						obj.OnRightClick.call(obj);
-				}
-
-
-				if (Pointer.IsDown(this.DragButton)) {
-					if (obj.Draggable) {
-						this._HookedObject = obj;
-						this._HookedObject.Pointer = Pointer;
-						this._HookedObject._Dragging = true;
-						Pointer.Dragging = true;
-					}
-				}
-
-				return;
-			}
-			else
-			{
-				if (obj._PointerWasOver)
-				{
-					this._OnPointerOut(obj);
-				}
-			}
-		}
-		*/
 
 	}
 
