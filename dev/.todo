@@ -2,9 +2,9 @@
 Extensions:
 
     ☐ IMPO. Quando ZOOMO: Gli oggetti incollati alla camera non devono essere ingranditi, ma mantenere un rapporto e una posizione uguale
-    ☐ La viewport non deve spostarsi o annullare la velocità se draggo un oggetto
+    ☐ Inoltre il dragging (quando zoommato) ha problemi (il mouse non corrisponde alla posizione dell'oggetto)
 
-    
+
     ☐ Unità di misura in metri
     ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
     ☐ this.CenterRelative = false in tutti gli oggetti grafici
@@ -19,4 +19,5 @@ Extensions:
     ☐ Object.Children deve essere una istanza di Tipo Childres.prototype in modo da poter utilizzare funzioni di ricerca
     ☐ Duedo.Object.prototype.Unbind
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
+    ☐ La viewport non deve spostarsi o annullare la velocità se draggo un oggetto
 

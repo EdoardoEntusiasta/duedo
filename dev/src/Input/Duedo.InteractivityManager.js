@@ -177,6 +177,7 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 
 			this._HookedObject._Dragging = false;
 			this._HookedObject = null;
+			this.Game.Status.HookedObject = null;
 			this._DragMouseLastLocation = null;
 
 		}
@@ -330,6 +331,7 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			if (Pointer.IsDown(this.DragButton)) {
 				if (obj.Draggable) {
 					this._HookedObject = obj;
+					this.Game.Status.HookedObject = obj;
 					this._HookedObject.Pointer = Pointer;
 					this._HookedObject._Dragging = true;
 					Pointer.Dragging = true;

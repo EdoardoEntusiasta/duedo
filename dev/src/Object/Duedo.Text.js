@@ -429,6 +429,9 @@ Object.defineProperty(Duedo.Text.prototype, "FontName", {
 Object.defineProperty(Duedo.Text.prototype, "FontSize", {
 
     set: function (val) {
+        if(!isNaN(val)) {
+            val = val + 'px';
+        }
         this._FontSize = val;
         this._Retouched = true;
     },

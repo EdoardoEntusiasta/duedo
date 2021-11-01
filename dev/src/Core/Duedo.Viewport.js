@@ -377,6 +377,9 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 */
 Duedo.Viewport.prototype._FavorsDragging = function() {
 
+	// ! TODO NON DEVE BLOCCARSI O SPOSTARSI SE STO DRAGGANDO UN OGGETTO
+	// MA SE LA VELOCITA' è MAGGIORE DI 0, MUOVI LA CAMERA
+
 	var mouse = this.Game.InputManager.Mouse;
 
 	if(!this._DragMouseLastLocation)
@@ -410,14 +413,18 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	const cameraMass = 5;
 
 	if(this.Slide && DeltaMouse.Magnitude() >= deltaSlideMinimumThreshold ||  this._Velocity.Magnitude()) {
-		// Reset velocity if mouse down
-		if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
-			this._Velocity.MultiplyScalar(0);
-		}
 
-		// Slide only for
-		this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
-	
+
+		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
+			// Reset velocity if mouse down
+			if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
+				this._Velocity.MultiplyScalar(0);
+			}
+
+			// Slide only for
+			this._DragAcceleration = DeltaMouse.DivideScalar(1).MultiplyScalar(-1);
+		}
+		
 		const relFriction = this._Velocity.Clone()
 			.MultiplyScalar(-1)
 			.Normalize()
@@ -431,11 +438,12 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 		// Reset acceleration
 		this._DragAcceleration.MultiplyScalar(0);
 	} else {
-		
-		DirVector.MultiplyScalar(this.DragScale).Negate();
-		
-		this.View.Location.X += DirVector.X;
-		this.View.Location.Y += DirVector.Y;
+		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
+			DirVector.MultiplyScalar(this.DragScale).Negate();
+			
+			this.View.Location.X += DirVector.X;
+			this.View.Location.Y += DirVector.Y;
+		}
 	}
 
 	this._DragMouseLastLocation = mouse.Location.Clone();
@@ -742,7 +750,8 @@ Object.defineProperty(Duedo.Viewport.prototype, "Debug", {
 			/*Prepare a text object through which view the informations*/
 			this._DebugText = new Duedo.Text(this.Game, "VIEWPORT-DEBUG");
 			this._DebugText.FixedToViewport = true;
-			this._DebugText.FontSize = 15;
+			this._DebugText.FontSize = 14;
+			this._DebugText.Style.Fill = 'red';
 			this._DebugText.ViewportOffset.X = 5;
 			this._DebugText.ViewportOffset.Y = 15;
 			this._DebugText.FontWeight = "bold";
