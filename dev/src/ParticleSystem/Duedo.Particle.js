@@ -192,7 +192,7 @@ Duedo.Particle.prototype.FixVelocity = function () {
 Duedo.Particle.prototype.CheckViewportIntersection = function () {
     
     var pBBox = null;
-
+    // ! TODO FIXA IN BASE A ZOOM
     /*Particle visibility*/
     if (this._Parent.Texture !== null)
     {

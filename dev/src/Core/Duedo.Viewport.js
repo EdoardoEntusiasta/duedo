@@ -53,7 +53,7 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 	this._Zoom = 1;
 	this._Zoomed = false;
 	this.ZoomMax = 5;
-	this.ZoomMin = 1;
+	this.ZoomMin = Duedo.Conf.MinimumZoom;
 	
 	this.OriginalView = {
 		Width: null,
@@ -539,7 +539,7 @@ Duedo.Viewport.prototype.Intersects = function ( DuedoRect ) {
 		Rectangle intersection
 		* TODO - coordinate e dimensioni van convertite in metri
 	*/
-	return this.View.Intersects(DuedoRect);
+	return this.View.Intersects(DuedoRect)
 };
 
 
@@ -752,6 +752,7 @@ Object.defineProperty(Duedo.Viewport.prototype, "Debug", {
 			this._DebugText.FixedToViewport = true;
 			this._DebugText.FontSize = 14;
 			this._DebugText.Style.Fill = 'red';
+			this._DebugText.Anchor.X = this._DebugText.Anchor.Y = 0;
 			this._DebugText.ViewportOffset.X = 5;
 			this._DebugText.ViewportOffset.Y = 15;
 			this._DebugText.FontWeight = "bold";
@@ -782,7 +783,7 @@ Object.defineProperty(Duedo.Viewport.prototype, "Debug", {
 Duedo.Viewport.prototype.RenderDebugInfo = function(renderer) {
 
 	/*Debug info text*/
-	this._DebugText.Text = "VIEWPORT-DEBUG\nLocation: {X: "+this.View.Location.X.toFixed(2)+" Y: "+this.View.Location.Y.toFixed(2)+"}\nDimension: {Width: "+this.View.Width+" Height: "+this.View.Height+"}\nBounds: {Width: "+this.Bounds.Width+" Height:    "+this.Bounds.Height+"}\nTranslation: {X:"+this.Translation.X.toFixed(2)+" Y:"+this.Translation.Y.toFixed(2)+"}";
+	this._DebugText.Text = "VIEWPORT-DEBUG\nLocation: {X: "+this.View.Location.X.toFixed(2)+" Y: "+this.View.Location.Y.toFixed(2)+"}\nDimension: {Width: "+this.View.Width+" Height: "+this.View.Height+"}\nBounds: {Width: "+this.Bounds.Width+" Height:    "+this.Bounds.Height+"}\nTranslation: {X:"+this.Translation.X.toFixed(2)+" Y:"+this.Translation.Y.toFixed(2)+"}\nZoom:" + this.Zoom;
 	this._DebugText.Draw(this.Game.Renderer.Context);
 
 	this._DebugText.RenderOrderID = renderer.CurrentRenderOrderID++;

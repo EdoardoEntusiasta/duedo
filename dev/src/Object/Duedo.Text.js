@@ -208,7 +208,11 @@ Duedo.Text.prototype.PostUpdate = function(deltaT) {
     /*Renderable*/ 
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
-            this.Location, 
+            !this.FixedToViewport 
+            ? 
+                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+            : 
+                new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
             this.Width, 
             this.Height)
     ) && this.Alpha > 0);
@@ -216,8 +220,8 @@ Duedo.Text.prototype.PostUpdate = function(deltaT) {
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X * this.Game.Viewport.Zoom + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y * this.Game.Viewport.Zoom + this.ViewportOffset.Y;
     }
     
 };
@@ -243,6 +247,10 @@ Duedo.Text.prototype.SetShadow = function (x, y, color, blur) {
  */
 Duedo.Text.prototype.Draw = function (context) {
     
+    if(!this.Renderable) {
+        return;
+    }
+
     context.save();
 
     //Setup drawing context
@@ -289,10 +297,14 @@ Duedo.Text.prototype.Draw = function (context) {
         context.translate(-(this.Location.X +  (width * this.Anchor.X)), -(this.Location.Y + (height * this.Anchor.Y)));
     }
     
+    if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
+        context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
+    }
+
     context.mlFillOrStrokeText(
         this.Text, 
-        this.Location.X, 
-        this.Location.Y, 
+        DToPixels(this.Location.X) - this.Width * this.Anchor.X,
+        DToPixels(this.Location.Y) - this.Height * this.Anchor.Y,
         width, 
         height, 
         this.VerticalAlign, 
@@ -301,8 +313,13 @@ Duedo.Text.prototype.Draw = function (context) {
         fn);      
     
     /*Show text box*/
-    if(this.Debug || Duedo.Text.DebugAll)
-        context.strokeRect(this.Location.X, this.Location.Y, this.MaxLineWidth, this.Height);
+    if(this.Debug || Duedo.Text.DebugAll) {
+        context.strokeStyle = 'orange';
+        context.strokeRect(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y, this.MaxLineWidth, this.Height);
+        context.font = '12px arial';
+        context.fillStyle = 'orange';
+        context.fillText(`Text X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
+    }
 
     context.restore();
     

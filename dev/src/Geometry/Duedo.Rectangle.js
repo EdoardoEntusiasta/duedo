@@ -129,7 +129,8 @@ Duedo.Rectangle.IntersectsInfo = function (a, b, output) {
         output = new Duedo.Rectangle();
     }
 
-    // Todo, if rotated...
+    // Todo, if rotated... 
+    // ! TODO STAMPA CON ANCHOR!!!!
     // https://gamedev.stackexchange.com/questions/128598/collision-detection-point-hitting-a-rotating-rectangle
 
     if (Duedo.Rectangle.Intersects(a, b))

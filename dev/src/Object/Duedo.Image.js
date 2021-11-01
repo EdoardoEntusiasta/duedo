@@ -82,7 +82,11 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
     /*Renderable*/
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
-            new Duedo.Vector2(this.Location.X, this.Location.Y),
+            !this.FixedToViewport 
+            ? 
+                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+            : 
+                new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
             DToPixels(this.Width), 
             DToPixels(this.Height))
     ) && this.Alpha > 0);
@@ -90,8 +94,8 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X * this.Game.Viewport.Zoom + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y * this.Game.Viewport.Zoom + this.ViewportOffset.Y;
     }
 
 };
@@ -194,14 +198,43 @@ Duedo.Image.prototype.Draw = function(context) {
     if(this.BlendMode)
         context.globalCompositeOperation = this.BlendMode;
 
+    if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
+        context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
+    }
+
     /*Draw*/
     context.drawImage(
         this.Source,    
-            0, 0,   
-                this.Source.width, this.Source.height, 
-                    DToPixels(this.Location.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0), DToPixels(this.Location.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0),
-                        DToPixels(this.Width), DToPixels(this.Height));
+        0, 0,   
+        this.Source.width, this.Source.height, 
+        DToPixels(this.Location.X) - this.Width * this.Anchor.X,  
+        DToPixels(this.Location.Y) - this.Height * this.Anchor.Y,
+        DToPixels(this.Width), DToPixels(this.Height));
     
+    if(this.Debug) {
+        // Draw wrapper
+        context.beginPath();
+        context.strokeStyle = 'green';
+        context.fillStyle = 'black';
+        context.rect(
+            DToPixels(this.Location.X) - this.Width * this.Anchor.X,  
+            DToPixels(this.Location.Y) - this.Height * this.Anchor.Y, 
+            this.Width, 
+            this.Height
+        );
+        context.stroke();
+        // Draw center
+        context.beginPath();
+        const centerSize = 1;
+        context.rect(
+            DToPixels(this.Location.X),
+            DToPixels(this.Location.Y), centerSize, centerSize);
+        context.fill();
+        context.font = '12px arial';
+        context.fillStyle = 'green';
+        context.fillText(`Image X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
+    }
+
     context.restore();
     
 

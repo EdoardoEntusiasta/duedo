@@ -466,8 +466,16 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
 
 	//Get object location in pixels -> multiplyScalar PixelsInMeter
-	var objLoc = object.Location.Clone().Subtract( this.Game.Viewport.View.GetAsVector() );
+	if(!object.FixedToViewport) {
+		objLoc = object.Location.Clone()
+		.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
+		.Subtract( this.Game.Viewport.View.GetAsVector() );
+	} else {
+		objLoc = object.ViewportOffset.Clone()
+		.Add( this.Game.Viewport.View.GetAsVector() ); // ! TOFIX SE FIXEDTOVIEWPORT + ZOOM
+	}
 
+	
 	// TODO fix
 	if(
 		LocationToCompare.X >= DToPixels(objLoc.X) /* - DToPixels(object.Width)*/

@@ -419,16 +419,21 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
     /*Renderable*/
     this.Renderable = (this.Game.Viewport.Intersects(
         new Duedo.Rectangle(
-            new Duedo.Vector2(this.Location.X, this.Location.Y),
+            !this.FixedToViewport 
+                ? 
+                    new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+                : 
+                    new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
             DToPixels(this.FrameWidth()), 
             DToPixels(this.FrameHeight()))
     ) && this.Alpha > 0);
     
     //Update location if it's fixed to viewport
+    // ! QUANDO ZOOMO SI SFASA TUTTO
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X * this.Game.Viewport.Zoom + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y * this.Game.Viewport.Zoom + this.ViewportOffset.Y;
     }
     
 };
@@ -486,16 +491,20 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     if(this.BlendMode)
         context.globalCompositeOperation = this.BlendMode;
 
+    if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
+        context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
+    }
+
     /*Draw*/
     try
     {
-        // TODO usa anchor
         context.drawImage(
             this.Source,
             fc[0], fc[1],
             DToPixels(fc[2]), DToPixels(fc[3]),
             // Location
-            DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0),  DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0),
+            DToPixels(drawLoc.X) - this.Width * this.Anchor.X,
+            DToPixels(drawLoc.Y) - this.Height * this.Anchor.Y,
             DToPixels(this.FrameWidth()), DToPixels(this.FrameHeight())
         ); 
                             
@@ -508,19 +517,25 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     if(this.Debug) {
         // Draw wrapper
         context.beginPath();
+        context.strokeStyle = 'red';
         context.rect(
-            DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0),
-            DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0), this.FrameWidth(), this.FrameHeight()
+            DToPixels(drawLoc.X) - this.Width * this.Anchor.X,  
+            DToPixels(drawLoc.Y) - this.Height * this.Anchor.Y, 
+            this.FrameWidth(), 
+            this.FrameHeight()
         );
         context.stroke();
         // Draw center
         context.beginPath();
         const centerSize = 1;
         context.rect(
-            (DToPixels(drawLoc.X) - (this.CenterRelative ? DToPixels(this.HalfWidth) : 0)) + this.HalfWidth - (centerSize / 2),
-            (DToPixels(drawLoc.Y) - (this.CenterRelative ? DToPixels(this.HalfHeight) : 0)) + this.HalfHeight - (centerSize / 2), centerSize, centerSize);
-        context.fillStyle = "red";
+            DToPixels(drawLoc.X),
+            DToPixels(drawLoc.Y), centerSize, centerSize);
+        context.fillStyle = "black";
         context.fill();
+        context.font = '12px arial';
+        context.fillStyle = 'red';
+        context.fillText(`Sprite X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
     }
 
     context.restore();

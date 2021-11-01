@@ -1,8 +1,8 @@
 
 Extensions:
 
-    ☐ IMPO. Quando ZOOMO: Gli oggetti incollati alla camera non devono essere ingranditi, ma mantenere un rapporto e una posizione uguale
-    ☐ Inoltre il dragging (quando zoommato) ha problemi (il mouse non corrisponde alla posizione dell'oggetto)
+    ☐ Duedo.Mouse objLoc = object.Location.Clone().MultiplyScalar(this.Game.Viewport.Zoom); // ! TOFIX SE FIXEDTOVIEWPORT + ZOOM
+    ☐ Quando ZOOM: il dragging e le interazioni su oggetti fixed to viewport (quando zoommato) hanno problemi (il mouse non corrisponde alla posizione dell'oggetto)
 
 
     ☐ Unità di misura in metri
@@ -20,4 +20,6 @@ Extensions:
     ☐ Duedo.Object.prototype.Unbind
     ☐ Duedo.InteractivityManager.prototype._UpdatePointerInteractions - vedi todo
     ☐ La viewport non deve spostarsi o annullare la velocità se draggo un oggetto
+    ☐ IMPO. Quando ZOOMO: Gli oggetti incollati alla camera non devono essere ingranditi, ma mantenere un rapporto e una posizione uguale
+    ☐ Quando ZOOM: Renderable a volte è false per oggetti fixedtoviewport
 

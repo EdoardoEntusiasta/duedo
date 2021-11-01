@@ -200,8 +200,8 @@ Duedo.Shape.prototype.PostUpdate = function(deltaT) {
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X * this.Game.Viewport.Zoom + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y * this.Game.Viewport.Zoom + this.ViewportOffset.Y;
     }
     
 

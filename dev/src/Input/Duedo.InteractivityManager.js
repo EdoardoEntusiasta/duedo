@@ -447,15 +447,15 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
 
 	if (obj.FixedToViewport) {
-		obj.ViewportOffset.Add(DirVector);
+		obj.ViewportOffset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
 	}
 	else if (obj["Offset"]) {
         /*Child element*/
-	    obj.Offset.Add(DirVector);
+	    obj.Offset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
 	}
 	else
 	{
-		obj.Location.Add(DirVector);
+		obj.Location.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
 	}
 
 	//Keeps track of the last position of the pointer
