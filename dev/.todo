@@ -1,12 +1,16 @@
 
 Extensions:
 
+    ☐ IMPO. Quando ZOOMO: Gli oggetti incollati alla camera non devono essere ingranditi, ma mantenere un rapporto e una posizione uguale
+    ☐ La viewport non deve spostarsi o annullare la velocità se draggo un oggetto
+
+    
+    ☐ Unità di misura in metri
     ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
-    ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
     ☐ this.CenterRelative = false in tutti gli oggetti grafici
     ☐ Scaling del testo e delle immagini
     ☐ StateManager non permette proprietà nell'oggetto
-    ☐ Unità di misura in metri
+    ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
 
 
 

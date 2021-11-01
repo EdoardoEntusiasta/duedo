@@ -34,10 +34,12 @@ Duedo.Text = function ( gameContext, text, location, style, name) {
 
     /*Private vars*/
     this._Text = "text";
-    this._Font = "Calibri";
-    this._FontSize = 30;
-    this._FontWeight = "normal";
     this._LineSpacing = 0;
+
+    // Fonts
+    this._FontName = 'Arial';
+    this._FontWeight = 'normal';
+    this._FontSize = '15pt';
 
     /*@bool: text has been modified?*/
     this._Retouched;
@@ -108,7 +110,12 @@ Duedo.Text.prototype.SetStyle = function (mstyle) {
 
     mstyle = mstyle || {};
 
-    this.Style.Font            = mstyle.Font            || "normal 15pt Calibri";
+    // Font
+    this._FontName             = mstyle.FontName        || "Calibri";
+    this._FontWeight           = mstyle.FontWeight      || "normal";
+    this._FontSize             = mstyle.FontSize        || "15pt";
+
+    // Style
     this.Style.Fill            = mstyle.Fill            || "black";
     this.Style.StrokeStyle     = mstyle.StrokeStyle     || "white";
     this.Style.StrokeThickness = mstyle.StrokeThickness || 0;
@@ -142,9 +149,10 @@ Duedo.Text.prototype.Update = function (deltaT) {
         this.Lines = this.Text.split(/(?:\r\n|\r|\n)/);
         this._UpdateTextWidth();
 
+
+        const fontHeight = this.DetermineFontHeight(`font-family:${this._FontName}`);
         //Calculate line height
-         this.LineHeight = this.DetermineFontHeight(
-            'font: ' + this.Style.Font + ';') + this.Style.StrokeThickness + this._LineSpacing + this.Style.ShadowOffsetY;
+        this.LineHeight = fontHeight + this.Style.StrokeThickness + this._LineSpacing + this.Style.ShadowOffsetY;
 
         this._Retouched = false;
     }
@@ -168,7 +176,7 @@ Duedo.Text.prototype._UpdateTextWidth = function() {
     var ctx = this.Game.Renderer.Context;
     
     ctx.save();
-    ctx.font = this.Style.Font;
+    ctx.font = this.Font;
 
     for (var i = 0; i < this.Lines.length; i++)
     {
@@ -177,6 +185,7 @@ Duedo.Text.prototype._UpdateTextWidth = function() {
         this.LinesWidths[i] = lineWidth;
         
         this.MaxLineWidth = Math.max(this.MaxLineWidth, lineWidth);
+       
         lineWidth = 0;
     }
 
@@ -190,7 +199,7 @@ Duedo.Text.prototype._UpdateTextWidth = function() {
  * PostUpdate
 */
 Duedo.Text.prototype.PostUpdate = function(deltaT) {
-
+ 
     if(this.Body)
     {
         this.Body.Link();
@@ -203,7 +212,6 @@ Duedo.Text.prototype.PostUpdate = function(deltaT) {
             this.Width, 
             this.Height)
     ) && this.Alpha > 0);
-    
 
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
@@ -243,10 +251,10 @@ Duedo.Text.prototype.Draw = function (context) {
     context.strokeStyle     = this.Style.StrokeStyle;
     context.lineWidth       = this.Style.LineHeight;
     context.strokeThickness = this.Style.StrokeThickness;
-
-    context.font = this.Style.Font; // todo scaling
+    
+    context.font = this.Font;
     context.fillStyle = this.Style.Fill;
-
+    
     //Shadow
     //bug: shadow don't work while using MLTEXT.JS down here...
     context.shadowOffsetX   = this.Style.ShadowOffsetX;
@@ -268,7 +276,7 @@ Duedo.Text.prototype.Draw = function (context) {
     }
 
     var height = this.Height;
-    var width  = this.MaxLineWidth;
+    var width  = 500;
     
 
     /*
@@ -280,8 +288,7 @@ Duedo.Text.prototype.Draw = function (context) {
         context.rotate(Duedo.Units.DegToRadians(this.Rotation));
         context.translate(-(this.Location.X +  (width * this.Anchor.X)), -(this.Location.Y + (height * this.Anchor.Y)));
     }
-
-
+    
     context.mlFillOrStrokeText(
         this.Text, 
         this.Location.X, 
@@ -397,25 +404,22 @@ Object.defineProperty(Duedo.Text.prototype, "Text", {
 });
 
 
-
 /*
- * Font
- * @val: string - font name
+ * FontName
+ * @val: string
 */
-Object.defineProperty(Duedo.Text.prototype, "Font", {
+Object.defineProperty(Duedo.Text.prototype, "FontName", {
 
     set: function (val) {
-        this._Font = val.trim();
-        this.Style.Font = this._FontWeight + ' ' + this._FontSize + 'px ' + this._Font;
+        this._FontName = val;
         this._Retouched = true;
     },
 
     get: function () {
-        return this._Font;
+        return this._FontName;
     }
 
 });
-
 
 
 /*
@@ -426,7 +430,6 @@ Object.defineProperty(Duedo.Text.prototype, "FontSize", {
 
     set: function (val) {
         this._FontSize = val;
-        this.Style.Font = this._FontWeight + ' ' + this._FontSize + 'px ' + this._Font;
         this._Retouched = true;
     },
 
@@ -446,7 +449,6 @@ Object.defineProperty(Duedo.Text.prototype, "FontWeight", {
 
     set: function (val) {
         this._FontWeight = val;
-        this.Style.Font = this._FontWeight + ' ' + this._FontSize + 'px ' + this._Font;
         this._Retouched = true;
     },
 
@@ -509,6 +511,19 @@ Object.defineProperty(Duedo.Text.prototype, "StrokeStyle", {
         return this.Style.StrokeStyle;
     }
 });
+
+
+
+/**
+* Font
+* An overall of the font
+*/
+Object.defineProperty(Duedo.Text.prototype, "Font", {
+    get: function() {
+        return this._FontWeight + ' ' + this._FontSize + ' ' + this._FontName;
+    }
+});
+
 
 
 

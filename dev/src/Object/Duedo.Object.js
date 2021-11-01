@@ -37,12 +37,6 @@ Duedo.Object = function () {
     */
     this.ChildrenList = new Duedo.ChildrenList();
 
-    /**
-     * Propagate events
-     * Decide whether to propagate mouse events to the parent object as well
-     */
-    this.PropagateEvents = false;
-
     /*
     Name
     */

@@ -149,7 +149,7 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 	if (this.Empty) return;
 
 	//Update the quadtree
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FIX:
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FIX:
 	if (this.QuadTree) this.QuadTree.Update();
 
 	var Pointer = this.Game.InputManager.Mouse;
@@ -158,6 +158,9 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 	if (this._HookedObject) {
 		if(!Pointer.IsDown(this.DragButton)) {
 			Pointer.Dragging = false;
+
+			// Update game status
+			this.Game.Status.DraggingObject = false;
 
 			if (this._HookedObject.OnPointerUp)
 				this._HookedObject.OnPointerUp.call(this._HookedObject);
@@ -277,14 +280,6 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			
 			if (this._LastOvered != null && this._LastOvered != obj) {
 				this._OnPointerOut(this._LastOvered);
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = this._LastOvered.Parent;
-					while(next) {
-						this._OnPointerOut(next);
-						next = next.Parent;
-					}
-				}
 			}
 
 			this._LastOvered = obj;
@@ -298,48 +293,17 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				if (obj.OnPointerMove) {
 					obj.OnPointerMove.call(obj);
 				}
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						if(next.OnPointerMove) {
-							next.OnPointerMove.call(next);
-						}
-						next = next.Parent;
-					}
-				}
 			}
 
 			//OnPointerOn
 			if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
 				obj.OnPointerOn.call(obj);
 				obj._OnPointerOnCalled = true;
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						if(next.OnPointerOn) {
-							next.OnPointerOn.call(next);
-							next._OnPointerOnCalled = true;
-						}
-						next = next.Parent;
-					}
-				}
 			}
 
 			//First: MouseHover
 			obj.MouseIsOver = true;
 			obj._PointerWasOver = true;
-			
-			// Propagate
-			if(obj.PropagateEvents) {
-				let next = obj.Parent;
-				while(next) {
-					next.MouseIsOver = true;
-					next._PointerWasOver = true;
-					next = next.Parent;
-				}
-			}
 
 
 			// Clicked
@@ -347,34 +311,12 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				obj.LeftClicked = false;
 				if (obj.OnClick)
 					obj.OnClick.call(obj);
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						next.LeftClicked = false;
-						if(next.OnClick) {
-							next.OnClick.call(next);
-						}
-						next = next.Parent;
-					}
-				}
 			}
 
 			if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj.LeftClicked) {
 				obj.LeftClicked = true;
 				if (obj.OnPointerDown)
 					obj.OnPointerDown.call(obj);
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						next.LeftClicked = true;
-						if(next.OnPointerDown) {
-							next.OnPointerDown.call(next);
-						}
-						next = next.Parent;
-					}
-				}
 			}
 
 
@@ -382,17 +324,6 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				obj.RightClicked = true;
 				if (obj.OnRightClick)
 					obj.OnRightClick.call(obj);
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						next.RightClicked = true;
-						if(next.OnRightClick) {
-							next.OnRightClick.call(next);
-						}
-						next = next.Parent;
-					}
-				}
 			}
 
 
@@ -402,6 +333,8 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 					this._HookedObject.Pointer = Pointer;
 					this._HookedObject._Dragging = true;
 					Pointer.Dragging = true;
+					// Update game status
+					this.Game.Status.DraggingObject = true;
 				}
 			}
 
@@ -412,14 +345,6 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			if (obj._PointerWasOver)
 			{
 				this._OnPointerOut(obj);
-				// Propagate
-				if(obj.PropagateEvents) {
-					let next = obj.Parent;
-					while(next) {
-						this._OnPointerOut(next);
-						next = next.Parent;
-					}
-				}
 			}
 		}
 
@@ -488,6 +413,8 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 
 
 	Pointer.Dragging = true;
+	// Update game status
+	this.Game.Status.DraggingObject = true;
 
 	if (!this._DragMouseLastLocation)
 		if (!Duedo.Vector2.Compare(this._DragMouseLastLocation, Pointer.Location))

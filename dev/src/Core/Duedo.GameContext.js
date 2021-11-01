@@ -52,7 +52,7 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
 
     this.Status = {
         HoveringObject: false, // TODO usa per mostrare il cursore giusto
-        DraggingCanvas: false
+        DraggingObject: false
     }
 
     this._Messages = {};
@@ -80,7 +80,7 @@ Duedo.GameContext = function (canvas, WWMaxX, WWMaxY, bool_enablePhysics, render
     this.PhysicsEngine;
 
     /*Debug informations update and render*/
-    this.DebugStorage;
+    this.DebugStorage; // ! da rimuovere
 
     /*1.0 is one second*/
     this.DeltaT;

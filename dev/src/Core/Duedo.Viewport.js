@@ -749,7 +749,8 @@ Object.defineProperty(Duedo.Viewport.prototype, "Debug", {
 			this._DebugText.Draggable = true;
 
 			/*Add to debug storage for updates*/
-			this.Game.DebugStorage.Add(this._DebugText);
+			this.Game.Add(this._DebugText);
+			
 		}
 		else
 		{
