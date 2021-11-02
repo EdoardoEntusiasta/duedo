@@ -31,9 +31,6 @@ Duedo.Image.prototype.constructor = Duedo.Image;
 Duedo.Image.prototype._init = function(bufferedImage) {
 	this._super();
     
-    // todo questo provoca un bug
-   // this.CenterRelative  = false;
-
 	if(!Duedo.Utils.IsNull(bufferedImage))
 	{
 		this.Source = bufferedImage;
@@ -84,7 +81,7 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
         new Duedo.Rectangle(
             !this.FixedToViewport 
             ? 
-                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y)
+                new Duedo.Vector2((this.Location.X - this.Width * this.Anchor.X) * Duedo.Conf.PixelsInMeter, (this.Location.Y - this.Height * this.Anchor.Y) * Duedo.Conf.PixelsInMeter)
             : 
                 new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
             DToPixels(this.Width), 

@@ -8,8 +8,10 @@ Thanks to Phaser.js by Richard Davey
 ==============================
 */
 
-//FIXME: Add a cache property to prevent repeating the same operations
-
+/* NOTES
+ FIXME: Add a cache property to prevent repeating the same operations
+ ! If you want to use a custom font, be sure that has been loaded before creating a new text object
+*/
 
 //Consts
 Duedo.SPACE_WIDTH; //initialized in Duedo.GameContext._initConstants();
@@ -111,7 +113,7 @@ Duedo.Text.prototype.SetStyle = function (mstyle) {
     mstyle = mstyle || {};
 
     // Font
-    this._FontName             = mstyle.FontName        || "Calibri";
+    this._FontName             = mstyle.FontName        || "Arial";
     this._FontWeight           = mstyle.FontWeight      || "normal";
     this._FontSize             = mstyle.FontSize        || "15pt";
 
@@ -127,6 +129,14 @@ Duedo.Text.prototype.SetStyle = function (mstyle) {
     this.Style.ShadowColor     = mstyle.ShadowColor     || "black";
     this.Style.ShadowBlur      = mstyle.ShadowBlur      || 0;
     this.Style.LineHeight      = mstyle.LineHeight      || 0;
+
+    /* 
+    if(document.fonts) {
+        document.fonts.ready.then(() => {
+            this._FontName = 'Titillium Web';
+        });
+    }
+    */
 
 };
 
@@ -168,6 +178,7 @@ Duedo.Text.prototype.Update = function (deltaT) {
  * _UpdateTextWidth
  * @private
  * Calculate the max width of this text
+ * return width in meters
 */
 Duedo.Text.prototype._UpdateTextWidth = function() {
 
@@ -182,12 +193,15 @@ Duedo.Text.prototype._UpdateTextWidth = function() {
     {
         
         lineWidth = this.Game.Renderer.Context.measureText(this.Lines[i]).width;
+        
         this.LinesWidths[i] = lineWidth;
         
-        this.MaxLineWidth = Math.max(this.MaxLineWidth, lineWidth) / 30;
-       
+        this.MaxLineWidth = Math.max(this.MaxLineWidth, lineWidth);
+
         lineWidth = 0;
     }
+    
+    this.MaxLineWidth /= Duedo.Conf.PixelsInMeter;
 
     ctx.restore();
 
@@ -210,11 +224,11 @@ Duedo.Text.prototype.PostUpdate = function(deltaT) {
         new Duedo.Rectangle(
             !this.FixedToViewport 
             ? 
-                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+                new Duedo.Vector2((this.Location.X - this.Width * this.Anchor.X) * Duedo.Conf.PixelsInMeter, (this.Location.Y - this.Height * this.Anchor.Y) * Duedo.Conf.PixelsInMeter)
             : 
                 new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
-            this.Width, 
-            this.Height)
+            DToPixels(this.Width), 
+            DToPixels(this.Height))
     ) && this.Alpha > 0);
 
     //Update location if it's fixed to viewport
@@ -284,8 +298,7 @@ Duedo.Text.prototype.Draw = function (context) {
     }
 
     var height = this.Height;
-    var width  = 500;
-    
+    var width  = this.Width;
 
     /*
      * Rotate if needed
@@ -300,13 +313,13 @@ Duedo.Text.prototype.Draw = function (context) {
     if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
         context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
     }
-
+    
     context.mlFillOrStrokeText(
         this.Text, 
         DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
         DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
         DToPixels(width), 
-            DToPixels(height),
+        DToPixels(height),
         this.VerticalAlign, 
         this.HorizontalAlign, 
         DToPixels(this.LineHeight + this.LineSpacing),
@@ -316,9 +329,9 @@ Duedo.Text.prototype.Draw = function (context) {
     if(this.Debug || Duedo.Text.DebugAll) {
         context.strokeStyle = 'orange';
         context.rect(
-            DToPixels(this.Location.X) - DToPixels(this.MaxLineWidth * this.Anchor.X),
+            DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
             DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y), 
-            DToPixels(this.MaxLineWidth),
+            DToPixels(this.Width),
             DToPixels(this.Height)
         );
         context.stroke();
@@ -352,17 +365,18 @@ Duedo.Text.prototype.DetermineFontHeight = function(fontStyle)
     body.appendChild(temp);
     
 
-    result = temp.offsetHeight / Duedo.Conf.PixelsInMeter;
+    result = temp.offsetHeight;
 
     body.removeChild(temp);
 
-    return result;
+    return result / Duedo.Conf.PixelsInMeter;
 };
 
 
 
 /*
  * Height
+ * return height in meters
 */
 Object.defineProperty(Duedo.Text.prototype, "Height", {
 
@@ -376,7 +390,7 @@ Object.defineProperty(Duedo.Text.prototype, "Height", {
 
 /*
  * HalfHeight
- * return text half height
+ * return text half height in meters
 */
 Object.defineProperty(Duedo.Text.prototype, "HalfHeight", {
     get: function() {
@@ -388,7 +402,7 @@ Object.defineProperty(Duedo.Text.prototype, "HalfHeight", {
 
 /*
  * Width
- * return text width
+ * return text width in meters
 */
 Object.defineProperty(Duedo.Text.prototype, "Width", {
     get: function() {
@@ -401,7 +415,7 @@ Object.defineProperty(Duedo.Text.prototype, "Width", {
 
 /*
  * HalfWidth
- * return text half width
+ * return text half width in meters
 */
 Object.defineProperty(Duedo.Text.prototype, "HalfWidth", {
     get: function() {

@@ -112,6 +112,12 @@ Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData ) 
         ];
     }
 
+    // Convert width/height frame pixels to meters
+    for(let i = 0; i < framesData.length; i++) {
+        framesData[i][2] = framesData[i][2] / Duedo.Conf.PixelsInMeter;
+        framesData[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
+    }
+
     //Compose sequence
     newSequence.Frames      = framesData;
     newSequence.FrameIndex  = 0;
@@ -366,24 +372,24 @@ Duedo.SpriteSheet.prototype.Update = function ( deltaT ) {
 
 
 /*
- * FrameWidth
+ * FrameWidth | meters
  * @public
  * return current frame width
 */
 Duedo.SpriteSheet.prototype.FrameWidth = function() {
-    return this.CurrentFrame()[2] * this.Scale.X;
+    return (this.CurrentFrame()[2] * this.Scale.X);
 };
 
 
 
 
 /*
- * FrameHeight
+ * FrameHeight | meters
  * @public
  * return current frame height
 */
 Duedo.SpriteSheet.prototype.FrameHeight = function() {
-    return this.CurrentFrame()[3] * this.Scale.Y;
+    return (this.CurrentFrame()[3] * this.Scale.Y);
 };
 
 
@@ -421,10 +427,10 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
         new Duedo.Rectangle(
             !this.FixedToViewport 
                 ? 
-                    new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+                    new Duedo.Vector2((this.Location.X - this.Width * this.Anchor.X) * Duedo.Conf.PixelsInMeter, (this.Location.Y - this.Height * this.Anchor.Y) * Duedo.Conf.PixelsInMeter) 
                 : 
                     new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
-            DToPixels(this.FrameWidth()), 
+            DToPixels(this.FrameWidth()),
             DToPixels(this.FrameHeight()))
     ) && this.Alpha > 0);
     
@@ -570,7 +576,7 @@ Duedo.SpriteSheet.prototype.DrawGL = function(context) {
 Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfWidth", {
 
     get: function () {
-        return (this.FrameWidth() / 2);
+        return (this.FrameWidth() / 2)  / Duedo.Conf.PixelsInMeter;
     }
 
 });
@@ -584,7 +590,7 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfWidth", {
 Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfHeight", {
 
     get: function () {
-        return (this.FrameHeight() / 2);
+        return (this.FrameHeight() / 2) / Duedo.Conf.PixelsInMeter;
     }
 
 });
@@ -598,7 +604,7 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfHeight", {
 Object.defineProperty(Duedo.SpriteSheet.prototype, "Height", {
 
     get: function () {
-        return this.FrameHeight();
+        return this.FrameHeight() / Duedo.Conf.PixelsInMeter;
     }
 
 });
@@ -611,7 +617,7 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "Height", {
 Object.defineProperty(Duedo.SpriteSheet.prototype, "Width", {
 
     get: function () {
-        return this.FrameWidth();
+        return this.FrameWidth() / Duedo.Conf.PixelsInMeter;
     }
 
 });

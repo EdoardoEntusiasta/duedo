@@ -465,7 +465,7 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 	if(object["Contains"]) //DA FIXARE IN BASE A PIXEL PER METERS
 	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
 
-	//Get object location in pixels -> multiplyScalar PixelsInMeter
+	// ! Get object location in pixels -> multiplyScalar PixelsInMeter
 	if(!object.FixedToViewport) {
 		objLoc = object.Location.Clone()
 		.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))

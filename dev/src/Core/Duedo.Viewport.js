@@ -255,8 +255,8 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
 	this._UpdateOffset();
 
-	/*Update translation*/ // TODO QUESTO NON DOVREBBE ESSERCI 
-	this.Location = this.View.Location.DivideScalar(Duedo.Conf.PixelsInMeter).Clone();
+	/*Update translation*/
+	this.Location = this.View.Location.Clone();
 
 
 	if (!Duedo.Vector2.Compare(this.LastLocation, this.Location))
@@ -406,7 +406,7 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DirVector = DeltaMouse.Clone();
 
-	const deltaSlideMinimumThreshold = 4 *30;
+	const deltaSlideMinimumThreshold = 4;
 	const cameraMass = 5;
 
 	if(this.Slide && DeltaMouse.Magnitude() >= deltaSlideMinimumThreshold ||  this._Velocity.Magnitude()) {
@@ -437,7 +437,6 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	} else {
 		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
 			DirVector.MultiplyScalar(this.DragScale).Negate();
-			console.log(DirVector);
 			this.View.Location.X += DirVector.X;
 			this.View.Location.Y += DirVector.Y;
 		}
@@ -534,7 +533,6 @@ Duedo.Viewport.prototype.SetPosition = function (x, y) {
 Duedo.Viewport.prototype.Intersects = function ( DuedoRect ) {
 	/*
 		Rectangle intersection
-		* TODO - coordinate e dimensioni van convertite in metri
 	*/
 	return this.View.Intersects(DuedoRect)
 };
@@ -684,6 +682,20 @@ Object.defineProperty(Duedo.Viewport.prototype, "HalfWidth", {
 Object.defineProperty(Duedo.Viewport.prototype, "HalfHeight", {
 	get: function () {
 		return this.View.Height / 2;
+	}
+
+});
+
+
+/*
+ * LocationInMeters
+ * @public
+ * Return location in meters
+*/
+Object.defineProperty(Duedo.Viewport.prototype, "LocationInMeters", {
+
+	get: function () {
+		return new Duedo.Vector2(this.View.Location.X * Duedo.Conf.PixelsInMeter, this.View.Location.Y * Duedo.Conf.PixelsInMeter)
 	}
 
 });
