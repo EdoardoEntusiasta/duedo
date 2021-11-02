@@ -184,7 +184,7 @@ Duedo.Text.prototype._UpdateTextWidth = function() {
         lineWidth = this.Game.Renderer.Context.measureText(this.Lines[i]).width;
         this.LinesWidths[i] = lineWidth;
         
-        this.MaxLineWidth = Math.max(this.MaxLineWidth, lineWidth);
+        this.MaxLineWidth = Math.max(this.MaxLineWidth, lineWidth) / 30;
        
         lineWidth = 0;
     }
@@ -303,22 +303,31 @@ Duedo.Text.prototype.Draw = function (context) {
 
     context.mlFillOrStrokeText(
         this.Text, 
-        DToPixels(this.Location.X) - this.Width * this.Anchor.X,
-        DToPixels(this.Location.Y) - this.Height * this.Anchor.Y,
-        width, 
-        height, 
+        DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
+        DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
+        DToPixels(width), 
+            DToPixels(height),
         this.VerticalAlign, 
         this.HorizontalAlign, 
-        this.LineHeight + this.LineSpacing,
+        DToPixels(this.LineHeight + this.LineSpacing),
         fn);      
     
     /*Show text box*/
     if(this.Debug || Duedo.Text.DebugAll) {
         context.strokeStyle = 'orange';
-        context.strokeRect(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y, this.MaxLineWidth, this.Height);
+        context.rect(
+            DToPixels(this.Location.X) - DToPixels(this.MaxLineWidth * this.Anchor.X),
+            DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y), 
+            DToPixels(this.MaxLineWidth),
+            DToPixels(this.Height)
+        );
+        context.stroke();
         context.font = '12px arial';
         context.fillStyle = 'orange';
-        context.fillText(`Text X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
+        context.fillText(`Text X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
+            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5),
+            DToPixels(this.Location.Y - 0.1) - DToPixels(this.Height * 0.5)
+        );
     }
 
     context.restore();
@@ -343,7 +352,7 @@ Duedo.Text.prototype.DetermineFontHeight = function(fontStyle)
     body.appendChild(temp);
     
 
-    result = temp.offsetHeight;
+    result = temp.offsetHeight / Duedo.Conf.PixelsInMeter;
 
     body.removeChild(temp);
 

@@ -37,8 +37,8 @@ Duedo.Image.prototype._init = function(bufferedImage) {
 	if(!Duedo.Utils.IsNull(bufferedImage))
 	{
 		this.Source = bufferedImage;
-		this._Width  = this.Source.naturalWidth;
-		this._Height = this.Source.naturalHeight;
+		this._Width  = this.Source.naturalWidth / Duedo.Conf.PixelsInMeter;
+		this._Height = this.Source.naturalHeight / Duedo.Conf.PixelsInMeter;
 	}
 
 };
@@ -84,7 +84,7 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
         new Duedo.Rectangle(
             !this.FixedToViewport 
             ? 
-                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y) 
+                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y)
             : 
                 new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
             DToPixels(this.Width), 
@@ -206,10 +206,11 @@ Duedo.Image.prototype.Draw = function(context) {
     context.drawImage(
         this.Source,    
         0, 0,   
-        this.Source.width, this.Source.height, 
-        DToPixels(this.Location.X) - this.Width * this.Anchor.X,  
-        DToPixels(this.Location.Y) - this.Height * this.Anchor.Y,
-        DToPixels(this.Width), DToPixels(this.Height));
+        this.Source.width, this.Source.height,
+        DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),  
+        DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
+        DToPixels(this.Width), DToPixels(this.Height)
+    );
     
     if(this.Debug) {
         // Draw wrapper
@@ -217,10 +218,10 @@ Duedo.Image.prototype.Draw = function(context) {
         context.strokeStyle = 'green';
         context.fillStyle = 'black';
         context.rect(
-            DToPixels(this.Location.X) - this.Width * this.Anchor.X,  
-            DToPixels(this.Location.Y) - this.Height * this.Anchor.Y, 
-            this.Width, 
-            this.Height
+            DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
+            DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y), 
+            DToPixels(this.Width),
+            DToPixels(this.Height)
         );
         context.stroke();
         // Draw center
@@ -232,7 +233,10 @@ Duedo.Image.prototype.Draw = function(context) {
         context.fill();
         context.font = '12px arial';
         context.fillStyle = 'green';
-        context.fillText(`Image X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
+        context.fillText(`Image X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
+            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
+            DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
+        );
     }
 
     context.restore();

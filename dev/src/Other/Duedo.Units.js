@@ -35,3 +35,4 @@ Duedo.Units.DegToRadians = function(degrees) {
 
 DUnits = Duedo.Units;
 window.DToPixels = DUnits.M2P;
+window.DPixel2Meter = DUnits.P2M;

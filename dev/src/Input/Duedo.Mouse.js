@@ -472,7 +472,8 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 		.Subtract( this.Game.Viewport.View.GetAsVector() );
 	} else {
 		objLoc = object.ViewportOffset.Clone()
-		.Add( this.Game.Viewport.View.GetAsVector() ); // ! TOFIX SE FIXEDTOVIEWPORT + ZOOM
+		.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
+		.DivideScalar(this.Game.Viewport.Zoom)
 	}
 
 	

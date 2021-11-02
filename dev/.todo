@@ -1,14 +1,10 @@
 
 Extensions:
 
-    ☐ Duedo.Mouse objLoc = object.Location.Clone().MultiplyScalar(this.Game.Viewport.Zoom); // ! TOFIX SE FIXEDTOVIEWPORT + ZOOM
-    ☐ Quando ZOOM: il dragging e le interazioni su oggetti fixed to viewport (quando zoommato) hanno problemi (il mouse non corrisponde alla posizione dell'oggetto)
-
-
     ☐ Unità di misura in metri
-    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
-    ☐ this.CenterRelative = false in tutti gli oggetti grafici
+    ☐ Per le sequenze delle spritesheet, width and height del fotogramma va in PIXEL non in metri
     ☐ Scaling del testo e delle immagini
+    ☐ Rotation di tutti gli oggetti
     ☐ StateManager non permette proprietà nell'oggetto
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
 
@@ -22,4 +18,7 @@ Extensions:
     ☐ La viewport non deve spostarsi o annullare la velocità se draggo un oggetto
     ☐ IMPO. Quando ZOOMO: Gli oggetti incollati alla camera non devono essere ingranditi, ma mantenere un rapporto e una posizione uguale
     ☐ Quando ZOOM: Renderable a volte è false per oggetti fixedtoviewport
+    ☐ Duedo.Mouse objLoc = object.Location.Clone().MultiplyScalar(this.Game.Viewport.Zoom); // ! TOFIX SE FIXEDTOVIEWPORT + ZOOM
+    ☐ Quando ZOOM: il dragging e le interazioni su oggetti fixed to viewport (quando zoommato) hanno problemi (il mouse non corrisponde alla posizione dell'oggetto)
+    ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
 

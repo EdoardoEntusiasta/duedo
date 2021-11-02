@@ -503,8 +503,8 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
             fc[0], fc[1],
             DToPixels(fc[2]), DToPixels(fc[3]),
             // Location
-            DToPixels(drawLoc.X) - this.Width * this.Anchor.X,
-            DToPixels(drawLoc.Y) - this.Height * this.Anchor.Y,
+            DToPixels(drawLoc.X) - DToPixels(this.Width * this.Anchor.X),
+            DToPixels(drawLoc.Y) - DToPixels(this.Height * this.Anchor.Y),
             DToPixels(this.FrameWidth()), DToPixels(this.FrameHeight())
         ); 
                             
@@ -519,10 +519,10 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
         context.beginPath();
         context.strokeStyle = 'red';
         context.rect(
-            DToPixels(drawLoc.X) - this.Width * this.Anchor.X,  
-            DToPixels(drawLoc.Y) - this.Height * this.Anchor.Y, 
-            this.FrameWidth(), 
-            this.FrameHeight()
+            DToPixels(drawLoc.X) - DToPixels(this.Width * this.Anchor.X),
+            DToPixels(drawLoc.Y) - DToPixels(this.Height * this.Anchor.Y), 
+            DToPixels(this.FrameWidth()),
+            DToPixels(this.FrameHeight())
         );
         context.stroke();
         // Draw center
@@ -535,7 +535,10 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
         context.fill();
         context.font = '12px arial';
         context.fillStyle = 'red';
-        context.fillText(`Sprite X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, this.Location.X - this.Width * 0.5, this.Location.Y - 10 - this.Height * 0.5);
+        context.fillText(`Sprite X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
+            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
+            DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
+        );
     }
 
     context.restore();

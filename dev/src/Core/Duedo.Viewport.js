@@ -377,9 +377,6 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 */
 Duedo.Viewport.prototype._FavorsDragging = function() {
 
-	// ! TODO NON DEVE BLOCCARSI O SPOSTARSI SE STO DRAGGANDO UN OGGETTO
-	// MA SE LA VELOCITA' è MAGGIORE DI 0, MUOVI LA CAMERA
-
 	var mouse = this.Game.InputManager.Mouse;
 
 	if(!this._DragMouseLastLocation)
@@ -409,12 +406,12 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DirVector = DeltaMouse.Clone();
 
-	const deltaSlideMinimumThreshold = 4;
+	const deltaSlideMinimumThreshold = 4 *30;
 	const cameraMass = 5;
 
 	if(this.Slide && DeltaMouse.Magnitude() >= deltaSlideMinimumThreshold ||  this._Velocity.Magnitude()) {
 
-
+		
 		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
 			// Reset velocity if mouse down
 			if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
@@ -440,7 +437,7 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 	} else {
 		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
 			DirVector.MultiplyScalar(this.DragScale).Negate();
-			
+			console.log(DirVector);
 			this.View.Location.X += DirVector.X;
 			this.View.Location.Y += DirVector.Y;
 		}
@@ -463,7 +460,7 @@ Duedo.Viewport.prototype.UpdateBoundsCollision = function () {
 	/*...check bounds collision*/
 	this.AtLimitX = false;
 	this.AtLimitY = false;
-
+	
 	//X
 	if( this.View.Location.X <= this.Bounds.Location.X )
 	{
@@ -753,6 +750,7 @@ Object.defineProperty(Duedo.Viewport.prototype, "Debug", {
 			this._DebugText.FontSize = 14;
 			this._DebugText.Style.Fill = 'red';
 			this._DebugText.Anchor.X = this._DebugText.Anchor.Y = 0;
+			this._DebugText.Debug = true;
 			this._DebugText.ViewportOffset.X = 5;
 			this._DebugText.ViewportOffset.Y = 15;
 			this._DebugText.FontWeight = "bold";

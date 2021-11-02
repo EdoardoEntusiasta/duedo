@@ -30,9 +30,9 @@ Duedo.PhysicsEngine = function(gameContext, options) {
 
     this.Conf = {
         AllowSleep:false,
-        Gravity: new Duedo.Vector2(0, 30),
+        Gravity: new Duedo.Vector2(0, 100),
         VelocityCorrection: 8,
-        PositionCorrection: 1
+        PositionCorrection: 3
     };
 
     this._FixDefDefault = {

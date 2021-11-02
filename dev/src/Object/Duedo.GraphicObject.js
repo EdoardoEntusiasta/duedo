@@ -254,7 +254,7 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
         //Update based on this parent
         child.Location.X = this.Location.X + child.Offset.X;
         child.Location.Y = this.Location.Y + child.Offset.Y;
-
+        
         /*Important*/
         if (child.ParentState != this.ParentState)
             child.ParentState = this.ParentState;
