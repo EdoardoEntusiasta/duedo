@@ -200,8 +200,8 @@ Duedo.Renderer.prototype.Render = function() {
 
 	/*Translate by viewport/camera*/
 	this.Translate(
-		-this.Game.Viewport.Offset.X/* * this.Game.Viewport.Zoom*/,
-		-this.Game.Viewport.Offset.Y/* * this.Game.Viewport.Zoom*/
+		-(this.Game.Viewport.Offset.X * Duedo.Conf.PixelsInMeter)/* * this.Game.Viewport.Zoom*/,
+		-(this.Game.Viewport.Offset.Y * Duedo.Conf.PixelsInMeter)/* * this.Game.Viewport.Zoom*/
 	);
 
 	/*Clear*/

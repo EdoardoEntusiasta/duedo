@@ -74,7 +74,7 @@ Duedo.Rectangle.prototype.Intersects = function ( rectangle, tolerance ) {
 
 
 Duedo.Rectangle.prototype.Contains = function ( x, y ) {
-
+    
     if (this.Width <= 0 || this.Height <= 0)
     {
         return false;
@@ -85,8 +85,8 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
         y = x.Y;
         x = x.X;
     }
-
-    return (x >= this.Location.X && x <= this.Right && y >= this.Location.Y && y <= this.Bottom);
+    
+    return (x >= this.Location.X && x <= this.Right && y  >= this.Location.Y && y  <= this.Bottom);
 
 };
 

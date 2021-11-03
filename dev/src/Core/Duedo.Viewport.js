@@ -103,11 +103,11 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 	this.Translation = new Duedo.Vector2(0, 0);
 
 	/*Viewport location/dimension*/
-	this.View = new Duedo.Rectangle(new Duedo.Vector2(0, 0), ViewWidth, ViewHeight);
+	this.View = new Duedo.Rectangle(new Duedo.Vector2(0, 0), ViewWidth / Duedo.Conf.PixelsInMeter, ViewHeight / Duedo.Conf.PixelsInMeter);
 
 	this.OriginalView = {
-		Width: ViewWidth,
-		Height: ViewHeight,
+		Width: ViewWidth / Duedo.Conf.PixelsInMeter,
+		Height: ViewHeight / Duedo.Conf.PixelsInMeter,
 		X: this.View.Location.X,
 		Y: this.View.Location.Y
 	}
@@ -184,25 +184,13 @@ Duedo.Viewport.prototype.Reset = function(width, height) {
 
 
 
-/**
- * Zoom
- * @param {*} value 
- */
-Duedo.Viewport.prototype.Zoom = function(value) {
-	// TODO
-	// decrease or increase viewport size
-	// update renderer ctx.scale(value, value)
-}
-
-
-
 /*
  * PreUpdate
  * @public
 */
 Duedo.Viewport.prototype.PreUpdate = function() {
 
-   if(this._Draggable)
+   if(this._Draggable && !this.Target)
    {
 		this._FavorsDragging();
    }
@@ -327,7 +315,7 @@ Duedo.Viewport.prototype.PostUpdate = function(deltaT) {
 Duedo.Viewport.prototype.UpdateTranslation = function () {
 
 	//Pixel to meters location
-	this.mLocation = this.Target.Location.Clone().MultiplyScalar(Duedo.Conf.PixelsInMeter); // location is always scaled by meters per pixel
+	this.mLocation = this.Target.Location.Clone() // location is always scaled by meters per pixel
 
 	/*...follow target - there is a Deadzone */
 	if( this.Deadzone )
@@ -395,7 +383,7 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 		this._DragMouseLastLocation = mouse.Location.Clone();
 	}
 
-	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation)/*.MultiplyScalar(20)*/;
+	var DeltaMouse = mouse.Location.Clone().Subtract(this._DragMouseLastLocation).DivideScalar(Duedo.Conf.PixelsInMeter)/*.MultiplyScalar(20)*/;
 
 	if(DeltaMouse.Magnitude() != 0) {
 		document.body.style.cursor = 'grab';
@@ -406,12 +394,11 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 	var DirVector = DeltaMouse.Clone();
 
-	const deltaSlideMinimumThreshold = 4;
+	const deltaSlideMinimumThreshold = 0.1;
 	const cameraMass = 5;
 
 	if(this.Slide && DeltaMouse.Magnitude() >= deltaSlideMinimumThreshold ||  this._Velocity.Magnitude()) {
 
-		
 		if(!this.Game.Status.DraggingObject && !this.Game.Status.HookedObject) {
 			// Reset velocity if mouse down
 			if(mouse.IsDown(Duedo.Mouse.LEFT_BUTTON)) {
@@ -431,6 +418,10 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
 
 		this._Velocity.Add(this._DragAcceleration).Limit(8.5);
 		this.View.Location.Add(this._Velocity);
+
+		if(this._Velocity.Magnitude() < 0.01) {
+			this._Velocity.Reset();
+		}
 
 		// Reset acceleration
 		this._DragAcceleration.MultiplyScalar(0);
@@ -455,7 +446,7 @@ Duedo.Viewport.prototype._FavorsDragging = function() {
  * @private
 */
 Duedo.Viewport.prototype.UpdateBoundsCollision = function () {
-
+	
 	/*...check bounds collision*/
 	this.AtLimitX = false;
 	this.AtLimitY = false;
@@ -466,7 +457,7 @@ Duedo.Viewport.prototype.UpdateBoundsCollision = function () {
 		this.AtLimitX = true;
 		this.View.Location.X = this.Bounds.Location.X;
 	}
-
+	
 	if( this.View.Location.X + this.View.Width >= this.Bounds.Location.X + this.Bounds.Width )
 	{
 		this.AtLimitX = true;
@@ -619,6 +610,19 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 
 });
 
+
+/*
+ * Bottom
+ * @public
+ * Return bottom point in meters
+*/
+Object.defineProperty(Duedo.Viewport.prototype, "Bottom", {
+
+	get: function () {
+		return this.View.Height;
+	}
+
+});
 
 
 /*

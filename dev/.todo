@@ -2,9 +2,8 @@
 Extensions:
 
     ☐ Unità di misura in metri
-    ☐ Gli oggetti fixedToViewport si spostano se muovo la viewport
-    ☐ Scaling del testo e delle immagini
     ☐ Rotation di tutti gli oggetti
+    ☐ Scaling del testo e delle immagini
     ☐ StateManager non permette proprietà nell'oggetto
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
 
@@ -22,4 +21,4 @@ Extensions:
     ☐ Quando ZOOM: il dragging e le interazioni su oggetti fixed to viewport (quando zoommato) hanno problemi (il mouse non corrisponde alla posizione dell'oggetto)
     ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
     ☐ Per le sequenze delle spritesheet, width and height del fotogramma va in PIXEL non in metri
-
+    ☐ Gli oggetti fixedToViewport si spostano se muovo la viewport o lo zoom

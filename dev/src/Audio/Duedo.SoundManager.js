@@ -1,6 +1,12 @@
 /*
 ==============================
 Duedo.SoundManager
+
+NOTE:
+Chrome's policy
+https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+According to the new Chrome policy, the audio context is activated only after a user click.
+
 ==============================
 */
 
@@ -20,7 +26,10 @@ Duedo.SoundManager = function ( _gameContext ) {
     this._MaxChannels = 32;
 
     this._Sounds = [];
-    
+
+    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    this._PendingUserInteraction = false;
+
     this._UsingWebAudio = false;
     this._UsingAudioTag = false;
     this._AudioAPIs = ["AudioContext", "webkitAudioContext", "Audio"];
@@ -85,7 +94,13 @@ Duedo.SoundManager.prototype._setup = function () {
 
     this._MasterGain.connect(this._AudioContext.destination);
 
-   
+    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    document.documentElement.addEventListener(
+        "click", () => {
+            if (this._AudioContext.state !== 'running') {
+                this._AudioContext.resume();
+            }
+        });
 
     return;
 };
@@ -145,7 +160,8 @@ Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReferenc
  * Play
 */
 Duedo.SoundManager.prototype.Play = function ( soundName, nameReference, volume, location ) {
-
+    
+    this._AudioContext.resume();
     if(this._noAudio)
     {
         return;
@@ -164,6 +180,9 @@ Duedo.SoundManager.prototype.Play = function ( soundName, nameReference, volume,
 
    DUEDOSound.Play();
 
+   if (this._AudioContext.state !== 'running') {
+       this._PendingUserInteraction;
+   }
 
    return DUEDOSound;
     

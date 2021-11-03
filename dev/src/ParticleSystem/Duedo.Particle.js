@@ -70,6 +70,7 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
 
     this.Velocity.Add(this.Acceleration);
     this.FixVelocity();
+    
     this.Location.Add(this.Velocity);
 
 

@@ -385,8 +385,8 @@ Duedo.Mouse.prototype.PostUpdate = function (dt) {
 		this.LastLocation.Copy(this.Location);
 
 		this._PreviousWorldLocation = new Duedo.Vector2(
-			this.LastLocation.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X,
-			this.LastLocation.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y
+			(this.LastLocation.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X) / Duedo.Conf.PixelsInMeter,
+			(this.LastLocation.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y) / Duedo.Conf.PixelsInMeter
 		)
 };
 
@@ -447,42 +447,48 @@ Duedo.Mouse.prototype._PreventDefault = function(event) {
 
 /*
  * Intersect
- * TODO: fix, should work with METERS
  * Check for intersection between mouse pointer and object
+ * The comparison is made in meters relatively to the canvas
 */
 Duedo.Mouse.prototype.Intersects = function(object) {
 
-	if(Duedo.Utils.IsNull(object))
+	if(Duedo.Utils.IsNull(object)) {
 		return false;
-
-	// Get location relative to the canvas / zoom
-	const cvBRect = this.Game.Renderer.Canvas.getBoundingClientRect();
-	const LocationToCompare =  new Duedo.Vector2(
-		(this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width) / this.Game.Viewport.Zoom,
-		(this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height) / this.Game.Viewport.Zoom
-	);
-
-	if(object["Contains"]) //DA FIXARE IN BASE A PIXEL PER METERS
-	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
-
-	// ! Get object location in pixels -> multiplyScalar PixelsInMeter
-	if(!object.FixedToViewport) {
-		objLoc = object.Location.Clone()
-		.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
-		.Subtract( this.Game.Viewport.View.GetAsVector() );
-	} else {
-		objLoc = object.ViewportOffset.Clone()
-		.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
-		.DivideScalar(this.Game.Viewport.Zoom)
 	}
 
-	
-	// TODO fix
+	// Get location relative to the canvas
+	const cvBRect = this.Game.Renderer.Canvas.getBoundingClientRect();
+	const LocationToCompare =  new Duedo.Vector2(
+		(this.ClientLoc.X - cvBRect.left) * (this.Game.Renderer.Canvas.width / cvBRect.width),
+		(this.ClientLoc.Y - cvBRect.top)  * (this.Game.Renderer.Canvas.height / cvBRect.height)
+	);
+
+	if(!object.FixedToViewport) {
+		// Objects in the world are affected by zoom
+		LocationToCompare.DivideScalar(this.Game.Viewport.Zoom);
+	}
+
+	if(object["Contains"]) //! DA FIXARE IN BASE A PIXEL PER METERS - ANCHE NEL CASO FIXED TO VIEWPORT
+	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
+
+	if(!object.FixedToViewport) {
+		objLoc = object.Location.Clone()
+			// bring anchor on top left
+			.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
+			// make it relative to the canvas
+			.Subtract(this.Game.Viewport.View.GetAsVector())
+	} else {
+		objLoc = object.ViewportOffset.Clone()
+			.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
+	}
+
+	LocationToCompare.DivideScalar(Duedo.Conf.PixelsInMeter); // convert coords to meters
+
 	if(
-		LocationToCompare.X >= DToPixels(objLoc.X) /* - DToPixels(object.Width)*/
-		&& LocationToCompare.X <= DToPixels(objLoc.X) + DToPixels(object.Width)
-        && LocationToCompare.Y >= DToPixels(objLoc.Y) /*- DToPixels(object.Height)*/
-        && LocationToCompare.Y <= DToPixels(objLoc.Y) + DToPixels(object.Height)
+		LocationToCompare.X >= objLoc.X
+		&& LocationToCompare.X <= objLoc.X + object.Width
+		&& LocationToCompare.Y >= objLoc.Y
+		&& LocationToCompare.Y <= objLoc.Y + object.Height
     )
     {
         return true;
@@ -611,17 +617,27 @@ Object.defineProperty(Duedo.Mouse.prototype, "Height", {
 
 
 
+/**
+ * World location
+ * unit: meters
+ */
 Object.defineProperty(Duedo.Mouse.prototype, "WorldLocation", {
 
 	get: function() {
 		return new Duedo.Vector2(
-			this.Location.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X,
-			this.Location.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y
+			(this.Location.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X) / Duedo.Conf.PixelsInMeter,
+			(this.Location.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y) / Duedo.Conf.PixelsInMeter
 		);
 	}
 
 });
 
+
+
+/**
+ * Previous world location
+ * unit: meters
+ */
 Object.defineProperty(Duedo.Mouse.prototype, "PreviousWorldLocation", {
 
 	get: function() {

@@ -447,10 +447,10 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
 
 	if (obj.FixedToViewport) {
-		obj.ViewportOffset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
-	}
+		obj.ViewportOffset.Add(DirVector);
+	} 
 	else if (obj["Offset"]) {
-        /*Child element*/
+			/*Child element*/
 	    obj.Offset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
 	}
 	else

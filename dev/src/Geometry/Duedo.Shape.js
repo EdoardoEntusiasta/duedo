@@ -270,7 +270,7 @@ Duedo.Shape.prototype.Draw = function ( context ) {
     }
     context.save();
 
-    if( this.Rotation !== 0 ) {  
+    if( this.Rotation !== 0 ) {
         const origin = new Duedo.Vector2(
             this.Location.X + (this.Width * this.Anchor.X), 
             this.Location.Y + (this.Height * this.Anchor.Y)

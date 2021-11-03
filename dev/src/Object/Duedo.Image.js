@@ -81,11 +81,11 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
         new Duedo.Rectangle(
             !this.FixedToViewport 
             ? 
-                new Duedo.Vector2((this.Location.X - this.Width * this.Anchor.X) * Duedo.Conf.PixelsInMeter, (this.Location.Y - this.Height * this.Anchor.Y) * Duedo.Conf.PixelsInMeter)
+                new Duedo.Vector2(this.Location.X - this.Width * this.Anchor.X, this.Location.Y - this.Height * this.Anchor.Y)
             : 
                 new Duedo.Vector2(this.ViewportOffset.X / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.X, this.ViewportOffset.Y / this.Game.Viewport.Zoom + this.Game.Viewport.View.Location.Y),
-            DToPixels(this.Width), 
-            DToPixels(this.Height))
+            this.Width, 
+            this.Height)
     ) && this.Alpha > 0);
 
     //Update location if it's fixed to viewport

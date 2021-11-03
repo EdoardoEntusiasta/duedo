@@ -440,12 +440,11 @@ Duedo.ParticleSystem.prototype.Update = function (deltaT) {
  * PostUpdate
 */
 Duedo.ParticleSystem.prototype.PostUpdate = function() {
-
     //Update location if it's fixed to viewport
     if(this.FixedToViewport)
     {
-        this.Location.X = this.Game.Viewport.View.Location.X + this.ViewportOffset.X;
-        this.Location.Y = this.Game.Viewport.View.Location.Y + this.ViewportOffset.Y;
+        this.Location.X = this.Game.Viewport.View.Location.X * this.Game.Viewport.Zoom + this.ViewportOffset.X;
+        this.Location.Y = this.Game.Viewport.View.Location.Y * this.Game.Viewport.Zoom + this.ViewportOffset.Y;
     }
     
 };
@@ -476,7 +475,7 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
         particle = this.Particles[i];
         
         if( !particle.Renderable )
-        {
+        { 
             continue;
         }
 
@@ -503,7 +502,7 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
             radgrad.addColorStop(0, particle.DrawColour);
             radgrad.addColorStop(1, 'rgba(0,0,0,0)'); //Super cool if you change these values (and add more colour stops)
             context.fillStyle = radgrad;
-            context.fillRect(x, y, size, size);
+            context.fillRect(DToPixels(x), DToPixels(y), DToPixels(size), DToPixels(size));
         }
         else
         {
@@ -525,7 +524,7 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
 
             context.save();
             context.globalAlpha = particle.Alpha;
-            context.drawImage(tToDraw, x - (width / 2), y - (height / 2), width, height);
+            context.drawImage(tToDraw, DToPixels(x) - DToPixels(width / 2), DToPixels(y) - DToPixels(height / 2), width, height);
             context.restore();
         }
 

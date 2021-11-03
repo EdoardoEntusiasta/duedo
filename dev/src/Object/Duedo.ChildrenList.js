@@ -32,6 +32,21 @@ Duedo.ChildrenList.prototype.Add = function (object, name = null) {
 };
 
 
+/*
+ * Empty
+ * Remove all objects
+*/
+Duedo.ChildrenList.prototype.Empty = function () {
+  this._Items.forEach(item => {
+    if(item.Destroy) {
+      item.Destroy();
+    }
+  })
+  this._Items = [];
+  return this;
+};
+
+
 
 /*
  * HasChildren

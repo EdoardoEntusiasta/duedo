@@ -38,7 +38,6 @@ Duedo.GraphicObject = function () {
     */
     this.Scale;
 
-
     /*
     Opacity/Alpha
     */
@@ -246,14 +245,18 @@ Duedo.GraphicObject.prototype.SuperUpdate = function (deltaT) {
 */
 Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
 
-
+    if(this.FixedToViewport && this.ChildrenList.List.length) {
+        this.ChildrenList.Empty();
+        return console.error('Duedo.GraphicObject.SuperPostUpdate: at the moment is not recommended that a fixedToViewport object have any child elements')
+    }
+    
     //Update graphic children
     for (var i = this.ChildrenList.List.length - 1; i >= 0; i--) {
         var child = this.ChildrenList.List[i];
 
         //Update based on this parent
-        child.Location.X = this.Location.X + child.Offset.X;
-        child.Location.Y = this.Location.Y + child.Offset.Y;
+        child.Location.X = ((this.Location.X / (!this.FixedToViewport ? 1 : this.Game.Viewport.Zoom)) + child.Offset.X);
+        child.Location.Y = ((this.Location.Y / (!this.FixedToViewport ? 1 : this.Game.Viewport.Zoom)) + child.Offset.Y);
         
         /*Important*/
         if (child.ParentState != this.ParentState)
