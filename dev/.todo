@@ -1,12 +1,15 @@
 
 Extensions:
 
+    Bugs
     ☐ Unità di misura in metri
     ☐ Rotation di tutti gli oggetti
     ☐ Scaling del testo e delle immagini
-    ☐ StateManager non permette proprietà nell'oggetto
-    ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
 
+
+    Sviluppi
+    ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
+    ☐ StateManager non permette proprietà nell'oggetto
 
 
     Fatto
@@ -22,3 +25,52 @@ Extensions:
     ☐ Prioritrio: Ancora gli oggetti e le spritesheet al centro di default, con ancora (come fatto per Shape)
     ☐ Per le sequenze delle spritesheet, width and height del fotogramma va in PIXEL non in metri
     ☐ Gli oggetti fixedToViewport si spostano se muovo la viewport o lo zoom
+
+
+    Links utili
+    https://www.w3resource.com/html5-canvas/html5-canvas-matrix-transforms.php
+    https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
+    https://math.stackexchange.com/questions/3955/how-to-reduce-lower-one-number-while-another-number-increases-goes-up-increment
+
+
+
+    getScaleFactor: function() {
+            var w = window.innerWidth,
+                h = window.innerHeight,
+                scale;
+        
+            this.mobile = false;
+        
+            if(w <= 1000) {
+                scale = 2;
+                this.mobile = true;
+            }
+            else if(w <= 1500 || h <= 870) {
+                scale = 2;
+            }
+            else {
+                scale = 3;
+            }
+        
+            return scale;
+        },
+    
+        rescale: function(factor) {
+            this.scale = this.getScaleFactor();
+        
+            this.createCamera();
+        
+            this.context.mozImageSmoothingEnabled = false;
+            this.background.mozImageSmoothingEnabled = false;
+            this.foreground.mozImageSmoothingEnabled = false;
+        
+            this.initFont();
+            this.initFPS();
+        
+            if(!this.upscaledRendering && this.game.map && this.game.map.tilesets) {
+                this.setTileset(this.game.map.tilesets[this.scale - 1]);
+            }
+            if(this.game.renderer) {
+                this.game.setSpriteScale(this.scale);
+            }
+        },
