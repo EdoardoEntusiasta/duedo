@@ -58,7 +58,7 @@ a:focus {
 }
 
 code {
-  background: #222;
+  background: transparent;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
@@ -247,9 +247,9 @@ select {
 
 /* ====== Header ====== */
 .header {
-  background: #494d55;
+  background: #175fb8;
   color: rgba(255, 255, 255, 0.85);
-  border-top: 5px solid #40babd;
+  border-top: 5px solid #499caf;
   padding: 30px 0;
 }
 
@@ -1211,7 +1211,7 @@ select {
 
 /* ======= Landing Page ======= */
 .landing-page .header {
-  background: #494d55;
+  background: #175fb8;
   color: rgba(255, 255, 255, 0.85);
   padding: 60px 0;
 }
@@ -1243,7 +1243,7 @@ select {
 
 .landing-page .tagline {
   font-weight: 600;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .landing-page .tagline p {
@@ -1462,4 +1462,10 @@ select {
   .main-search-box .search-form .search-input {
     width: 560px;
   }
+}
+
+.git-fork {
+  position: absolute;
+  right: 0px;
+  top: 0px;
 }

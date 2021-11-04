@@ -17,7 +17,8 @@
     <!-- Plugins CSS -->    
     <link rel="stylesheet" href="assets/plugins/prism/prism.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">  
-      
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeRDark.min.css" media="all">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     
@@ -31,8 +32,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                            <span aria-hidden="true" class="icon_documents_alt icon"></span>
-                            <span class="text-highlight">Pretty</span><span class="text-bold">Docs</span>
+                            <img src="./assets/images/logo/logo.png" style="height: 60px;">
                         </a>
                     </h1>
                     
@@ -40,10 +40,10 @@
                 
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Quick Start</li>
+                    <li class="breadcrumb-item active">Docs</li>
                 </ol>
                 
-                <div class="top-search-box">
+                <div class="top-search-box d-none">
 	                 <form class="form-inline search-form justify-content-center" action="" method="get">
 	            
 			            <input type="text" placeholder="Search..." name="search" class="form-control search-input">
@@ -57,37 +57,89 @@
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
-                <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Quick Start</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: Oct 12th, 2020</div>
-                </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
+                            <div id="doc-header" class="doc-header">
+                                <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Docs</h1>
+                                <div class="meta"><i class="far fa-clock"></i> Last updated: Nov 4th, 2021</div>
+                            </div><!--//doc-header-->
+
+
+
+
                             <section id="download-section" class="doc-section">
                                 <h2 class="section-title">Download</h2>
                                 <div class="section-block">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nec imperdiet turpis. Curabitur aliquet pulvinar ultrices. Etiam at posuere leo. Proin ultrices ex et dapibus feugiat <a href="#">link example</a> aenean purus leo, faucibus at elit vel, aliquet scelerisque dui. Etiam quis elit euismod, imperdiet augue sit amet, imperdiet odio. Aenean sem erat, hendrerit  eu gravida id, dignissim ut ante. Nam consequat porttitor libero euismod congue. 
+                                    <p>The package is freely downloadable from Github. To get started download it manually or using node package manager.
                                     </p>
-                                    <a href="https://themes.3rdwavemedia.com/bootstrap-templates/startup/prettydocs-free-bootstrap-theme-for-developers-and-startups/" class="btn btn-green" target="_blank"><i class="fas fa-download"></i> Download PrettyDocs</a>
+                                    <a href="https://github.com/civile/duedo.js/archive/HEAD.zip" class="btn btn-green" target="_blank"><i class="fas fa-download"></i> Download Duedo</a>
                                 </div>
                             </section><!--//doc-section-->
+
+
+
+
+
+
+                            <section id="requirements-section" class="doc-section">
+                                <h2 class="section-title">Requirements</h2>
+                                <div id="step1"  class="section-block">
+                                    <p>To use Duedo you need just a couple of very important things</p>
+                                    <ol class="list">
+                                        <li>Code Editing Software (eg: Dreamweaver, Sublime Text or Notepad)</li>
+                                        <li>Web Browser for testing (eg: Google Chrome or Mozilla Firefox)</li>
+                                        <li>A running local server...
+                                        </li>
+                                        <li>...or an FTP Tool to upload files to Server (eg: FileZilla)</li>
+                                    </ol>
+                                    <div class="callout-block callout-info">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Remember</h4>
+                                            <p>It is essential that you have an up and running server otherwise you will not be able to load the resources you will need in development.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+
+
                             <section id="installation-section" class="doc-section">
                                 <h2 class="section-title">Installation</h2>
                                 <div id="step1"  class="section-block">
                                     <h3 class="block-title">Step One</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis.
+                                    <p>To start, you need to invoke the compressed script of Duedo on the page.
                                     </p>
-                                    <div class="code-block">
-                                        <h6>Default code example:</h6>
-                                        <p><code>bower install &lt;package&gt;</code></p>
-                                        <p><code>npm install &lt;package&gt;</code></p>
-                                    </div><!--//code-block-->
-                                </div><!--//section-block-->
+                                    <div class="code-block">                                        
+                                        <pre><code class="language-javascript">&lt;script src="path/to/project/duedo.minified.js"&gt;&lt;/script&gt;</code></pre>
+                                    </div>
+                                </div>
                                 <div id="step2"  class="section-block">
                                     <h3 class="block-title">Step Two</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+                                    <p>Next you will need to create a canvas element and use it to create the application instance.
                                     </p>
+                                    <div class="code-block">                                        
+                                        <pre><code class="language-markup">&lt;canvas class=&quot;screen&quot; width=&quot;600&quot; height=&quot;300&quot;&gt;&lt;/canvas&gt;</code></pre>
+                                    </div>
+                                    <p>Please note that the dimension of your canvas will be the dimension of your Viewport as well</p>
+                                    <div id="step3">
+                                        <h3 class="block-title">Step three</h3>
+                                        <p>Create a new game instance</p>
+                                        <div class="code-block">                                        
+                                            <pre><code class="language-markup"><div class="container"><div class="line number1 index0 alt2"><code class="javascript comments">/*</code></div><div class="line number2 index1 alt1"><code class="javascript spaces">&nbsp;</code><code class="javascript comments">* Create a new instance, specifying the canvas to use, </code></div><div class="line number3 index2 alt2"><code class="javascript spaces">&nbsp;</code><code class="javascript comments">* the size in length and size in height of the virtual world.</code></div><div class="line number4 index3 alt1"><code class="javascript comments">*/</code></div><div class="line number5 index4 alt2"><code class="javascript plain">app = </code><code class="javascript keyword">new</code> <code class="javascript plain">Duedo.GameContext(document.getElementById(</code><code class="javascript string">"screen"</code><code class="javascript plain">), 5500, 1000);</code></div></div></code></pre>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+
+
+
                                     <div class="row">
                                         <div class="col-md-6 col-12">
                                             <h6>Un-ordered list example</h6>
@@ -501,6 +553,7 @@ echo $y;
 	                        
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
 	                                <a class="nav-link scrollto" href="#download-section">Download</a>
+                                    <a class="nav-link scrollto" href="#requirements-section">Requirements</a>
 	                                <a class="nav-link scrollto" href="#installation-section">Installation</a>
                                     <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#step1">Step One</a>
@@ -580,7 +633,10 @@ echo $y;
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>      
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>                                                             
     <script type="text/javascript" src="assets/js/main.js"></script>
-    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushCss.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushXml.min.js"></script>
 </body>
 </html> 
 
