@@ -468,7 +468,9 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 		LocationToCompare.DivideScalar(this.Game.Viewport.Zoom);
 	}
 
-	if(object["Contains"]) //! DA FIXARE IN BASE A PIXEL PER METERS - ANCHE NEL CASO FIXED TO VIEWPORT
+	LocationToCompare.DivideScalar(Duedo.Conf.PixelsInMeter); // convert coords to meters
+
+	if(object["Contains"]) // for example geometries
 	    return object.Contains(LocationToCompare.X, LocationToCompare.Y);
 
 	if(!object.FixedToViewport) {
@@ -481,8 +483,6 @@ Duedo.Mouse.prototype.Intersects = function(object) {
 		objLoc = object.ViewportOffset.Clone()
 			.Subtract(new Duedo.Vector2(object.Width * object.Anchor.X, object.Height * object.Anchor.Y))
 	}
-
-	LocationToCompare.DivideScalar(Duedo.Conf.PixelsInMeter); // convert coords to meters
 
 	if(
 		LocationToCompare.X >= objLoc.X

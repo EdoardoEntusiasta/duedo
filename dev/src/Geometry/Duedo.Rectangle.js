@@ -85,8 +85,20 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
         y = x.Y;
         x = x.X;
     }
-    
-    return (x >= this.Location.X && x <= this.Right && y  >= this.Location.Y && y  <= this.Bottom);
+
+    let locationToCompare = null;
+
+    if(!this.FixedToViewport) {
+        locationToCompare = this.Location.Clone()
+            .Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y))
+            // make it relative to the canvas
+            .Subtract(this.Game.Viewport.View.GetAsVector());
+    } else {
+        locationToCompare = this.ViewportOffset.Clone()
+			.Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y));
+    }
+    // console.log(x, y, locationToCompare.Y, this.Location.Y, this.Height, this.Bottom);
+    return (x >= locationToCompare.X && x <= this.Right && y  >= locationToCompare.Y && y <= this.Bottom);
 
 };
 
@@ -129,8 +141,7 @@ Duedo.Rectangle.IntersectsInfo = function (a, b, output) {
         output = new Duedo.Rectangle();
     }
 
-    // Todo, if rotated... 
-    // ! TODO STAMPA CON ANCHOR!!!!
+    // Todo, if rotated... FIXA
     // https://gamedev.stackexchange.com/questions/128598/collision-detection-point-hitting-a-rotating-rectangle
 
     if (Duedo.Rectangle.Intersects(a, b))
@@ -357,7 +368,12 @@ Object.defineProperty(Duedo.Rectangle.prototype, "HalfHeight", {
 
 Duedo.Rectangle.prototype.CreatePath = function(context) {
     context.beginPath();
-    context.rect(DUnits.M2P(this.Location.X), DUnits.M2P(this.Location.Y), this.Width, this.Height);
+    context.rect(
+        DUnits.M2P(this.Location.X) - DUnits.M2P(this.Width * this.Anchor.X), 
+        DUnits.M2P(this.Location.Y) - DUnits.M2P(this.Height * this.Anchor.Y), 
+        DUnits.M2P(this.Width), 
+        DUnits.M2P(this.Height)
+    );
 };
 
 

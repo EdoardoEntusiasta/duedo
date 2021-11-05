@@ -156,14 +156,16 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 
 	//We have or had a dragged object
 	if (this._HookedObject) {
+		// ...was hooked, now we left it
 		if(!Pointer.IsDown(this.DragButton)) {
 			Pointer.Dragging = false;
+			
+			if (this._HookedObject.OnClick && !this._HookedObject._WasDragged) {
+				this._HookedObject.OnClick.call(this._HookedObject);
+			}
 
 			// Update game status
 			this.Game.Status.DraggingObject = false;
-
-			if (this._HookedObject.OnPointerUp)
-				this._HookedObject.OnPointerUp.call(this._HookedObject);
 
 			if (typeof this._HookedObject._Cache['OriginalZValue'] != "undefined")
 			{
@@ -176,6 +178,7 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 
 
 			this._HookedObject._Dragging = false;
+			this._HookedObject._WasDragged = false;
 			this._HookedObject = null;
 			this.Game.Status.HookedObject = null;
 			this._DragMouseLastLocation = null;
@@ -183,9 +186,11 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 		}
 		else
 		{
-			if(Pointer.IsMoving)
+			if(Pointer.IsMoving) {
 				this._UpdateDragging();
-			else this._HookedObject._Dragging = false;
+			} else {
+				this._HookedObject._Dragging = false;
+			}
 		}
 
 	}
@@ -306,14 +311,6 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			obj.MouseIsOver = true;
 			obj._PointerWasOver = true;
 
-
-			// Clicked
-			if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && obj.LeftClicked) {
-				obj.LeftClicked = false;
-				if (obj.OnClick)
-					obj.OnClick.call(obj);
-			}
-
 			if (Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj.LeftClicked) {
 				obj.LeftClicked = true;
 				if (obj.OnPointerDown)
@@ -433,6 +430,12 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 	var DeltaMouse = Pointer.Location.Clone().Subtract(this._DragMouseLastLocation);
 	var DirVector = DeltaMouse.MultiplyScalar(obj.DragScale);
 
+	if(DirVector.Magnitude() == 0) {
+		return;
+	}
+
+	// This object has been drag at least once
+	obj._WasDragged = true;
 
 	//Check axis motion
 	if (!obj.DragVertical) {
@@ -445,6 +448,8 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 
 	//Update coordinates
 	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
+
+	// ! TODO dragga anche il body
 
 	if (obj.FixedToViewport) {
 		obj.ViewportOffset.Add(DirVector);
