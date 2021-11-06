@@ -159,13 +159,11 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 		// ...was hooked, now we left it
 		if(!Pointer.IsDown(this.DragButton)) {
 			Pointer.Dragging = false;
-			
-			if (this._HookedObject.OnClick && !this._HookedObject._WasDragged) {
-				this._HookedObject.OnClick.call(this._HookedObject);
-			}
 
 			// Update game status
 			this.Game.Status.DraggingObject = false;
+
+			this._UpdatePointerInteractions(Pointer);
 
 			if (typeof this._HookedObject._Cache['OriginalZValue'] != "undefined")
 			{
@@ -173,33 +171,27 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 				delete this._HookedObject._Cache['OriginalZValue'];
 			}
 
+			// Reset
 			this._HookedObject.LeftClicked = false;
-
-
-
 			this._HookedObject._Dragging = false;
 			this._HookedObject._WasDragged = false;
 			this._HookedObject = null;
 			this.Game.Status.HookedObject = null;
 			this._DragMouseLastLocation = null;
-
 		}
 		else
 		{
-			if(Pointer.IsMoving) {
+			if(Pointer.IsMoving && this._HookedObject.Draggable) {
 				this._UpdateDragging();
 			} else {
 				this._HookedObject._Dragging = false;
 			}
 		}
-
 	}
 	else
 	{
 		this._UpdatePointerInteractions(Pointer);
 	}
-
-
 
 	return this;
 
@@ -208,14 +200,75 @@ Duedo.InteractivityManager.prototype.Update = function(dt) {
 
 
 /*
- ======================
- ToCameraCoord
- @public
- @Support function
- ======================
+=====================
+_UpdateDragging
+@private
+=====================
 */
-Duedo.InteractivityManager.prototype.ToCameraCoord = function (o) {
-	return new Duedo.Rectangle(o.Location.Clone().Add(this.Game.Camera.View.Location), 1, 1);
+Duedo.InteractivityManager.prototype._UpdateDragging = function () {
+
+	if (this._HookedObject.Body)
+		return;
+
+	var obj   = this._HookedObject,
+		Pointer = obj.Pointer;
+
+	if (!this._DragMouseLastLocation)
+		if (!Duedo.Vector2.Compare(this._DragMouseLastLocation, Pointer.Location))
+			this._DragMouseLastLocation = Pointer.Location.Clone();
+
+
+	if (obj.DragBringToTop && typeof obj._Cache['OriginalZValue'] == "undefined")
+	{
+		obj._Cache['OriginalZValue'] = obj.Z;
+		obj.Z = this.Game.Renderer.MaxZPlane + 1;
+	}
+
+	//Calculate drag vector
+	var DeltaMouse = Pointer.Location.Clone().Subtract(this._DragMouseLastLocation);
+	var DirVector = DeltaMouse.MultiplyScalar(obj.DragScale);
+
+	if(DirVector.Magnitude() == 0) {
+		return;
+	}
+
+	// Pointer is dragging
+	Pointer.Dragging = true;
+	// Update game status
+	this.Game.Status.DraggingObject = true;
+
+	// This object has been drag at least once
+	obj._WasDragged = true;
+
+	//Check axis motion
+	if (!obj.DragVertical) {
+		DirVector.X = 0;
+	}
+
+	if (!obj.DragHorizontal) {
+		DirVector.Y = 0;
+	}
+
+	//Update coordinates
+	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
+
+	if (obj.FixedToViewport) {
+		obj.ViewportOffset.Add(DirVector);
+	} 
+	else if (obj["Offset"]) {
+			/*Child element*/
+	    obj.Offset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
+	}
+	else
+	{
+		obj.Location.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
+	}
+
+	//Keeps track of the last position of the pointer
+	this._DragMouseLastLocation = Pointer.Location.Clone();
+
+	obj._Dragging = true;
+
 };
 
 
@@ -236,11 +289,13 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 		this.ToCameraCoord(ptr));
 
 	var Pointer = ptr;
+
 	/*FIX: Sort only when altered*/
 	//if (this._Altered) {
-		this._Cache["SortedByZ"] = this._SortElements(obs, "RenderOrderID");
-		this._Altered = false;
+	this._Cache["SortedByZ"] = this._SortElements(obs, "RenderOrderID");
+	this._Altered = false;
     //}
+	
 	for (var i in this._Cache["SortedByZ"]) {
 		var obj = this._Cache["SortedByZ"][i];
 
@@ -251,9 +306,7 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 		{
 			this._TriggerEvents(obj, Pointer);
 		}
-
 	}
-
 
 	/*Mouse down on a non-interactive element*/
 	if (Pointer.IsDown(this.DragButton)) {
@@ -269,7 +322,6 @@ Duedo.InteractivityManager.prototype._UpdatePointerInteractions = function (ptr)
 		if (this.OnPointerUpOut)
 			this.OnPointerUpOut.call(this);
 	}
-
 
 	return;
 
@@ -301,6 +353,13 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 				}
 			}
 
+			if (!Pointer.IsDown(Duedo.Mouse.LEFT_BUTTON) && !obj._WasDragged && obj._MouseClickedOn) {
+				obj._MouseClickedOn = false;
+				if(obj.OnClick) {
+					obj.OnClick.call(obj);
+				}
+			}
+
 			//OnPointerOn
 			if (obj.OnPointerOn && !obj._OnPointerOnCalled) {
 				obj.OnPointerOn.call(obj);
@@ -326,15 +385,12 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 
 
 			if (Pointer.IsDown(this.DragButton)) {
-				if (obj.Draggable) {
+					obj._MouseClickedOn = true;
 					this._HookedObject = obj;
 					this.Game.Status.HookedObject = obj;
 					this._HookedObject.Pointer = Pointer;
-					this._HookedObject._Dragging = true;
-					Pointer.Dragging = true;
-					// Update game status
-					this.Game.Status.DraggingObject = true;
-				}
+			} else {
+				obj._MouseClickedOn = false;
 			}
 
 			return;
@@ -344,10 +400,26 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 			if (obj._PointerWasOver)
 			{
 				this._OnPointerOut(obj);
+				if(obj._MouseClickedOn) {
+					obj._MouseClickedOn = false;
+				}
 			}
 		}
 
 }
+
+
+
+/*
+ ======================
+ ToCameraCoord
+ @public
+ @Support function
+ ======================
+*/
+Duedo.InteractivityManager.prototype.ToCameraCoord = function (o) {
+	return new Duedo.Rectangle(o.Location.Clone().Add(this.Game.Camera.View.Location), 1, 1);
+};
 
 
 
@@ -364,7 +436,6 @@ Duedo.InteractivityManager.prototype.PostUpdate = function () {
 	}
 
 };
-
 
 
 /*
@@ -393,83 +464,6 @@ Duedo.InteractivityManager.prototype._SortElements = function (obs, by) {
 	/*ADD/FIX: se pi� oggetti hanno lo stesso Z chi viene usato per prima? Stessa cosa nel renderer*/
 	return obs;
 };
-
-
-
-/*
-=====================
-_UpdateDragging
-@private
-=====================
-*/
-Duedo.InteractivityManager.prototype._UpdateDragging = function () {
-
-	if (this._HookedObject.Body)
-		return;
-
-	var obj   = this._HookedObject,
-		Pointer = obj.Pointer;
-
-
-	Pointer.Dragging = true;
-	// Update game status
-	this.Game.Status.DraggingObject = true;
-
-	if (!this._DragMouseLastLocation)
-		if (!Duedo.Vector2.Compare(this._DragMouseLastLocation, Pointer.Location))
-			this._DragMouseLastLocation = Pointer.Location.Clone();
-
-
-	if (obj.DragBringToTop && typeof obj._Cache['OriginalZValue'] == "undefined")
-	{
-		obj._Cache['OriginalZValue'] = obj.Z;
-		obj.Z = this.Game.Renderer.MaxZPlane + 1;
-	}
-
-	//Calculate drag vector
-	var DeltaMouse = Pointer.Location.Clone().Subtract(this._DragMouseLastLocation);
-	var DirVector = DeltaMouse.MultiplyScalar(obj.DragScale);
-
-	if(DirVector.Magnitude() == 0) {
-		return;
-	}
-
-	// This object has been drag at least once
-	obj._WasDragged = true;
-
-	//Check axis motion
-	if (!obj.DragVertical) {
-		DirVector.X = 0;
-	}
-
-	if (!obj.DragHorizontal) {
-		DirVector.Y = 0;
-	}
-
-	//Update coordinates
-	DirVector.DivideScalar(Duedo.Conf.PixelsInMeter);
-
-	// ! TODO dragga anche il body
-
-	if (obj.FixedToViewport) {
-		obj.ViewportOffset.Add(DirVector);
-	} 
-	else if (obj["Offset"]) {
-			/*Child element*/
-	    obj.Offset.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
-	}
-	else
-	{
-		obj.Location.Add(DirVector.DivideScalar(this.Game.Viewport.Zoom));
-	}
-
-	//Keeps track of the last position of the pointer
-	this._DragMouseLastLocation = Pointer.Location.Clone();
-
-	obj._Dragging = true;
-
-};
-
 
 
 

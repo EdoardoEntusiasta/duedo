@@ -88,6 +88,8 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
 
     let locationToCompare = null;
 
+    // ! FIX
+    
     if(!this.FixedToViewport) {
         locationToCompare = this.Location.Clone()
             .Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y))
