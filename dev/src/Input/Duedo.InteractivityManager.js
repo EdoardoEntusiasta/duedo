@@ -376,13 +376,11 @@ Duedo.InteractivityManager.prototype._TriggerEvents = function(obj, Pointer) {
 					obj.OnPointerDown.call(obj);
 			}
 
-
 			if (Pointer.IsDown(Duedo.Mouse.RIGHT_BUTTON) && !obj.RightClicked) {
 				obj.RightClicked = true;
 				if (obj.OnRightClick)
 					obj.OnRightClick.call(obj);
 			}
-
 
 			if (Pointer.IsDown(this.DragButton)) {
 					obj._MouseClickedOn = true;
