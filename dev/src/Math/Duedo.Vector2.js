@@ -58,6 +58,12 @@ Duedo.Vector2.prototype.ToArray = function () {
     return new Array(this.X, this.Y);
 };
 
+Duedo.Vector2.prototype.Double = function () {
+    this.X *= this.X;
+    this.Y *= this.Y;
+    return this;
+};
+
 Duedo.Vector2.prototype.Set = function(x, y) { 
     this.X = x;
     this.Y = y;

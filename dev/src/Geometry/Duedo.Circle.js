@@ -105,15 +105,15 @@ Duedo.Circle.prototype.Contains = function(x, y) {
     {
         return false;
     }
-        
-    var dx = (this.Location.X - x),
-        dy = (this.Location.Y - y),
-        r2 = this.Radius * this.Radius;
+    
+    const objLoc = this.Location.Clone()
+        .Subtract( new Duedo.Vector2(x, y) )
+        .Subtract(this.Game.Viewport.View.GetAsVector())
+        .Double();
+    
+    const r2 = this.Radius * this.Radius;
 
-    dx *= dx;
-    dy *= dy;
-
-    return (dx + dy <= r2);
+    return (objLoc.X + objLoc.Y <= r2);
 
 };
 
@@ -134,7 +134,14 @@ Duedo.Circle.prototype.IntersectCircle = function ( c2 ) {
 */
 Duedo.Circle.prototype.CreatePath = function (context) {
     context.beginPath();
-    context.arc(this.Location.X, this.Location.Y, this.Radius, 0, Math.PI * 2, false);
+    context.arc(
+        DUnits.M2P(this.Location.X),
+        DUnits.M2P(this.Location.Y),
+        DUnits.M2P(this.Radius),
+        0,
+        Math.PI * 2,
+        false
+    );
 };
 
 

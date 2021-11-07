@@ -85,23 +85,28 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
         y = x.Y;
         x = x.X;
     }
-
-    let locationToCompare = null;
-
-    // ! FIX
     
     if(!this.FixedToViewport) {
-        locationToCompare = this.Location.Clone()
+        objLoc = this.Location.Clone()
             .Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y))
             // make it relative to the canvas
             .Subtract(this.Game.Viewport.View.GetAsVector());
     } else {
-        locationToCompare = this.ViewportOffset.Clone()
+        objLoc = this.ViewportOffset.Clone()
 			.Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y));
     }
 
-    // console.log(x, y, locationToCompare.Y, this.Location.Y, this.Height, this.Bottom);
-    return (x >= locationToCompare.X && x <= this.Right && y  >= locationToCompare.Y && y <= this.Bottom);
+    if(
+		x >= objLoc.X
+		&& x <= objLoc.X + this.Width
+		&& y >= objLoc.Y
+		&& y <= objLoc.Y + this.Height
+    )
+    {
+        return true;
+    }
+
+    return false;
 
 };
 
@@ -109,7 +114,7 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
 
 
 Object.defineProperty(Duedo.Rectangle.prototype, "Center", {
-    
+    // TODO : check
     get: function () {
 
         if (!Duedo.Utils.IsNull(this.Angle) && this.Angle != 0)

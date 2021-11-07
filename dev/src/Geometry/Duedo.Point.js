@@ -64,7 +64,6 @@ Duedo.Point.prototype.Rotate = function (rad, center) {
     return this;
 };
 
-
 Object.defineProperty(Duedo.Point.prototype, "Width", {
     get: function () { return 1; }
 });
