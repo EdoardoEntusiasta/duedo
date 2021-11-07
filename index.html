@@ -7,95 +7,77 @@
 
 	<meta http-equiv='Content-Language' content='it' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,       user-scalable=0' >
-	<script src="dev/src/Duedo.js"></script>
-	<script src="dev/src/Core/Duedo.Consts.js"></script>
-	<script src="dev/src/Core/Duedo.Client.js"></script>
-	<script type="text/javascript" src="dev/src/Loader/Duedo.Require.js"></script>
-	<script src="dev/src/Time/Duedo.Time.js"></script>
-	<script src="dev/src/Math/Duedo.Matrix2.js"></script>
-	<script src="dev/src/Math/Duedo.Vector2.js"></script>
-	<script src="dev/src/Other/Duedo.Utils.js"></script>
-	<script src="dev/src/Other/Duedo.Units.js"></script>
-	<script src="dev/src/Object/Duedo.Easing.js"></script>
-	<script src="dev/src/Object/Duedo.Object.js"></script>
-	<script src="dev/src/Object/Duedo.GraphicObject.js"></script>
-	<script src="dev/src/Object/Duedo.Entity.js"></script>
-	<!-- <script src="dev/src/Physics/prototype.js"></script>-->
-	<script src="dev/src/Physics/Box2dWeb-2.1.a.3.js"></script>
-	<script src="dev/src/Other/Duedo.QuadTree.js"></script>
-	<script src="dev/src/Physics/Duedo.PhysicsEngine.js"></script>
-	<script src="dev/src/Object/Duedo.Animation.js"></script>
-	<script src="dev/src/Object/Duedo.AnimationManager.js"></script>
-	<script src="dev/src/Geometry/Duedo.Shape.js"></script>
-	<script src="dev/src/Geometry/Duedo.Dimension.js"></script>
-	<script src="dev/src/Geometry/Duedo.Point.js"></script>
-	<script src="dev/src/Geometry/Duedo.Rectangle.js"></script>
-	<script src="dev/src/Geometry/Duedo.Polygon.js"></script>
-	<script src="dev/src/Geometry/Duedo.Circle.js"></script>
-	<script src="dev/src/Geometry/Duedo.Line.js"></script>
-	<script src="dev/src/Object/Duedo.Text.js"></script>
-	<script src="dev/src/Parallax/Duedo.Layer.js"></script>
-	<script src="dev/src/Parallax/Duedo.Parallax.js"></script>
-	<script src="dev/src/ParticleSystem/Duedo.Particle.js"></script>
-	<script src="dev/src/ParticleSystem/Duedo.ParticleSystem.js"></script>
-	<script src="dev/src/SpriteSheet/Duedo.SSequence.js"></script>
-	<script src="dev/src/SpriteSheet/Duedo.SpriteSheet.js"></script>
-	<script src="dev/src/Object/Duedo.Image.js"></script>
-	<script src="dev/src/Object/Duedo.ChildrenList.js"></script>
-	<script src="dev/src/Core/Duedo.Cache.js"></script>
-	<script src="dev/src/Loader/Duedo.Loader.js"></script>
-	<script src="dev/src/Audio/Duedo.SpeechRecognition.js"></script>
-	<script src="dev/src/Audio/Duedo.Sound.js"></script>
-	<script src="dev/src/Audio/Duedo.SoundManager.js"></script>
-	<script src="dev/src/Tilesmap/Duedo.Tile.js"></script>
-	<script src="dev/src/Tilesmap/Duedo.TilemapLayer.js"></script>
-	<script src="dev/src/Tilesmap/Duedo.Tilemap.js"></script>
-	<script src="dev/src/Core/Duedo.State.js"></script>
-	<script src="dev/src/Core/Duedo.StateManager.js"></script>
-	<script src="dev/src/Core/Duedo.Events.js"></script>
-	<script src="dev/src/Core/Duedo.Stage.js"></script>
-	<script src="dev/src/Input/Duedo.InputManager.js"></script>
-	<script src="dev/src/Input/Duedo.Keyboard.js"></script>
-	<script src="dev/src/Input/Duedo.Key.js"></script>
-	<script src="dev/src/Input/Duedo.Mouse.js"></script>
-	<script src="dev/src/Input/Duedo.InteractivityManager.js"></script>
-	<script src="dev/src/Input/Duedo.InteractiveProperties.js"></script>
-
-	<script src="dev/src/Core/Duedo.Viewport.js"></script>
-	<script src="dev/src/Core/Duedo.World.js"></script>
-	<script src="dev/src/Core/Duedo.Renderer.js"></script>
-	<script src="dev/src/Core/Duedo.GameContext.js"></script>
-	<script src="dev/src/Core/Duedo.DebugStorage.js"></script>
+	<script src="dist/duedo.minified.js"></script>
 	<style>
 		body {
-			background:rgb(54, 54, 54);
 			display: flex;
+			padding: 0;
+			margin: 0;
+			background: rgb(2,0,36);
+			background: linear-gradient(150deg, rgba(2,0,36,1) 0%, rgba(10,133,119,1) 82%);
 			flex-direction: column;
 			align-items: center;
 			vertical-align: middle;
 			justify-content: center;
 			height: 100vh;
+			font-family: sans-serif;
 		}
 		#wrapper {
-			height:300px;
 			width: 800px;
 			margin:0 auto;
+		}
+		.info ul {
+			list-style-type: none;
+			display: block;
+			padding-left: 0;
+			margin-left: auto;
+			text-align: right;
+		}
+		.info ul li {
+			display: inline-block;
+			padding: 10px;
+		}
+		.info ul li a {
+			float: left;
+			padding: 10px;
+			color: rgb(255, 255, 255);
 		}
 	</style>
 </head>
 	<body>
 		<div id="wrapper">
 			<canvas id="screen" width="800" height="300"></canvas>
+			<div class="info">
+				<ul>
+					<li><a href="http://civile.github.io/Duedo.js/" target="_blank">Docs</a></li>
+					<li><a href="http://civile.github.io/Duedo.js/" target="_blank">Examples</a></li>
+				</ul>
+			</div>
 		</div>
 		<script>
 			const physicsEnabled = false;
 			const worldWidthMeters = 30;
 			const worldHeightMeters = 20;
 			const screenCanvas = document.getElementById("screen");
-			/**
-			 * Start the game context
-			 */
+
 			const game = new Duedo.GameContext(screenCanvas, worldWidthMeters, worldHeightMeters, physicsEnabled);
+
+			game.StateManager.AddState('splash', {
+        Enter: function() {
+            const splashLogo = new Image();
+            splashLogo.src = Duedo.Logo64;
+            splashLogo.onload = function() {
+                const splashScreen = new Duedo.Image(game, splashLogo);
+                splashScreen.Location.X = game.Viewport.Center.X;
+                splashScreen.Location.Y = game.Viewport.Center.Y + 1;
+                splashScreen.Alpha = 0;
+                splashScreen.Animate({ Alpha: 1, Location: {Y: game.Viewport.Center.Y}}, 4, 'EaseInOut');
+                game.Add(splashScreen);
+            }
+        }
+    }, true);
+
+
 	 	</script>
 	</body>
 </html>

@@ -183,9 +183,6 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     if(bool_enablePhysics === true) {
         this.PhysicsEngine = new Duedo.PhysicsEngine(this);
     }
-    if(Duedo.Conf.SplashScreen) {
-        this.StartSplashScreen();
-    }
 
     /*Currently running*/
     this._Paused = false;
@@ -366,30 +363,6 @@ Duedo.GameContext.prototype._PostBoot = function () {
         fpst.Style.Fill = "white";
         this._Cache["FPS"] = this.Add(fpst);
     }
-};
-
-
-
-/*
- * TODO:
- * Create and add the Duedo Splash Screen
-*/
-Duedo.GameContext.prototype.StartSplashScreen = function() {
-    const game = this;
-    this.StateManager.AddState('splash', {
-        Enter: function() {
-            const splashLogo = new Image();
-            splashLogo.src = Duedo.Logo64;
-            splashLogo.onload = function() {
-                const splashScreen = new Duedo.Image(game, splashLogo);
-                splashScreen.Location.X = game.Viewport.Center.X;
-                splashScreen.Location.Y = game.Viewport.Center.Y + 1;
-                splashScreen.Alpha = 0;
-                splashScreen.Animate({ Alpha: 1, Location: {Y: game.Viewport.Center.Y}}, 4, 'EaseInOut');
-                game.Add(splashScreen);
-            }
-        }
-    }, true);
 };
 
 

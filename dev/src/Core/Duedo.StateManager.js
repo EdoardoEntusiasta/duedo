@@ -55,11 +55,12 @@ Duedo.StateManager.prototype._init = function () {
     
     /*STD State template*/
     this._STDStateMethods = {
+        "StateData"   : {}, // Object to store the state's relative data
         "Load"        : null,
         "LoadUpdate"  : null,
         "Added"       : null,
         "Zoom"        : null, // When camera has been zoomed @param - zoomLevel
-        "Update"      : null,
+        "Update"      : null, // Each frame @param - deltaT
         "Create"      : null,
         "Enter"       : null,
         "Exit"        : null,
@@ -74,7 +75,6 @@ Duedo.StateManager.prototype._init = function () {
     return this;
 
 };
-
 
 
 
@@ -102,7 +102,6 @@ Duedo.StateManager.prototype.RemoveState = function ( stateName ) {
 
 
 
-
 /*
  * CurrentState
  * return: _currentState
@@ -110,7 +109,6 @@ Duedo.StateManager.prototype.RemoveState = function ( stateName ) {
 Duedo.StateManager.prototype.CurrentState = function() {
     return this._CurrentState;
 };
-
 
 
 
@@ -160,7 +158,6 @@ Duedo.StateManager.prototype.AddState = function( stateName, DUEDOState, start )
 
 
 
-
 /*
  * DelayStateChange
  * Delay next state enter
@@ -168,7 +165,6 @@ Duedo.StateManager.prototype.AddState = function( stateName, DUEDOState, start )
 Duedo.StateManager.prototype.DelayStateChange = function( time ) {
     this._DelayStateChange = time;
 };
-
 
 
 
@@ -198,12 +194,12 @@ Duedo.StateManager.prototype.ActivateState = function ( stateName ) {
     {
         if(!Duedo.Utils.IsNull(this._States[stateName][i]))
         {
-            this[i] = this._States[stateName][i]; 
+            this[i] = this._States[stateName][i];
         }
     }
             
     /*Set _CurrentState*/
-    this._CurrentState  = stateName;    
+    this._CurrentState  = stateName;
     this._Ready = false;
 };
 
@@ -222,15 +218,7 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
     }
     else
     {
-        let allowed = true;
-
-        if(this._States[this._CurrentState] && this._States[this._CurrentState]['TransitionFilter']) {
-            if(!this._States[this._CurrentState].TransitionFilter(this.Game.DeltaT)) {
-                allowed = false;
-            }
-        }
-
-        if(this._ForthcomingState && allowed)
+        if(this._ForthcomingState)
         {
             /*if delay state change*/
             if(!Duedo.Utils.IsNull(this._DelayStateChange))
@@ -376,6 +364,7 @@ Duedo.StateManager.prototype.UpdateState = function() {
 };
 
 
+
 /*
  * RenderState
  * Render some additional things from the current state
@@ -406,7 +395,6 @@ Duedo.StateManager.prototype.FreeFromState = function() {
 
 
 
-
 /*
  * Destroy
 */
@@ -421,7 +409,6 @@ Duedo.StateManager.prototype.Destroy = function() {
     this._CreatedStates = {};
 
 };
-
 
 
 

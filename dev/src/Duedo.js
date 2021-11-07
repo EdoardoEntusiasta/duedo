@@ -52,11 +52,10 @@ Duedo.Conf = {
     AutoLooping: true,
     /*Shows FPS in the canvas screen*/
     DrawFPS: false,
-    /*Draw the initial Duedo splash image*/
-    SplashScreen: true,
     /*Pixels in meters |don't change it! */
     PixelsInMeter: 30
 };
+
 
 
 /*Duedo logo base64*/

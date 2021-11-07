@@ -88,8 +88,6 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
 
     this.Renderable = this.CheckViewportIntersection();
 
-
-
     return this;
 };
 

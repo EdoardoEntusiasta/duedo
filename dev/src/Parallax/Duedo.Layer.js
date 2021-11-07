@@ -10,11 +10,8 @@ Duedo.Layer = function ( gameContext, image ) {
     Duedo.GraphicObject.call(this);
     this.Game = gameContext || Duedo.Global.Games[0];
     this.Type = Duedo.LAYER;
-    
     this.Parent;
-    
     this._init(image);
-
 };
 
 

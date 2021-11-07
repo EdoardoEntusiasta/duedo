@@ -18,11 +18,21 @@ Duedo.State.prototype.constructor = Duedo.State;
 
 
 /*
+ * Data
+ * @overwritten
+ * To store state's relative data: accessible as this.StateData from every state's methods
+*/
+Duedo.State.prototype.StateData = {};
+
+
+
+/*
  * Load
  * @overwritten
 */
 Duedo.State.prototype.Load = function () {
 };
+
 
 
 /*
@@ -40,6 +50,8 @@ Duedo.State.prototype.LoadUpdate = function() {
 Duedo.State.prototype.Create = function () {
 };
 
+
+
 /*
  * Update
  * @overwritten
@@ -53,6 +65,8 @@ Duedo.State.prototype.Update = function () {
 */
 Duedo.State.prototype.PausedUpdate = function () {
 };
+
+
 
 /*
  * Render
@@ -68,6 +82,8 @@ Duedo.State.prototype.Render = function (_2dcontext) {
 Duedo.State.prototype.Exit = function () {
 };
 
+
+
 /*
  * Zoom
  * @overwritten
@@ -75,12 +91,16 @@ Duedo.State.prototype.Exit = function () {
 Duedo.State.prototype.Zoom = function () {
 };
 
+
+
 /*
  * Enter
  * @overwritten
 */
 Duedo.State.prototype.Enter = function () {
 };
+
+
 
 /*
  * Shutdown
@@ -90,12 +110,14 @@ Duedo.State.prototype.Destroy = function () {
 };
 
 
+
 /*
  * Pause
  * @overwritten
 */
 Duedo.State.prototype.Pause = function() {
 };
+
 
 
 /*
