@@ -10797,6 +10797,7 @@ Box2D.postDefs = [];
       if (!vertexCount) return;
       var s = this.m_ctx;
       var drawScale = this.m_drawScale;
+
       s.beginPath();
       s.strokeStyle = this._color(color.color, this.m_alpha);
       s.fillStyle = this._color(color.color, this.m_fillAlpha);

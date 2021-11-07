@@ -14,7 +14,7 @@ myGraphicObject.Interactive = true;
 myGraphicObject.OnPointerUp = myfunction;
 
 --- @Mouse events:
-- OnPointerUp
+- OnPointerUpOut
 - OnPointerDown
 - OnPointerMove
 - OnPointerOn
@@ -242,11 +242,11 @@ Duedo.InteractivityManager.prototype._UpdateDragging = function () {
 
 	//Check axis motion
 	if (!obj.DragVertical) {
-		DirVector.X = 0;
+		DirVector.Y = 0;
 	}
 
 	if (!obj.DragHorizontal) {
-		DirVector.Y = 0;
+		DirVector.X = 0;
 	}
 
 	//Update coordinates

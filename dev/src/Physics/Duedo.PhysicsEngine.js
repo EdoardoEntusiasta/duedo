@@ -30,7 +30,7 @@ Duedo.PhysicsEngine = function(gameContext, options) {
 
     this.Conf = {
         AllowSleep:false,
-        Gravity: new Duedo.Vector2(0, 100),
+        Gravity: new Duedo.Vector2(0, 10),
         VelocityCorrection: 8,
         PositionCorrection: 3
     };
@@ -75,7 +75,7 @@ Duedo.PhysicsEngine.prototype._init = function(options) {
 /*
 * RectBody
 */
-Duedo.PhysicsEngine.prototype.RectBody = function(position, width, height, options) {
+Duedo.PhysicsEngine.prototype.RectBody = function(position, halfWidth, halFheight, options) {
 
     options = Duedo.Extend(options, this._FixDefDefault);
 
@@ -100,8 +100,10 @@ Duedo.PhysicsEngine.prototype.RectBody = function(position, width, height, optio
     bodyDef.position.y = position.Y;
        
     fixDef.shape = new b2PolygonShape;
-       
-    fixDef.shape.SetAsBox(width, height);
+
+    // Notice that the parameters of SetAsBox are the 'half-width' and 'half-height' of the box
+    // and it is centered at the location of the body it gets attached to
+    fixDef.shape.SetAsBox(halfWidth, halFheight);
 
     body = this.World.CreateBody(bodyDef).CreateFixture(fixDef);
 

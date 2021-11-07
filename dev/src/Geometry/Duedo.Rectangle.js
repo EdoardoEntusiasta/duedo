@@ -99,6 +99,7 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
         locationToCompare = this.ViewportOffset.Clone()
 			.Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y));
     }
+
     // console.log(x, y, locationToCompare.Y, this.Location.Y, this.Height, this.Bottom);
     return (x >= locationToCompare.X && x <= this.Right && y  >= locationToCompare.Y && y <= this.Bottom);
 
@@ -371,9 +372,9 @@ Object.defineProperty(Duedo.Rectangle.prototype, "HalfHeight", {
 Duedo.Rectangle.prototype.CreatePath = function(context) {
     context.beginPath();
     context.rect(
-        DUnits.M2P(this.Location.X) - DUnits.M2P(this.Width * this.Anchor.X), 
-        DUnits.M2P(this.Location.Y) - DUnits.M2P(this.Height * this.Anchor.Y), 
-        DUnits.M2P(this.Width), 
+        DUnits.M2P(this.Location.X) - DUnits.M2P(this.Width) * this.Anchor.X,
+        DUnits.M2P(this.Location.Y) - DUnits.M2P(this.Height) * this.Anchor.Y,
+        DUnits.M2P(this.Width),
         DUnits.M2P(this.Height)
     );
 };
