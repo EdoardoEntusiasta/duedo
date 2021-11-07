@@ -14,8 +14,8 @@ ComicPart/
 00_test/
 node_modules/
 0test/
-build/
 node_modules/
+test-dev/
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 

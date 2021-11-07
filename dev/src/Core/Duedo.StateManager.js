@@ -16,7 +16,7 @@ Duedo.StateManager = function ( gameContext ) {
 
     /*States stack*/
     this._States;
-    this._StatesLenght;
+    this._StatesLength;
     this._CurrentState = null;
     this._ForthcomingState;
 
@@ -41,7 +41,7 @@ Duedo.StateManager.prototype._init = function () {
     
     /*States stack*/
     this._States = {};
-    this._StatesLenght = 0;
+    this._StatesLength = 0;
     this._CurrentState = null;
     this._ForthcomingState = null;
     this._StateLoading = false;
@@ -95,7 +95,7 @@ Duedo.StateManager.prototype.RemoveState = function ( stateName ) {
 
         delete this._States[stateName];
         
-        this._StatesLenght--;
+        this._StatesLength--;
     }
 
 };
@@ -130,7 +130,7 @@ Duedo.StateManager.prototype.AddState = function( stateName, DUEDOState, start )
 
     if( Duedo.Utils.IsNull(stateName) )
     {
-        stateName = "state_" + this._StatesLenght;
+        stateName = "state_" + this._StatesLength;
     }
 
     /*Add state*/
@@ -138,7 +138,7 @@ Duedo.StateManager.prototype.AddState = function( stateName, DUEDOState, start )
 
 
     /*Increment StatesLength*/
-    this._StatesLenght++;
+    this._StatesLength++;
 
 
     /*Check autostart*/
@@ -222,10 +222,16 @@ Duedo.StateManager.prototype.PreUpdate = function(deltaT) {
     }
     else
     {
+        let allowed = true;
 
-        if(this._ForthcomingState)
+        if(this._States[this._CurrentState] && this._States[this._CurrentState]['TransitionFilter']) {
+            if(!this._States[this._CurrentState].TransitionFilter(this.Game.DeltaT)) {
+                allowed = false;
+            }
+        }
+
+        if(this._ForthcomingState && allowed)
         {
-
             /*if delay state change*/
             if(!Duedo.Utils.IsNull(this._DelayStateChange))
             {   
@@ -409,7 +415,7 @@ Duedo.StateManager.prototype.Destroy = function() {
     this.FreeFromState();
 
     this._States = {};
-    this._StatesLenght = 0;
+    this._StatesLength = 0;
     this._ForthcomingState = null;
     this._CurrentState = null;
     this._CreatedStates = {};

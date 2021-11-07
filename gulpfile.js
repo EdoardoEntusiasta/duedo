@@ -1,30 +1,41 @@
 
-/**
- * Duedo gulpfile
-*/
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var sass = require('gulp-sass');
+// Gulp version 4
+var gulp = require("gulp");
+var uglify = require("gulp-uglify");
+var rename = require("gulp-rename");
+const { series } = require("gulp");
 
-/**
- * Copy media directory
+/* 
+Define gulp task.
+This task will uglify all js files in js directory 
+and create uglified or minified files with min.js extension inside the 
+dist/js directory.
 */
-gulp.task('media', function() {
-      return gulp.src(['dev/media/**/*']).pipe(gulp.dest('build/media'));
-});
+ 
+gulp.task( "uglify", gulp.series(async function () {
+         gulp
+        .src("js/*.js")
+        .pipe(uglify())
+        .pipe(
+          rename(function (path) {
+            path.extname = ".min.js";
+          })
+        )
+        .pipe(gulp.dest("./dist/js/"));
+      })
+);
 
-/**
- * Copy example directory
-*/
-gulp.task('examples', function() {
-      return gulp.src(['dev/examples/**/*']).pipe(gulp.dest('build/examples'));
-});
+// Code to run gulp tasks
+gulp.task(
+	"default",
+	gulp.series("uglify")
+);
 
 /**
  * Compress and uglify engine core
 */
-gulp.task('minify', function() {
+/*
+gulp.task('minify', null, function() {
   return gulp
   	.src([
       'dev/src/Duedo.js'
@@ -42,8 +53,9 @@ gulp.task('minify', function() {
       ,'dev/src/Object/Duedo.Entity.js',
       ,'dev/src/Physics/Duedo.prototype.js',
       ,'dev/src/Physics/Box2dWeb-2.1.a.3.js'
-      ,'dev/src/Other/Duedo.QuadTree.js',
-      ,'dev/src/Physics/Duedo.PhysicsEngine.js',
+      ,'dev/src/Other/Duedo.QuadTree.js'
+      ,'dev/src/Physics/Duedo.PhysicsEngine.js'
+      ,'dev/src/Object/Duedo.ChildrenList.js'
       ,'dev/src/Object/Duedo.Animation.js'
       ,'dev/src/Object/Duedo.AnimationManager.js'
       ,'dev/src/Geometry/Duedo.Shape.js'
@@ -89,10 +101,8 @@ gulp.task('minify', function() {
     .pipe(concat('duedo.minified.js'))
     .pipe(gulp.dest('build/'));
 });
-
-/**
- * Compress
 */
+/**
 gulp.task('duedo', function() {
   return gulp
     .src([
@@ -105,6 +115,7 @@ gulp.task('duedo', function() {
       ,'dev/src/Math/Duedo.Vector2.js',
       ,'dev/src/Other/Duedo.Utils.js',
       ,'dev/src/Other/Duedo.Units.js'
+      ,'dev/src/Object/Duedo.ChildrenList.js'
       ,'dev/src/Object/Duedo.Easing.js'
       ,'dev/src/Object/Duedo.Object.js'
       ,'dev/src/Object/Duedo.GraphicObject.js'
@@ -157,8 +168,8 @@ gulp.task('duedo', function() {
     .pipe(concat('duedo.js'))
     .pipe(gulp.dest('build/'));
 });
-
+*/
 /**
  * Default
 */
-gulp.task('default', ['minify', 'duedo', 'media', 'examples'])
+gulp.task('default', ['uglify']);

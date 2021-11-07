@@ -183,8 +183,9 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
     if(bool_enablePhysics === true) {
         this.PhysicsEngine = new Duedo.PhysicsEngine(this);
     }
-    if(Duedo.Conf.SplashScreen)
+    if(Duedo.Conf.SplashScreen) {
         this.StartSplashScreen();
+    }
 
     /*Currently running*/
     this._Paused = false;
@@ -218,7 +219,7 @@ Duedo.GameContext.prototype._Boot = function ( canvas, WWMaxX, WWMaxY, bool_enab
 Duedo.GameContext.prototype.__NewRenderer = function(r, c) {
 
     if(Duedo.Utils.AreNull([r, c]))
-        throw "GameContext:__initRenderer: error while initializing renderer component";
+        throw "GameContext:__initRenderer: error while initializing renderer component. Missing canvas?";
     
     /*Renderer, canvas | webgl*/
     this.Renderer = new Duedo.Renderer(this, c, r);
@@ -374,7 +375,21 @@ Duedo.GameContext.prototype._PostBoot = function () {
  * Create and add the Duedo Splash Screen
 */
 Duedo.GameContext.prototype.StartSplashScreen = function() {
-    
+    const game = this;
+    this.StateManager.AddState('splash', {
+        Enter: function() {
+            const splashLogo = new Image();
+            splashLogo.src = Duedo.Logo64;
+            splashLogo.onload = function() {
+                const splashScreen = new Duedo.Image(game, splashLogo);
+                splashScreen.Location.X = game.Viewport.Center.X;
+                splashScreen.Location.Y = game.Viewport.Center.Y + 1;
+                splashScreen.Alpha = 0;
+                splashScreen.Animate({ Alpha: 1, Location: {Y: game.Viewport.Center.Y}}, 4, 'EaseInOut');
+                game.Add(splashScreen);
+            }
+        }
+    }, true);
 };
 
 

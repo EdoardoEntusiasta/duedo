@@ -69,6 +69,13 @@ Duedo.State.prototype.Exit = function () {
 };
 
 /*
+ * Zoom
+ * @overwritten
+*/
+Duedo.State.prototype.Zoom = function () {
+};
+
+/*
  * Enter
  * @overwritten
 */

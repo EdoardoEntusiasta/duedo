@@ -3,12 +3,14 @@ Extensions:
 
     Bugs
     ☐ Unità di misura in metri
+    ☐ Se zoom le geometrie fixed to viewport sfasano
     ☐ Rotation di tutti gli oggetti - spritesheet, geometrie, immagine etc
     ☐ Scaling del testo e delle immagini
     ☐ Rimuovi riferimenti a Matter
 
 
     Sviluppi
+    ☐ Ordina Z-Index nell'interactivity manager anche per posizionamento degli oggetti. I fixedToViewport hanno la precedenza
     ☐ Lo Z index non influisce sull'hover per geometrie disegnate tipo la mappa
     ☐ StateManager non permette proprietà nell'oggetto
     ☐ Ordina children considerando anche il parent (il parent potrebbe avere un piano inferiore o maggiore)
