@@ -17,7 +17,7 @@ Duedo.Line = function (start /*Duedo.Point*/, end /*Duedo.Point*/) {
 
     this.Location = this.Start;
 
-    this.LineWidth = 1;
+    this.LineWidth = 0.1;
 
 };
 
@@ -104,6 +104,20 @@ Duedo.Line.Intersects = function (a, b, e, f, asSegment) {
 
 
 Duedo.Line.prototype.PointOnLine = function (x, y) {
+    /*
+    if(!this.FixedToViewport) {
+        objLoc = this.Location.Clone()
+            .Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y))
+            // make it relative to the canvas
+            .Subtract(this.Game.Viewport.View.GetAsVector());
+    } else {
+        objLoc = this.ViewportOffset.Clone()
+			.Subtract(new Duedo.Vector2(this.Width * this.Anchor.X, this.Height * this.Anchor.Y));
+    }
+    */
+    // todo Considera anche il width/height della linea
+    // TODO la location a cosa corrisponde? Alla dimensione * l'ancora?
+    // TODO se modifico la location modifico allo stesso tempo il punto A e il punto B della retta?
     return ((x - this.Start.X) * (this.End.Y - this.Start.Y) === (this.End.X - this.Start.X) * (y - this.Start.Y));
 };
 
@@ -162,9 +176,9 @@ Duedo.Line.prototype.SetEndY = function (y) {
 
 Duedo.Line.prototype.CreatePath = function(context) {
     context.beginPath();
-    context.lineWidth = this.LineWidth;
-    context.moveTo(this.Start.X, this.Start.Y);
-    context.lineTo(this.End.X, this.End.Y);
+    context.lineWidth = DUnits.M2P(this.LineWidth); // line height
+    context.moveTo(DUnits.M2P(this.Start.X), DUnits.M2P(this.Start.Y));
+    context.lineTo(DUnits.M2P(this.End.X), DUnits.M2P(this.End.Y));
 };
 
 

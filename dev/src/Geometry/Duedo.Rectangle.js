@@ -37,13 +37,9 @@ Duedo.Rectangle.Intersects = function (ra, rb, tolerance) {
 
 
 
-
 Duedo.Rectangle.Equals = function (a, b) {
     return (a.Location.X === b.Location.X && a.Y === b.Location.Y && a.Width === b.Width && a.Height === b.Height);
 };
-
-
-
 
 
 
@@ -53,7 +49,6 @@ Duedo.Rectangle.Equals = function (a, b) {
 Duedo.Rectangle.prototype.Clone = function () {
     return new Duedo.Rectangle(this.Location.X, this.Location.Y, this.Width, this.Height);
 };
-
 
 
 
@@ -68,8 +63,6 @@ Duedo.Rectangle.prototype.Intersects = function ( rectangle, tolerance ) {
     return Duedo.Rectangle.Intersects( this, rectangle, tolerance );
 
 };
-
-
 
 
 
@@ -109,7 +102,6 @@ Duedo.Rectangle.prototype.Contains = function ( x, y ) {
     return false;
 
 };
-
 
 
 
@@ -166,11 +158,6 @@ Duedo.Rectangle.IntersectsInfo = function (a, b, output) {
 
 
 
-
-
-
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "Left", {
 
     get: function () {
@@ -195,11 +182,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "Left", {
 
 
 
-
-
-
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "Right", {
 
     get: function () {
@@ -219,10 +201,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "Right", {
     }
 
 });
-
-
-
-
 
 
 
@@ -249,9 +227,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "Top", {
 
 
 
-
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "Bottom", {
 
     get: function () {
@@ -275,9 +250,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "Bottom", {
 
 
 
-
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "TopLeft", {
 
     get: function () {
@@ -291,8 +263,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "TopLeft", {
     }
 
 });
-
-
 
 
 
@@ -314,12 +284,10 @@ Object.defineProperty(Duedo.Rectangle.prototype, "TopRight", {
 
 
 
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "BottomRight", {
 
     get: function () {
-        return new Phaser.Point(this.Right, this.Bottom);
+        return new Duedo.Point(this.Right, this.Bottom);
     },
 
     set: function (value)
@@ -329,10 +297,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "BottomRight", {
     }
 
 });
-
-
-
-
 
 
 
@@ -346,10 +310,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "Volume", {
 
 
 
-
-
-
-
 Object.defineProperty(Duedo.Rectangle.prototype, "HalfWidth", {
 
     get: function () {
@@ -357,9 +317,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "HalfWidth", {
     }
 
 });
-
-
-
 
 
 
@@ -373,7 +330,6 @@ Object.defineProperty(Duedo.Rectangle.prototype, "HalfHeight", {
 
 
 
-
 Duedo.Rectangle.prototype.CreatePath = function(context) {
     context.beginPath();
     context.rect(
@@ -383,7 +339,3 @@ Duedo.Rectangle.prototype.CreatePath = function(context) {
         DUnits.M2P(this.Height)
     );
 };
-
-
-
-

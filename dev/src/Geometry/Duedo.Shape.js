@@ -24,6 +24,9 @@ Duedo.Shape = function () {
 };
 
 
+// ! MANY METHODS ARE NOT ALIGNED WITH THE PIXELS TO METERS CONVERSION
+
+
 /*Inherit generic object*/
 Duedo.Shape.prototype = Object.create(Duedo.GraphicObject.prototype);
 Duedo.Shape.prototype.constructor = Duedo.Shape;

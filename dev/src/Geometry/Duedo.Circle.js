@@ -29,6 +29,8 @@ Duedo.Circle.prototype.constructor = Duedo.Circle;
 */
 Duedo.Circle.Intersects = function ( c1, c2 ) {
 
+    // TODO CHECK AND UPDATE CODE
+
     var A, B, ABD;
 
     A = c2.Origin.X - c1.Origin.X;
@@ -105,11 +107,19 @@ Duedo.Circle.prototype.Contains = function(x, y) {
     {
         return false;
     }
-    
-    const objLoc = this.Location.Clone()
+
+    let objLoc = null;
+
+    if(!this.FixedToViewport) {
+    objLoc = this.Location.Clone()
         .Subtract( new Duedo.Vector2(x, y) )
         .Subtract(this.Game.Viewport.View.GetAsVector())
         .Double();
+    } else {
+        objLoc = this.ViewportOffset.Clone()
+            .Subtract( new Duedo.Vector2(x, y) )
+            .Double();
+    }
     
     const r2 = this.Radius * this.Radius;
 

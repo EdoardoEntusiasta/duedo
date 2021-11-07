@@ -121,6 +121,8 @@ Duedo.Polygon.prototype.GetPosition = function () {
 Duedo.Polygon.prototype.Contains = function (x, y) {
     
     var p = new Duedo.Point(x, y);
+
+    // TODO PIXELS A METRI
     
     // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
     var inside = false;
