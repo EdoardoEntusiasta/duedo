@@ -26,6 +26,10 @@ Duedo.Layer.prototype.constructor = Duedo.Layer;
 Duedo.Layer.prototype._init = function( image ) {
     this._super();
 
+    if(!image instanceof Duedo.Image) {
+        image = new Duedo.Image(this.Game, image);
+    }
+
     if(!Duedo.Utils.IsNull(image))
     {
         this.Source = image;

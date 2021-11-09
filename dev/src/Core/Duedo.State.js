@@ -22,7 +22,7 @@ Duedo.State.prototype.constructor = Duedo.State;
  * @overwritten
  * To store state's relative data: accessible as this.StateData from every state's methods
 */
-Duedo.State.prototype.StateData = {};
+Duedo.State.prototype.Data = {};
 
 
 

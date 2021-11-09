@@ -8,7 +8,7 @@ Author: http://www.edoardocasella.it
 
 Duedo.Particle = function (gameContext) {
     Duedo.GraphicObject.call(this);
-    this.Game = gameContext || Duedo.Global.Games[0];
+    this.Game = gameContext || Duedo.Global.Game;
     this.TYPE = Duedo.PARTICLE;
     
     /*Parent particle system*/
@@ -70,7 +70,6 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
 
     this.Velocity.Add(this.Acceleration);
     this.FixVelocity();
-    
     this.Location.Add(this.Velocity);
 
 
@@ -87,6 +86,8 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
 
 
     this.Renderable = this.CheckViewportIntersection();
+
+
 
     return this;
 };
@@ -191,7 +192,7 @@ Duedo.Particle.prototype.FixVelocity = function () {
 Duedo.Particle.prototype.CheckViewportIntersection = function () {
     
     var pBBox = null;
-    // ! TODO FIXA IN BASE A ZOOM
+
     /*Particle visibility*/
     if (this._Parent.Texture !== null)
     {

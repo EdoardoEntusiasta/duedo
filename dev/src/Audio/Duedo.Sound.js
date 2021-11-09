@@ -19,10 +19,10 @@ Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
     this._Source;
     this._BufferSource;
 
-    this.Name;
-
+    this.Name; // Internal reference name
+    this.OriginalName; // Original name of audiofile
     this.Location;
-
+    this.PlaybackRate = 1;
     this._IsPlaying = false;
 
     this.Volume = 1;
@@ -418,14 +418,14 @@ Duedo.Sound.prototype.Loop = function (loop) {
 /*
  * Play
  * If startFrom is !== null we are calling a resume operation
+ * If startFrom == -1 audio will start from a random point
 */
 Duedo.Sound.prototype.Play = function ( startFrom ) {
-    
+
     if( this._IsPlaying === true )
     {
         return this;
     }
-
 
     startFrom = (Duedo.Utils.IsNull(startFrom) ? 0 : startFrom);
 
@@ -438,8 +438,18 @@ Duedo.Sound.prototype.Play = function ( startFrom ) {
 
         this._BufferSource.connect( this._GainNode );
 
+        this.PlaybackRate = parseFloat(this.PlaybackRate);
+
+        if (isFinite(this.PlaybackRate)) {
+            this._BufferSource.playbackRate.value = this.PlaybackRate;
+        }
+
         //Total duration
         this._TotalDuration = this._BufferSource.buffer.duration;
+
+        if(startFrom == -1) {
+            startFrom = Math.random() * (this._TotalDuration - 0 + 1) + 0;
+        }
 
         if ( typeof this._BufferSource.noteGrainOn != "undefined" )
         {
@@ -449,20 +459,19 @@ Duedo.Sound.prototype.Play = function ( startFrom ) {
         else
         {
             this._BufferSource.start(0, startFrom, this._TotalDuration);
-            
             this.ElapsedTime = startFrom;
         }
-
-
     }
     else
     {
+        this._TotalDuration = this._Source.duration;
+
+        if(startFrom == -1) {
+            startFrom = Math.random() * (this._TotalDuration - 0 + 1) + 0;
+        }
 
         this._Source.currentTime = startFrom;
         this._Source.play();
-
-        this._TotalDuration = this._Source.duration;
-
     }
 
 
@@ -482,3 +491,13 @@ Duedo.Sound.prototype.Play = function ( startFrom ) {
     return this;
 
 };
+
+
+/*
+ * Playing
+*/
+Object.defineProperty(Duedo.Sound.prototype, "Playing", {
+    get: function () {
+        return this._IsPlaying;
+    },
+});

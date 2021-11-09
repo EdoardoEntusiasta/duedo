@@ -204,6 +204,40 @@ Duedo.Cache.prototype.RemoveTxt = function( name ) {
 };
 
 
+/**
+ * StartsWith
+ * get all documents that starts with: startsWith: string
+ */
+Duedo.Cache.prototype.StartsWith = function(startsWith, type) {
+
+	switch (type) {
+		case 'image':
+			type = '_Images';
+		break;
+		case 'json':
+			type = '_JSON';
+		break;
+		case 'txt':
+			type = '_Txt';
+		break;
+		case 'sound':
+			type = '_Sounds';
+		break;
+	}
+
+	const output = [];
+
+	Object.keys(this._Data[type]).forEach(key => {
+		if(key.startsWith(startsWith)) {
+			output.push(this._Data[type][key]);
+		}
+	})
+
+	return output;
+
+}
+
+
 
 /*
  * Destroy

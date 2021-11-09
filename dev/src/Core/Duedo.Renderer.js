@@ -28,7 +28,7 @@ Duedo.Renderer = function( gameContext, canvas, renderer) {
 	this.Context;
 	
 	/*Generic*/
-	this.FillColor = "rgba(255, 255, 255, 1)";
+	this.FillColor = "rgba(0, 0, 0, 1)";
 	this.Alpha;
 	this.TransformationMatrix;
 	this._Angle = 0;

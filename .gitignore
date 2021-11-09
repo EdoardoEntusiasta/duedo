@@ -16,7 +16,7 @@ node_modules/
 0test/
 build/
 node_modules/
-test-dev/
+tests/
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 

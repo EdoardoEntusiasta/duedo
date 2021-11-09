@@ -30,8 +30,8 @@ Duedo.PhysicsEngine = function(gameContext, options) {
 
     this.Conf = {
         AllowSleep:false,
-        Gravity: new Duedo.Vector2(0, 10),
-        VelocityCorrection: 8,
+        Gravity: new Duedo.Vector2(0, 35),
+        VelocityCorrection: 100,
         PositionCorrection: 3
     };
 
@@ -75,7 +75,7 @@ Duedo.PhysicsEngine.prototype._init = function(options) {
 /*
 * RectBody
 */
-Duedo.PhysicsEngine.prototype.RectBody = function(position, halfWidth, halFheight, options) {
+Duedo.PhysicsEngine.prototype.RectBody = function(position, width, height, options) {
 
     options = Duedo.Extend(options, this._FixDefDefault);
 
@@ -89,6 +89,7 @@ Duedo.PhysicsEngine.prototype.RectBody = function(position, halfWidth, halFheigh
     fixDef.friction    = options.friction;
     fixDef.restitution = options.restitution;
     fixDef.isSensor    = options.isSensor;
+    fixDef.fixedRotation    = options.fixedRotation != null ? options.fixedRotation : false;
 
     /*Body def*/
     bodyDef = new b2BodyDef; 
@@ -103,7 +104,7 @@ Duedo.PhysicsEngine.prototype.RectBody = function(position, halfWidth, halFheigh
 
     // Notice that the parameters of SetAsBox are the 'half-width' and 'half-height' of the box
     // and it is centered at the location of the body it gets attached to
-    fixDef.shape.SetAsBox(halfWidth, halFheight);
+    fixDef.shape.SetAsBox(width / 2, height / 2);
 
     body = this.World.CreateBody(bodyDef).CreateFixture(fixDef);
 
@@ -210,10 +211,11 @@ Object.defineProperty(Duedo.PhysicsEngine.prototype, "Debug", {
 
         if(val === true) {
             //setup debug draw
+            this.Game.Debug = true;
             var debugDraw = new b2DebugDraw();
-            debugDraw.SetSprite(document.getElementById("screen").getContext("2d"));
-            debugDraw.SetDrawScale(30);
-            debugDraw.SetFillAlpha(0.3);
+            debugDraw.SetSprite(this.Game.Renderer.Context);
+            debugDraw.SetDrawScale(Duedo.Conf.PixelsInMeter);
+            debugDraw.SetFillAlpha(0.5);
             debugDraw.SetLineThickness(1.0);
             debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
             this.World.SetDebugDraw(debugDraw);

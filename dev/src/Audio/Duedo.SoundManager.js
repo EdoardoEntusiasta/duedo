@@ -158,33 +158,49 @@ Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReferenc
 
 /*
  * Play
+ * Set volume, location, rate, or choose whether to play the audio from a random point
+ * options { Location: Vec2, Volume: integer, Rate: integer, NameReference: string, RandomStart: boolean}
+ * When RandomStart == true playback will start from a random position
 */
-Duedo.SoundManager.prototype.Play = function ( soundName, nameReference, volume, location ) {
+Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
     
     this._AudioContext.resume();
+
     if(this._noAudio)
     {
         return;
     }
 
-   DUEDOSound = this.NewSoundInstance(soundName, nameReference);
-   if(Duedo.Utils.IsNull(DUEDOSound))
+    const playOptions = {
+        Location: null,
+        Volume: 1,
+        Rate: 1,
+        NameReference: null,
+        RandomStart: null
+    }
+
+    Object.assign(playOptions, options);
+
+    DUEDOSound = this.NewSoundInstance(soundName, playOptions.NameReference);
+    if(Duedo.Utils.IsNull(DUEDOSound))
         return;
 
-   if (typeof location !== "undefined" && location !== null)
-   {
+    if (playOptions.Location)
+    {
         DUEDOSound.SetLocation( location );
-   }
-    
-   DUEDOSound.Volume = volume || this.Volume;
+    }
 
-   DUEDOSound.Play();
+    DUEDOSound.SetVolume(playOptions.Volume);
 
-   if (this._AudioContext.state !== 'running') {
-       this._PendingUserInteraction;
-   }
+    DUEDOSound.PlaybackRate = playOptions.Rate;
 
-   return DUEDOSound;
+    DUEDOSound.Play( playOptions.RandomStart ? -1 : 0);
+
+    if (this._AudioContext.state !== 'running') {
+        this._PendingUserInteraction;
+    }
+
+    return DUEDOSound;
     
 };
 
@@ -208,7 +224,9 @@ Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameRefere
     else
     {
         var DUEDOSound = this._AddSound(s, (nameReference !== undefined ? nameReference : ("TWODSound_" + this._Sounds.length)), this.Volume);
-
+        
+        DUEDOSound.OriginalName = soundName;
+        
         if(!Duedo.Utils.IsNull(this.GameContext.StateManager.CurrentState()))
             DUEDOSound.ParentState = this.GameContext.StateManager.CurrentState();
 
@@ -297,8 +315,14 @@ Duedo.SoundManager.prototype.PauseSound = function (soundNameReference) {
 };
 
 
-
-
+Duedo.SoundManager.prototype.IsPlaying = function(name) {
+    const sound = this.GetListedSoundByName(name);
+    if(!sound) {
+        return false;
+    } else {
+        return sound.Playing;
+    }
+} 
 
 
 /*
@@ -379,7 +403,26 @@ Duedo.SoundManager.prototype.ResumeAllSounds = function () {
 
 
 
+/*
+ * GetSoundByReferenceName
+*/
+Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReference ) {
 
+    if( typeof soundNameReference === "undefined" )
+    {
+        return null;
+    }
+
+    for (var i in this._Sounds)
+    {
+        if (this._Sounds[i].OriginalName === soundNameReference)
+        {
+            return this._Sounds[i];
+        }
+    }
+
+    return null;
+};
 
 
 
@@ -395,13 +438,11 @@ Duedo.SoundManager.prototype.GetSoundByReferenceName = function ( soundNameRefer
 
     for (var i in this._Sounds)
     {
-        if (this._Sounds[i].Name === soundNameReference)
+        if (this._Sounds[i].Name === soundNameReference || this._Sounds[i].OriginalName === soundNameReference)
         {
             return this._Sounds[i];
         }
     }
-
-
 
     return null;
 };

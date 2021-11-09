@@ -163,7 +163,7 @@ Duedo.Viewport.prototype.Follow = function ( object, style ) {
 			break;
 	}
 
-
+	// TODO CHECK ! (testa con parallasse attivo)
 	this.LastLocation = this.Target.Location.Clone();
 
 	//TargetLocked event
@@ -315,7 +315,7 @@ Duedo.Viewport.prototype.PostUpdate = function(deltaT) {
 Duedo.Viewport.prototype.UpdateTranslation = function () {
 
 	//Pixel to meters location
-	this.mLocation = this.Target.Location.Clone() // location is always scaled by meters per pixel
+	this.mLocation = this.Target.Location.Clone(); // location is always scaled by meters per pixel
 
 	/*...follow target - there is a Deadzone */
 	if( this.Deadzone )
@@ -327,7 +327,7 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 			this.View.Location.X = this._Edge;
 		}
 
-		this._Edge = this.mLocation.X + this.Target.Width - this.Deadzone.Location.X - this.Deadzone.Width;
+		this._Edge = this.mLocation.X/* + this.Target.Width */- this.Deadzone.Location.X - this.Deadzone.Width;
 
 		if (this.View.Location.X < this._Edge)
 		{
@@ -341,7 +341,7 @@ Duedo.Viewport.prototype.UpdateTranslation = function () {
 			this.View.Location.Y = this._Edge;
 		}
 
-		this._Edge = this.mLocation.Y + this.Target.Height - this.Deadzone.Location.Y - this.Deadzone.Height;
+		this._Edge = this.mLocation.Y/* + this.Target.Height*/ - this.Deadzone.Location.Y - this.Deadzone.Height;
 
 		if (this.View.Location.Y < this._Edge)
 		{

@@ -18,10 +18,12 @@ Duedo.SSequence = function(gameContext, name) {
 	this.Type = Duedo.SSEQUENCE;
 	
 	this.Frames;
+	this.SpriteSource;
 	this.FrameIndex;
 	this.Active;
 	this.Rate = 1;
 	this.Repeat = Infinity;
+	this.Reverse = false;
 	this._Expired = false;
 	this._init(name);
 

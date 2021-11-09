@@ -313,9 +313,9 @@ Duedo.Text.prototype.Draw = function (context) {
     if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
         context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
     }
-    
+
     context.mlFillOrStrokeText(
-        this.Text, 
+        this.Text,
         DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
         DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
         DToPixels(width), 

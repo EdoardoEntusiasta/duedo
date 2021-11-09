@@ -57,7 +57,7 @@ Duedo.SpriteSheet.prototype.constructor = Duedo.SpriteSheet;
  * _init
  * @private
 */
-Duedo.SpriteSheet.prototype._init = function ( bufferedImage, name ) {
+Duedo.SpriteSheet.prototype._init = function ( bufferedImage, name) {
     this._super();
 
     this._Repeated       = 0;
@@ -71,6 +71,7 @@ Duedo.SpriteSheet.prototype._init = function ( bufferedImage, name ) {
     this.FrameIndex      = 0;
     this.Frame           = null;
     this.SequencesLength = 0;
+
 
     if( !Duedo.Utils.IsNull(bufferedImage) )
     {
@@ -100,17 +101,29 @@ Duedo.SpriteSheet.prototype._init = function ( bufferedImage, name ) {
 
 
 
+/**
+ * IsPlayingSequence
+ * check if sequenceName is currently playing
+ * @param {*} sequenceName 
+ * @returns 
+ */
+Duedo.SpriteSheet.prototype.IsPlayingSequence = function(sequenceName) {
+    if(this.ActiveSS().Name === sequenceName) {
+        return true;
+    }
+    return false;
+}
+
+
 
 /*
  * AddSequence
  * @sequenceName: string "myanimation"
  * @framesData: [ [frameOriginX, frameOriginY, frameWidth, frameHeight], [...] ]
 */
-Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData, options ) {
+Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData, options, sequenceImage = null ) {
 
-    var newSequence = new Duedo.SSequence(this.Game, sequenceName);
-
-
+    
     if(Duedo.Utils.IsNull(framesData))
     {
         framesData = [
@@ -124,20 +137,25 @@ Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData, o
         framesData[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
     }
 
+    var newSequence = new Duedo.SSequence(this.Game, sequenceName);
+
     //Compose sequence
-    newSequence.Frames      = framesData;
+    newSequence.Frames      = framesData.slice(0);
+    newSequence.SpriteSource = sequenceImage ? sequenceImage : this.Source;
     newSequence.FrameIndex  = 0;
+    newSequence.Name        = sequenceName;
     newSequence.Active      = true;
     newSequence.Parent      = this;
-    newSequence.Rate        = options ? options.Rate >= 0 ? options.Rate : this.Rate : this.Rate;
-    newSequence.Repeat      = options ? options.Repeat >= 0 ? options.Repeat : this.Repeat : this.Repeat;
+    newSequence.Rate        = options ? typeof options.Rate != undefined ? options.Rate : this.Rate : this.Rate;
+    newSequence.Repeat      = options ? typeof options.Repeat != undefined ? options.Repeat : this.Repeat : this.Repeat;
+    newSequence.Reverse     = false;
+
     this._Sequences[sequenceName] = newSequence;
     
     this.SequencesLength++;
 
     return newSequence;
 };
-
 
 
 
@@ -156,7 +174,6 @@ Duedo.SpriteSheet.prototype.GetSequence = function(sname) {
 
     return null;
 };
-
 
 
 
@@ -244,8 +261,12 @@ Duedo.SpriteSheet.prototype.PlaySequence = function ( sequenceName, stopPrevSequ
         this.StopSequence(this.ActiveSequence);
     }
     
-    if(sequenceName == this.ActiveSequence && this.Paused) {
-        return this.ResumeSequence();
+    if(sequenceName == this.ActiveSequence) {
+        if(this.Paused) {
+            return this.ResumeSequence();
+        } else {
+            return;
+        }
     }
 
     this._Repeated = 0;
@@ -371,8 +392,6 @@ Duedo.SpriteSheet.prototype.StopSequence = function ( sequenceName ) {
 
 
 
-
-
 /*
  * PauseSequence
  * @sequenceName: the name of the sequence to pause
@@ -446,7 +465,6 @@ Duedo.SpriteSheet.prototype.FrameWidth = function() {
 
 
 
-
 /*
  * FrameHeight | meters
  * @public
@@ -509,7 +527,6 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
 
 
 
-
 /*
  * Draw
  * @context: the context in use
@@ -534,6 +551,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 
     context.save();
     context.globalAlpha = this.Alpha * this.Game.World.Alpha;
+    
     
     /*
      * Rotate if needed
@@ -567,7 +585,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     try
     {
         context.drawImage(
-            this.Source,
+            this.ActiveSS().SpriteSource,
             fc[0], fc[1],
             DToPixels(fc[2]), DToPixels(fc[3]),
             // Location
@@ -583,30 +601,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
     }
 
     if(this.Debug) {
-        // Draw wrapper
-        context.beginPath();
-        context.strokeStyle = 'red';
-        context.rect(
-            DToPixels(drawLoc.X) - DToPixels(this.Width * this.Anchor.X),
-            DToPixels(drawLoc.Y) - DToPixels(this.Height * this.Anchor.Y), 
-            DToPixels(this.FrameWidth()),
-            DToPixels(this.FrameHeight())
-        );
-        context.stroke();
-        // Draw center
-        context.beginPath();
-        const centerSize = 1;
-        context.rect(
-            DToPixels(drawLoc.X),
-            DToPixels(drawLoc.Y), centerSize, centerSize);
-        context.fillStyle = "black";
-        context.fill();
-        context.font = '12px arial';
-        context.fillStyle = 'red';
-        context.fillText(`Sprite X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
-            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
-            DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
-        );
+        this._DrawDebug(context, drawLoc);
     }
 
     context.restore();
@@ -615,6 +610,41 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 };
 
 
+
+/**
+ * Draw debug information
+ * @param {*} context 
+ */
+Duedo.SpriteSheet.prototype._DrawDebug = function(context, drawLoc) {
+    // Draw wrapper
+    context.beginPath();
+    context.strokeStyle = 'red';
+    context.rect(
+        DToPixels(drawLoc.X) - DToPixels(this.Width * this.Anchor.X),
+        DToPixels(drawLoc.Y) - DToPixels(this.Height * this.Anchor.Y), 
+        DToPixels(this.FrameWidth()),
+        DToPixels(this.FrameHeight())
+    );
+    context.stroke();
+    // Draw center
+    context.font = '12px arial';
+    context.fillStyle = 'red';
+    context.fillText(`Sprite X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
+        DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
+        DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
+    );
+    context.beginPath();
+    context.moveTo(DToPixels(drawLoc.X), DToPixels(drawLoc.Y));
+    context.lineTo(DToPixels(this.Location.X), DToPixels(this.Location.Y) - DToPixels(this.Height * 0.5));
+    context.stroke();
+    // Draw pivot
+    context.beginPath();
+    context.beginPath();
+    context.arc(DToPixels(this.Location.X), DToPixels(this.Location.Y), 2, 0, 2 * Math.PI);
+    context.stroke();
+    context.fillStyle = "yellow";
+    context.fill();
+}
 
 
 
@@ -625,7 +655,6 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 */
 Duedo.SpriteSheet.prototype.DrawGL = function(context) {
 }
-
 
 
 
@@ -642,7 +671,6 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfWidth", {
 
 
 
-
 /*
  * HalfHeight
 */
@@ -653,7 +681,6 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "HalfHeight", {
     }
 
 });
-
 
 
 
@@ -693,6 +720,7 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "Center", {
     }
 
 });
+
 
 
 /*

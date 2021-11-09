@@ -11,6 +11,7 @@ gulp.task('minify', function() {
   return gulp
     .src([
       'dev/src/Duedo.js'
+      //,'dev/src/Physics/prototype.js'
       ,'dev/src/Core/Duedo.Consts.js'
       ,'dev/src/Core/Duedo.Client.js'
       ,'dev/src/Loader/Duedo.Require.js'
@@ -23,7 +24,6 @@ gulp.task('minify', function() {
       ,'dev/src/Object/Duedo.Object.js'
       ,'dev/src/Object/Duedo.GraphicObject.js'
       ,'dev/src/Object/Duedo.Entity.js'
-      ,'dev/src/Physics/prototype.js'
       ,'dev/src/Physics/Box2dWeb-2.1.a.3.js'
       ,'dev/src/Other/Duedo.QuadTree.js'
       ,'dev/src/Physics/Duedo.PhysicsEngine.js'

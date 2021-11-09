@@ -55,6 +55,7 @@
 			</div>
 		</div>
 		<script>
+
 			const physicsEnabled = false;
 			const worldWidthMeters = 30;
 			const worldHeightMeters = 20;
@@ -62,21 +63,26 @@
 
 			const game = new Duedo.GameContext(screenCanvas, worldWidthMeters, worldHeightMeters, physicsEnabled);
 
+			/*
+			* Sample state
+			*/
 			game.StateManager.AddState('splash', {
-        Enter: function() {
-            const splashLogo = new Image();
-            splashLogo.src = Duedo.Logo64;
-            splashLogo.onload = function() {
-                const splashScreen = new Duedo.Image(game, splashLogo);
-                splashScreen.Location.X = game.Viewport.Center.X;
-                splashScreen.Location.Y = game.Viewport.Center.Y + 1;
-                splashScreen.Alpha = 0;
-                splashScreen.Animate({ Alpha: 1, Location: {Y: game.Viewport.Center.Y}}, 4, 'EaseInOut');
-                game.Add(splashScreen);
+				Data: {
+					splashLogo: null
+				},
+        Create: function() {
+            this.Data.splashLogo = new Image();
+            this.Data.splashLogo.onload = () => {
+							const splashScreen = new Duedo.Image(game, this.Data.splashLogo);
+							splashScreen.Location.X = game.Viewport.Center.X;
+							splashScreen.Location.Y = game.Viewport.Center.Y + 1;
+							splashScreen.Alpha = 0;
+							splashScreen.Animate({ Alpha: 1, Location: {Y: game.Viewport.Center.Y}}, 4, 'EaseInOut');
+							game.Add(splashScreen);
             }
+						this.Data.splashLogo.src = Duedo.Logo64;
         }
-    }, true);
-
+    	}, true);
 
 	 	</script>
 	</body>

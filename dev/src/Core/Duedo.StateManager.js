@@ -55,7 +55,7 @@ Duedo.StateManager.prototype._init = function () {
     
     /*STD State template*/
     this._STDStateMethods = {
-        "StateData"   : {}, // Object to store the state's relative data
+        "Data"        : {}, // Object to store the state's relative data
         "Load"        : null,
         "LoadUpdate"  : null,
         "Added"       : null,
