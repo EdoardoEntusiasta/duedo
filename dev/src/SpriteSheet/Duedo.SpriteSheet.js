@@ -45,11 +45,9 @@ Duedo.SpriteSheet = function ( gameContext, bufferedImage, name ) {
 
 
 
-
 /*Inherit GraphicObject*/
 Duedo.SpriteSheet.prototype = Object.create(Duedo.GraphicObject.prototype);
 Duedo.SpriteSheet.prototype.constructor = Duedo.SpriteSheet;
-
 
 
 
@@ -123,24 +121,26 @@ Duedo.SpriteSheet.prototype.IsPlayingSequence = function(sequenceName) {
 */
 Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData, options, sequenceImage = null ) {
 
-    
+    const sequence = [];
+
     if(Duedo.Utils.IsNull(framesData))
     {
-        framesData = [
+        sequence = [
             [0, 0, 0, 0]
         ];
     }
 
     // Convert width/height frame pixels to meters
     for(let i = 0; i < framesData.length; i++) {
-        framesData[i][2] = framesData[i][2] / Duedo.Conf.PixelsInMeter;
-        framesData[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
+        sequence[i] = [framesData[i][0], framesData[i][1]];
+        sequence[i][2] = framesData[i][2] / Duedo.Conf.PixelsInMeter;
+        sequence[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
     }
 
     var newSequence = new Duedo.SSequence(this.Game, sequenceName);
 
     //Compose sequence
-    newSequence.Frames      = framesData.slice(0);
+    newSequence.Frames      = sequence;
     newSequence.SpriteSource = sequenceImage ? sequenceImage : this.Source;
     newSequence.FrameIndex  = 0;
     newSequence.Name        = sequenceName;
@@ -532,15 +532,13 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
  * @context: the context in use
  * draw the spritesheet on the screen
 */
-Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
+Duedo.SpriteSheet.prototype.Draw = function ( context , location, forceRender = false) {
 
-    if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 )
+    if (this.ActiveSequence === null || !this.Renderable && !forceRender || this.Alpha === 0 )
     {
         return this;
     }
-       
-    var frame;
-    var scaledDim;
+    
     var fc;
     var drawLoc = location !== undefined ? location : this.Location;
 
@@ -583,7 +581,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 
     /*Draw*/
     try
-    {
+    {   
         context.drawImage(
             this.ActiveSS().SpriteSource,
             fc[0], fc[1],

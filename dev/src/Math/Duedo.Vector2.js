@@ -64,7 +64,11 @@ Duedo.Vector2.prototype.Double = function () {
     return this;
 };
 
-Duedo.Vector2.prototype.Set = function(x, y) { 
+Duedo.Vector2.prototype.Set = function(x, y) {
+    if(x instanceof Duedo.Vector2) {
+        y = x.Y;
+        x = x.X;
+    }
     this.X = x;
     this.Y = y;
     return this;  

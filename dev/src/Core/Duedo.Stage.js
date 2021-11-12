@@ -119,7 +119,7 @@ Duedo.Stage.prototype.__StepEntity = function (deltaT, ent, upLevel) {
         ent[upLevel](deltaT);
 
         /*Update sub-children*/
-        if (Duedo.IsArray(ent.ChildrenList.List)) 
+        if (ent.ChildrenList && Duedo.IsArray(ent.ChildrenList.List)) 
         {
             this.__Update(deltaT, ent.ChildrenList.List, upLevel);
         }

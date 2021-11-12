@@ -54,9 +54,9 @@ Duedo.Parallax.prototype.AddLayer = function ( layer ) {
     }
     else
     {
-        if(Duedo.Utils.IsNull(layer.Source.Z) || layer.Source.Z === 0)
+        if(Duedo.Utils.IsNull(layer.Z) || layer.Z === 0)
         {
-            layer.Source.Z = (this.Z + this.Layers.length);
+            layer.Z = (this.Z + this.Layers.length);
         }
         
         layer.Parent = this;
@@ -66,13 +66,13 @@ Duedo.Parallax.prototype.AddLayer = function ( layer ) {
         layer.Source.Anchor.Y = this.Anchor.Y;
 
         // Inherit scale
-        layer.Source.Scale.X = this.Scale.X;
-        layer.Source.Scale.Y = this.Scale.Y;
+        //layer.Source.Scale.X = this.Scale.X;
+        //layer.Source.Scale.Y = this.Scale.Y;
 
         this.Layers.push(layer);
 
         /*...then free it into the world*/
-        this.Game.Add(layer.Source);
+        this.Game.Add(layer);
     }
     
     return this;
@@ -101,8 +101,8 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
         if (this.Game.Viewport.Translation.Magnitude() > 0)
         {
             
-            relVel = this.Velocity * (Layer.Source.Z + 2);
-            // Todo, zoom etc RIPETI LAYER
+            relVel = this.Velocity * (Layer.Z + 2);
+            // Todo, zoom etc
             offset.X = ((this.Game.Viewport.Translation.X * relVel) / (this.Game.Viewport.View.Width));
             offset.Y = ((this.Game.Viewport.Translation.Y * relVel) / (this.Game.Viewport.View.Height / 2));
 
@@ -112,6 +112,7 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
             /*Translate layer*/
             Layer.Source.Location.X += offset.X;
             Layer.Source.Location.Y += offset.Y;
+
         }
 
         if(!Duedo.Utils.IsNull(Layer["Update"]))

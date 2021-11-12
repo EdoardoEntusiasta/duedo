@@ -113,7 +113,7 @@ Duedo.Entity.prototype.PostUpdate = function() {};
  * Draw
  * Must/can be overwritten
 */
-Duedo.Entity.prototype.Draw     = function() {};
+Duedo.Entity.prototype.Draw     = function(context) {};
 
 
 /*

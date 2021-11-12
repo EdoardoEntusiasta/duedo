@@ -106,7 +106,7 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
 */
 Object.defineProperty(Duedo.Image.prototype, "Width", {
     get:function() {
-        return this._Width * this.Scale.X;
+        return (this._Width * this.Scale.X);
     },
     set:function(val) {
         //this.Scale.X = val / this._Width;
@@ -123,7 +123,7 @@ Object.defineProperty(Duedo.Image.prototype, "Width", {
 */
 Object.defineProperty(Duedo.Image.prototype, "Height", {
     get:function() {
-        return this._Height * this.Scale.Y;
+        return (this._Height * this.Scale.Y);
     },
     set:function(val) {
         //this.Scale.Y = val / this._Height;
@@ -164,9 +164,9 @@ Object.defineProperty(Duedo.Image.prototype, "HalfHeight", {
  * Draw
  * @public
 */
-Duedo.Image.prototype.Draw = function(context) {
+Duedo.Image.prototype.Draw = function(context, location, forceRender = false) {
 
-	if (!this.Renderable || this.Alpha === 0 || !this.Source )
+	if (!this.Renderable && !forceRender || this.Alpha === 0 || !this.Source )
     {
         return this; 
     }
@@ -174,13 +174,15 @@ Duedo.Image.prototype.Draw = function(context) {
 	context.save();
     context.globalAlpha = this.Alpha * this.Game.World.Alpha;
  
+    const Destination = location ? location : this.Location;
+
     /*
      * Rotate if needed
     */    
     if( this.Rotation !== 0 )
     {
         /*Get center based on PixelsInMeter and dimension*/
-        var mLocation = this.Location.Clone()
+        var mLocation = Destination.Clone()
             .MultiplyScalar(Duedo.Conf.PixelsInMeter)
             .Subtract(new Duedo.Vector2(this.HalfWidth, this.HalfHeight))
             .Add(
@@ -188,7 +190,7 @@ Duedo.Image.prototype.Draw = function(context) {
             );
         
         context.translate(mLocation.X, mLocation.Y);
-        context.rotate(Duedo.Units.DegToRadians(this.Rotation));
+        context.rotate(this.Rotation);
         context.translate(-(mLocation.X), -(mLocation.Y));
     }
 
@@ -204,8 +206,8 @@ Duedo.Image.prototype.Draw = function(context) {
         this.Source,    
         0, 0,   
         this.Source.width, this.Source.height,
-        DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),  
-        DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
+        DToPixels(Destination.X) - DToPixels(this.Width * this.Anchor.X),  
+        DToPixels(Destination.Y) - DToPixels(this.Height * this.Anchor.Y),
         DToPixels(this.Width), DToPixels(this.Height)
     );
     
@@ -215,8 +217,8 @@ Duedo.Image.prototype.Draw = function(context) {
         context.strokeStyle = 'green';
         context.fillStyle = 'black';
         context.rect(
-            DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
-            DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y), 
+            DToPixels(Destination.X) - DToPixels(this.Width * this.Anchor.X),
+            DToPixels(Destination.Y) - DToPixels(this.Height * this.Anchor.Y), 
             DToPixels(this.Width),
             DToPixels(this.Height)
         );
@@ -225,14 +227,14 @@ Duedo.Image.prototype.Draw = function(context) {
         context.beginPath();
         const centerSize = 1;
         context.rect(
-            DToPixels(this.Location.X),
-            DToPixels(this.Location.Y), centerSize, centerSize);
+            DToPixels(Destination.X),
+            DToPixels(Destination.Y), centerSize, centerSize);
         context.fill();
         context.font = '12px arial';
         context.fillStyle = 'green';
-        context.fillText(`Image X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
-            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
-            DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
+        context.fillText(`Image X:${Destination.X.toFixed(0)} Y:${Destination.Y.toFixed(0)}`, 
+            DToPixels(Destination.X) - DToPixels(this.Width * 0.5), 
+            DToPixels(Destination.Y - 0.5) - DToPixels(this.Height * 0.5)
         );
     }
 

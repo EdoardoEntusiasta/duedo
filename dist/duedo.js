@@ -697,7 +697,11 @@ Duedo.Vector2.prototype.Double = function () {
     return this;
 };
 
-Duedo.Vector2.prototype.Set = function(x, y) { 
+Duedo.Vector2.prototype.Set = function(x, y) {
+    if(x instanceof Duedo.Vector2) {
+        y = x.Y;
+        x = x.X;
+    }
     this.X = x;
     this.Y = y;
     return this;  
@@ -2809,7 +2813,7 @@ Duedo.Entity.prototype.PostUpdate = function() {};
  * Draw
  * Must/can be overwritten
 */
-Duedo.Entity.prototype.Draw     = function() {};
+Duedo.Entity.prototype.Draw     = function(context) {};
 
 
 /*
@@ -17331,16 +17335,24 @@ function mlFunction(text, x, y, w, h, hAlign, vAlign, lineheight, fn) {
 ==============================
 Duedo.Layer
 Author: http://www.edoardocasella.it
+
+* Default anchor for a parallax should be at O,O
+
 ==============================
 */
 
 
-Duedo.Layer = function ( gameContext, image ) {
+Duedo.Layer = function ( gameContext, image, anchor = new Duedo.Vector2(0, 0) ) {
     Duedo.GraphicObject.call(this);
     this.Game = gameContext || Duedo.Global.Games[0];
     this.Type = Duedo.LAYER;
     this.Parent;
-    this._init(image);
+
+    /**
+     * Force repetition on X axis
+     */
+    this.RepeatX = true;
+    this._init(image, anchor);
 };
 
 
@@ -17352,18 +17364,15 @@ Duedo.Layer.prototype.constructor = Duedo.Layer;
 /*
  * _init
 */
-Duedo.Layer.prototype._init = function( image ) {
+Duedo.Layer.prototype._init = function( image, anchor) {
     this._super();
-
-    if(!image instanceof Duedo.Image) {
-        image = new Duedo.Image(this.Game, image);
-    }
 
     if(!Duedo.Utils.IsNull(image))
     {
         this.Source = image;
 
-        /*FIX:: SE E' UNA SPRITESHEET LA DIMENSIONE E' QUELLA DEL FRAME*/
+        this.Source.Anchor = anchor;
+
         this._Width = this.Source.Width;
         this._Height = this.Source.Height;
     }
@@ -17374,9 +17383,17 @@ Duedo.Layer.prototype._init = function( image ) {
 
 /*
  * Draw
+ * ... and eventually loop horizontally
 */
-Duedo.Layer.prototype.Draw = function(context2d) {
-    this.DrawLayer(this.Source, context2d, this.Source.Location);
+Duedo.Layer.prototype.Draw = function(context2d, location = null, forceRender = false) {
+
+    const targetLocation = location ? location : this.Source.Location;
+
+    this.DrawLayer(this.Source, context2d, location ? location : this.Source.Location, forceRender);
+    
+    if(this.RepeatX && targetLocation.X - this.Game.Viewport.Location.X + this.Source.Width < this.Game.Viewport.Location.X + this.Game.Viewport.Width) {
+        this.Draw(context2d, new Duedo.Vector2(targetLocation.X + this.Source.Width, targetLocation.Y), true);
+    }
 };
 
 
@@ -17384,25 +17401,52 @@ Duedo.Layer.prototype.Draw = function(context2d) {
 /*
  * DrawLayer
 */
-Duedo.Layer.prototype.DrawLayer = function(source, context2d, location) {
-    source.Draw(context2d, location);
+Duedo.Layer.prototype.DrawLayer = function(source, context2d, location, forceRender = false) {
+    source.Draw(context2d, location, forceRender);
 };
 
+
+/*
+ * PreUpdate
+*/
+Duedo.Layer.prototype.PreUpdate = function(deltaT) {
+    if(this.Source.PreUpdate) {
+        this.Source.PreUpdate(deltaT);
+    }
+};
+
+
+
+/*
+ * Update
+*/
+Duedo.Layer.prototype.Update = function(deltaT) {
+    if(this.Source.Update) {
+        this.Source.Update(deltaT);
+    }
+};
+
+
+
+/*
+ * PostUpdate
+*/
+Duedo.Layer.prototype.PostUpdate = function(deltaT) {
+    if(this.Source.PostUpdate) {
+        this.Source.PostUpdate(deltaT);
+    }
+};
 
 
 
 /*
  * Width
  * @public
- * Width of this image
+ * Width of this layer that is the width of the graphic resource
 */
 Object.defineProperty(Duedo.Layer.prototype, "Width", {
     get:function() {
-        return this._Width * this.Scale.X;
-    },
-    set:function(val) {
-        this.Scale.X = val / this._Width;
-        this._Width = val;
+        return this._Width;
     }
 });
 
@@ -17411,17 +17455,12 @@ Object.defineProperty(Duedo.Layer.prototype, "Width", {
 /*
  * Height
  * @public
- * Height of this image
+ * Height of this layer that is the height of the graphic resource
 */
 Object.defineProperty(Duedo.Layer.prototype, "Height", {
     get:function() {
-        return this._Height * this.Scale.Y;
-    },
-    set:function(val) {
-        this.Scale.Y = val / this._Height;
-        this._Height = val;
+        return this._Height;
     }
-
 });
 
 
@@ -17481,9 +17520,9 @@ Duedo.Parallax.prototype.AddLayer = function ( layer ) {
     }
     else
     {
-        if(Duedo.Utils.IsNull(layer.Source.Z) || layer.Source.Z === 0)
+        if(Duedo.Utils.IsNull(layer.Z) || layer.Z === 0)
         {
-            layer.Source.Z = (this.Z + this.Layers.length);
+            layer.Z = (this.Z + this.Layers.length);
         }
         
         layer.Parent = this;
@@ -17493,13 +17532,13 @@ Duedo.Parallax.prototype.AddLayer = function ( layer ) {
         layer.Source.Anchor.Y = this.Anchor.Y;
 
         // Inherit scale
-        layer.Source.Scale.X = this.Scale.X;
-        layer.Source.Scale.Y = this.Scale.Y;
+        //layer.Source.Scale.X = this.Scale.X;
+        //layer.Source.Scale.Y = this.Scale.Y;
 
         this.Layers.push(layer);
 
         /*...then free it into the world*/
-        this.Game.Add(layer.Source);
+        this.Game.Add(layer);
     }
     
     return this;
@@ -17528,8 +17567,8 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
         if (this.Game.Viewport.Translation.Magnitude() > 0)
         {
             
-            relVel = this.Velocity * (Layer.Source.Z + 2);
-            // Todo, zoom etc RIPETI LAYER
+            relVel = this.Velocity * (Layer.Z + 2);
+            // Todo, zoom etc
             offset.X = ((this.Game.Viewport.Translation.X * relVel) / (this.Game.Viewport.View.Width));
             offset.Y = ((this.Game.Viewport.Translation.Y * relVel) / (this.Game.Viewport.View.Height / 2));
 
@@ -17539,6 +17578,7 @@ Duedo.Parallax.prototype.Update = function ( deltaT ) {
             /*Translate layer*/
             Layer.Source.Location.X += offset.X;
             Layer.Source.Location.Y += offset.Y;
+
         }
 
         if(!Duedo.Utils.IsNull(Layer["Update"]))
@@ -18479,11 +18519,9 @@ Duedo.SpriteSheet = function ( gameContext, bufferedImage, name ) {
 
 
 
-
 /*Inherit GraphicObject*/
 Duedo.SpriteSheet.prototype = Object.create(Duedo.GraphicObject.prototype);
 Duedo.SpriteSheet.prototype.constructor = Duedo.SpriteSheet;
-
 
 
 
@@ -18557,24 +18595,26 @@ Duedo.SpriteSheet.prototype.IsPlayingSequence = function(sequenceName) {
 */
 Duedo.SpriteSheet.prototype.AddSequence = function ( sequenceName, framesData, options, sequenceImage = null ) {
 
-    
+    const sequence = [];
+
     if(Duedo.Utils.IsNull(framesData))
     {
-        framesData = [
+        sequence = [
             [0, 0, 0, 0]
         ];
     }
 
     // Convert width/height frame pixels to meters
     for(let i = 0; i < framesData.length; i++) {
-        framesData[i][2] = framesData[i][2] / Duedo.Conf.PixelsInMeter;
-        framesData[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
+        sequence[i] = [framesData[i][0], framesData[i][1]];
+        sequence[i][2] = framesData[i][2] / Duedo.Conf.PixelsInMeter;
+        sequence[i][3] = framesData[i][3] / Duedo.Conf.PixelsInMeter;
     }
 
     var newSequence = new Duedo.SSequence(this.Game, sequenceName);
 
     //Compose sequence
-    newSequence.Frames      = framesData.slice(0);
+    newSequence.Frames      = sequence;
     newSequence.SpriteSource = sequenceImage ? sequenceImage : this.Source;
     newSequence.FrameIndex  = 0;
     newSequence.Name        = sequenceName;
@@ -18966,15 +19006,13 @@ Duedo.SpriteSheet.prototype.PostUpdate = function(deltaT) {
  * @context: the context in use
  * draw the spritesheet on the screen
 */
-Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
+Duedo.SpriteSheet.prototype.Draw = function ( context , location, forceRender = false) {
 
-    if (this.ActiveSequence === null || !this.Renderable || this.Alpha === 0 )
+    if (this.ActiveSequence === null || !this.Renderable && !forceRender || this.Alpha === 0 )
     {
         return this;
     }
-       
-    var frame;
-    var scaledDim;
+    
     var fc;
     var drawLoc = location !== undefined ? location : this.Location;
 
@@ -19017,7 +19055,7 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location) {
 
     /*Draw*/
     try
-    {
+    {   
         context.drawImage(
             this.ActiveSS().SpriteSource,
             fc[0], fc[1],
@@ -19275,7 +19313,7 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
 */
 Object.defineProperty(Duedo.Image.prototype, "Width", {
     get:function() {
-        return this._Width * this.Scale.X;
+        return (this._Width * this.Scale.X);
     },
     set:function(val) {
         //this.Scale.X = val / this._Width;
@@ -19292,7 +19330,7 @@ Object.defineProperty(Duedo.Image.prototype, "Width", {
 */
 Object.defineProperty(Duedo.Image.prototype, "Height", {
     get:function() {
-        return this._Height * this.Scale.Y;
+        return (this._Height * this.Scale.Y);
     },
     set:function(val) {
         //this.Scale.Y = val / this._Height;
@@ -19333,9 +19371,9 @@ Object.defineProperty(Duedo.Image.prototype, "HalfHeight", {
  * Draw
  * @public
 */
-Duedo.Image.prototype.Draw = function(context) {
+Duedo.Image.prototype.Draw = function(context, location, forceRender = false) {
 
-	if (!this.Renderable || this.Alpha === 0 || !this.Source )
+	if (!this.Renderable && !forceRender || this.Alpha === 0 || !this.Source )
     {
         return this; 
     }
@@ -19343,13 +19381,15 @@ Duedo.Image.prototype.Draw = function(context) {
 	context.save();
     context.globalAlpha = this.Alpha * this.Game.World.Alpha;
  
+    const Destination = location ? location : this.Location;
+
     /*
      * Rotate if needed
     */    
     if( this.Rotation !== 0 )
     {
         /*Get center based on PixelsInMeter and dimension*/
-        var mLocation = this.Location.Clone()
+        var mLocation = Destination.Clone()
             .MultiplyScalar(Duedo.Conf.PixelsInMeter)
             .Subtract(new Duedo.Vector2(this.HalfWidth, this.HalfHeight))
             .Add(
@@ -19357,7 +19397,7 @@ Duedo.Image.prototype.Draw = function(context) {
             );
         
         context.translate(mLocation.X, mLocation.Y);
-        context.rotate(Duedo.Units.DegToRadians(this.Rotation));
+        context.rotate(this.Rotation);
         context.translate(-(mLocation.X), -(mLocation.Y));
     }
 
@@ -19373,8 +19413,8 @@ Duedo.Image.prototype.Draw = function(context) {
         this.Source,    
         0, 0,   
         this.Source.width, this.Source.height,
-        DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),  
-        DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y),
+        DToPixels(Destination.X) - DToPixels(this.Width * this.Anchor.X),  
+        DToPixels(Destination.Y) - DToPixels(this.Height * this.Anchor.Y),
         DToPixels(this.Width), DToPixels(this.Height)
     );
     
@@ -19384,8 +19424,8 @@ Duedo.Image.prototype.Draw = function(context) {
         context.strokeStyle = 'green';
         context.fillStyle = 'black';
         context.rect(
-            DToPixels(this.Location.X) - DToPixels(this.Width * this.Anchor.X),
-            DToPixels(this.Location.Y) - DToPixels(this.Height * this.Anchor.Y), 
+            DToPixels(Destination.X) - DToPixels(this.Width * this.Anchor.X),
+            DToPixels(Destination.Y) - DToPixels(this.Height * this.Anchor.Y), 
             DToPixels(this.Width),
             DToPixels(this.Height)
         );
@@ -19394,14 +19434,14 @@ Duedo.Image.prototype.Draw = function(context) {
         context.beginPath();
         const centerSize = 1;
         context.rect(
-            DToPixels(this.Location.X),
-            DToPixels(this.Location.Y), centerSize, centerSize);
+            DToPixels(Destination.X),
+            DToPixels(Destination.Y), centerSize, centerSize);
         context.fill();
         context.font = '12px arial';
         context.fillStyle = 'green';
-        context.fillText(`Image X:${this.Location.X.toFixed(0)} Y:${this.Location.Y.toFixed(0)}`, 
-            DToPixels(this.Location.X) - DToPixels(this.Width * 0.5), 
-            DToPixels(this.Location.Y - 0.5) - DToPixels(this.Height * 0.5)
+        context.fillText(`Image X:${Destination.X.toFixed(0)} Y:${Destination.Y.toFixed(0)}`, 
+            DToPixels(Destination.X) - DToPixels(this.Width * 0.5), 
+            DToPixels(Destination.Y - 0.5) - DToPixels(this.Height * 0.5)
         );
     }
 
@@ -22140,6 +22180,7 @@ Duedo.State.prototype.Load = function () {
 
 
 
+
 /*
  * LoadUpdate
  * @overwritten
@@ -22296,7 +22337,7 @@ Duedo.StateManager.prototype._init = function () {
         "Zoom"        : null, // When camera has been zoomed @param - zoomLevel
         "Update"      : null, // Each frame @param - deltaT
         "Create"      : null,
-        "Enter"       : null,
+        "Enter"       : null, // Load completed, enter state
         "Exit"        : null,
         "PausedUpdate": null,
         "Pause"       : null,
@@ -22529,7 +22570,7 @@ Duedo.StateManager.prototype._UpdateLoading = function() {
 
     if(!Duedo.Utils.IsNull(this["LoadUpdate"]))
     {
-        this.LoadUpdate.call(this._States[this._CurrentState], this.Game.DeltaT);
+        this.LoadUpdate.call(this._States[this._CurrentState], this.Game.Loader.Percentage);
     }
 
     if(!this.Game.Loader.Loading)
@@ -23167,7 +23208,7 @@ Duedo.Stage.prototype.__StepEntity = function (deltaT, ent, upLevel) {
         ent[upLevel](deltaT);
 
         /*Update sub-children*/
-        if (Duedo.IsArray(ent.ChildrenList.List)) 
+        if (ent.ChildrenList && Duedo.IsArray(ent.ChildrenList.List)) 
         {
             this.__Update(deltaT, ent.ChildrenList.List, upLevel);
         }
@@ -23310,7 +23351,7 @@ Duedo.Keyboard = function(gameContext) {
     this.Game = gameContext || Duedo.Global.Games[0];
 
 	this.Enabled;
-	this.PreventDefault;
+	this.PreventDefault = true;
 
 	//this._Captures;
 	this._Keys;

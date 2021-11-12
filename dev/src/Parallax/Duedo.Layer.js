@@ -2,16 +2,24 @@
 ==============================
 Duedo.Layer
 Author: http://www.edoardocasella.it
+
+* Default anchor for a parallax should be at O,O
+
 ==============================
 */
 
 
-Duedo.Layer = function ( gameContext, image ) {
+Duedo.Layer = function ( gameContext, image, anchor = new Duedo.Vector2(0, 0) ) {
     Duedo.GraphicObject.call(this);
     this.Game = gameContext || Duedo.Global.Games[0];
     this.Type = Duedo.LAYER;
     this.Parent;
-    this._init(image);
+
+    /**
+     * Force repetition on X axis
+     */
+    this.RepeatX = true;
+    this._init(image, anchor);
 };
 
 
@@ -23,18 +31,15 @@ Duedo.Layer.prototype.constructor = Duedo.Layer;
 /*
  * _init
 */
-Duedo.Layer.prototype._init = function( image ) {
+Duedo.Layer.prototype._init = function( image, anchor) {
     this._super();
-
-    if(!image instanceof Duedo.Image) {
-        image = new Duedo.Image(this.Game, image);
-    }
 
     if(!Duedo.Utils.IsNull(image))
     {
         this.Source = image;
 
-        /*FIX:: SE E' UNA SPRITESHEET LA DIMENSIONE E' QUELLA DEL FRAME*/
+        this.Source.Anchor = anchor;
+
         this._Width = this.Source.Width;
         this._Height = this.Source.Height;
     }
@@ -45,9 +50,17 @@ Duedo.Layer.prototype._init = function( image ) {
 
 /*
  * Draw
+ * ... and eventually loop horizontally
 */
-Duedo.Layer.prototype.Draw = function(context2d) {
-    this.DrawLayer(this.Source, context2d, this.Source.Location);
+Duedo.Layer.prototype.Draw = function(context2d, location = null, forceRender = false) {
+
+    const targetLocation = location ? location : this.Source.Location;
+
+    this.DrawLayer(this.Source, context2d, location ? location : this.Source.Location, forceRender);
+    
+    if(this.RepeatX && targetLocation.X - this.Game.Viewport.Location.X + this.Source.Width < this.Game.Viewport.Location.X + this.Game.Viewport.Width) {
+        this.Draw(context2d, new Duedo.Vector2(targetLocation.X + this.Source.Width, targetLocation.Y), true);
+    }
 };
 
 
@@ -55,25 +68,52 @@ Duedo.Layer.prototype.Draw = function(context2d) {
 /*
  * DrawLayer
 */
-Duedo.Layer.prototype.DrawLayer = function(source, context2d, location) {
-    source.Draw(context2d, location);
+Duedo.Layer.prototype.DrawLayer = function(source, context2d, location, forceRender = false) {
+    source.Draw(context2d, location, forceRender);
 };
 
+
+/*
+ * PreUpdate
+*/
+Duedo.Layer.prototype.PreUpdate = function(deltaT) {
+    if(this.Source.PreUpdate) {
+        this.Source.PreUpdate(deltaT);
+    }
+};
+
+
+
+/*
+ * Update
+*/
+Duedo.Layer.prototype.Update = function(deltaT) {
+    if(this.Source.Update) {
+        this.Source.Update(deltaT);
+    }
+};
+
+
+
+/*
+ * PostUpdate
+*/
+Duedo.Layer.prototype.PostUpdate = function(deltaT) {
+    if(this.Source.PostUpdate) {
+        this.Source.PostUpdate(deltaT);
+    }
+};
 
 
 
 /*
  * Width
  * @public
- * Width of this image
+ * Width of this layer that is the width of the graphic resource
 */
 Object.defineProperty(Duedo.Layer.prototype, "Width", {
     get:function() {
-        return this._Width * this.Scale.X;
-    },
-    set:function(val) {
-        this.Scale.X = val / this._Width;
-        this._Width = val;
+        return this._Width;
     }
 });
 
@@ -82,16 +122,11 @@ Object.defineProperty(Duedo.Layer.prototype, "Width", {
 /*
  * Height
  * @public
- * Height of this image
+ * Height of this layer that is the height of the graphic resource
 */
 Object.defineProperty(Duedo.Layer.prototype, "Height", {
     get:function() {
-        return this._Height * this.Scale.Y;
-    },
-    set:function(val) {
-        this.Scale.Y = val / this._Height;
-        this._Height = val;
+        return this._Height;
     }
-
 });
 

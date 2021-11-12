@@ -14,7 +14,7 @@ Duedo.Keyboard = function(gameContext) {
     this.Game = gameContext || Duedo.Global.Games[0];
 
 	this.Enabled;
-	this.PreventDefault;
+	this.PreventDefault = true;
 
 	//this._Captures;
 	this._Keys;

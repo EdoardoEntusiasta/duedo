@@ -62,7 +62,7 @@ Duedo.StateManager.prototype._init = function () {
         "Zoom"        : null, // When camera has been zoomed @param - zoomLevel
         "Update"      : null, // Each frame @param - deltaT
         "Create"      : null,
-        "Enter"       : null,
+        "Enter"       : null, // Load completed, enter state
         "Exit"        : null,
         "PausedUpdate": null,
         "Pause"       : null,
@@ -295,7 +295,7 @@ Duedo.StateManager.prototype._UpdateLoading = function() {
 
     if(!Duedo.Utils.IsNull(this["LoadUpdate"]))
     {
-        this.LoadUpdate.call(this._States[this._CurrentState], this.Game.DeltaT);
+        this.LoadUpdate.call(this._States[this._CurrentState], this.Game.Loader.Percentage);
     }
 
     if(!this.Game.Loader.Loading)
