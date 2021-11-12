@@ -133,42 +133,27 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 
 /**
  * Update effects
+ * TODO preUpdate effects?
  * @private
  */
 Duedo.Viewport.prototype._UpdateEffects = function(deltaT) {
-	for(let i = 0; i < this._Effects.length; i++) {
-		const effect = this._Effects[i];
-		if(effect.ElapsedTime < effect.Duration) {
-			effect.ElapsedTime += deltaT;
-			const offset = new Duedo.Vector2(
-				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.X * deltaT,
-				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.Y * deltaT
-			)
-			this.View.Location.Add(offset);
-		} else {
-			this.SetPosition(effect.OriginalPosition.X, effect.OriginalPosition.Y);
+	for(let i = this._Effects.length - 1; i >= 0; i--) {
+		if(!this._Effects[i].Update(deltaT)) {
 			this._Effects.splice(i, 1);
 		}
 	}
 }
 
+
+
 /**
- * Shake effect
+ * Effect
+ * Apply an effect to the viewport
  * @param {*} magnitude 
  */
-Duedo.Viewport.prototype.Effect = function(effectName, duration, options) {
-
-	this._Effects.push(
-		{
-			Name: effectName,
-			Duration: duration,
-			Options: options,
-			ElapsedTime: 0,
-			OriginalPosition: this.Location.Clone()
-		}
-	);
-
-} 
+Duedo.Viewport.prototype.Effect = function(effectName, options) {
+	this._Effects.push( new Duedo[`ViewportEffect${effectName}`](this.Game, this, options));
+}
 
 
 

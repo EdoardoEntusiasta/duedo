@@ -25380,42 +25380,27 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 
 /**
  * Update effects
+ * TODO preUpdate effects?
  * @private
  */
 Duedo.Viewport.prototype._UpdateEffects = function(deltaT) {
-	for(let i = 0; i < this._Effects.length; i++) {
-		const effect = this._Effects[i];
-		if(effect.ElapsedTime < effect.Duration) {
-			effect.ElapsedTime += deltaT;
-			const offset = new Duedo.Vector2(
-				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.X * deltaT,
-				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.Y * deltaT
-			)
-			this.View.Location.Add(offset);
-		} else {
-			this.SetPosition(effect.OriginalPosition.X, effect.OriginalPosition.Y);
+	for(let i = this._Effects.length - 1; i >= 0; i--) {
+		if(!this._Effects[i].Update(deltaT)) {
 			this._Effects.splice(i, 1);
 		}
 	}
 }
 
+
+
 /**
- * Shake effect
+ * Effect
+ * Apply an effect to the viewport
  * @param {*} magnitude 
  */
-Duedo.Viewport.prototype.Effect = function(effectName, duration, options) {
-
-	this._Effects.push(
-		{
-			Name: effectName,
-			Duration: duration,
-			Options: options,
-			ElapsedTime: 0,
-			OriginalPosition: this.Location.Clone()
-		}
-	);
-
-} 
+Duedo.Viewport.prototype.Effect = function(effectName, options) {
+	this._Effects.push( new Duedo[`ViewportEffect${effectName}`](this.Game, this, options));
+}
 
 
 
@@ -26095,9 +26080,84 @@ Duedo.Viewport.prototype.RenderDebugInfo = function(renderer) {
 
 
 
+Duedo.ViewportEffect = function ( gameContext, Viewport ) {
+	this.Game = gameContext || Duedo.Global.Games[0];
+	this.Viewport = Viewport;
+	return this._init();
+};
+
+Duedo.ViewportEffect.prototype.constructor = Duedo.ViewportEffect;
+
+
+Duedo.ViewportEffect.prototype._init = function() {}
+
+
+Duedo.ViewportEffect.prototype.PreUpdate = function() {}
+
+Duedo.ViewportEffect.prototype.Update = function() {}
+
+Duedo.ViewportEffect.prototype.PostUpdate = function() {}
+
+
+
+
 /**
- * Viewport effects
+ * Duedo Viewport's shake effect
+ * @param {*} gameContext 
+ * @param {*} Viewport 
+ * @param {*} options 
+ * @returns 
  */
+
+
+Duedo.ViewportEffectShake = function ( gameContext, Viewport, options ) {
+  Duedo.ViewportEffect.call(this, gameContext, Viewport);
+
+  this._ElapsedTim;
+  this.OriginalPosition;
+
+	return this._init(options);
+};
+
+
+Duedo.ViewportEffectShake.prototype = Object.create(Duedo.ViewportEffect.prototype);
+Duedo.ViewportEffectShake.prototype.constructor = Duedo.ViewportEffectShake;
+
+/**
+ * Init
+ * Initialize effect
+ * @param {*} options 
+ */
+Duedo.ViewportEffectShake.prototype._init = function(options = {}) {
+  this._ElapsedTime = 0;
+  this.OriginalPosition = this.Viewport.Location.Clone();
+  this.Duration = options.Duration != null ? options.Duration : 0.5;
+  this.Magnitude = options.Magnitude != null ? options.Magnitude : new Duedo.Vector2(0, 0);
+}
+
+/**
+ * Update effect
+ * @param {*} deltaT 
+ * @returns 
+ */
+Duedo.ViewportEffectShake.prototype.Update = function(deltaT) {
+
+		if(this._ElapsedTime < this.Duration) {
+			this._ElapsedTime += deltaT;
+			const offset = new Duedo.Vector2(
+				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.X * deltaT,
+				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.Y * deltaT
+			)
+			this.Viewport.View.Location.Add(offset);
+		} else {
+      // Return the camera to its initial position
+      this.Viewport.SetPosition(this.OriginalPosition.X, this.OriginalPosition.Y);
+			return false;
+		}
+
+    return true;
+}
+
 
 /*
 ==============================

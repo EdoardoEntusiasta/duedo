@@ -65,6 +65,7 @@ gulp.task('minify', function() {
       ,'dev/src/Input/Duedo.InteractiveProperties.js'
       ,'dev/src/Viewport/Duedo.Viewport.js'
       ,'dev/src/Viewport/Duedo.ViewportEffects.js'
+      ,'dev/src/Viewport/Effects/Shake.js'
       ,'dev/src/Core/Duedo.World.js'
       ,'dev/src/Core/Duedo.Renderer.js'
       ,'dev/src/Core/Duedo.GameContext.js'
