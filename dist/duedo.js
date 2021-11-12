@@ -25307,6 +25307,8 @@ Duedo.Viewport = function ( gameContext, ViewWidth, ViewHeight ) {
 		Height: null
 	}
 
+	this._Effects = [];
+
 	/*Dragging properties*/
 	this.DragScale = 0.5;
 	this.Slide = false;
@@ -25375,6 +25377,45 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 };
 
 
+
+/**
+ * Update effects
+ * @private
+ */
+Duedo.Viewport.prototype._UpdateEffects = function(deltaT) {
+	for(let i = 0; i < this._Effects.length; i++) {
+		const effect = this._Effects[i];
+		if(effect.ElapsedTime < effect.Duration) {
+			effect.ElapsedTime += deltaT;
+			const offset = new Duedo.Vector2(
+				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.X * deltaT,
+				Duedo.Utils.RandInRange(-0.2, 0.2) * effect.Options.Magnitude.Y * deltaT
+			)
+			this.View.Location.Add(offset);
+		} else {
+			this.SetPosition(effect.OriginalPosition.X, effect.OriginalPosition.Y);
+			this._Effects.splice(i, 1);
+		}
+	}
+}
+
+/**
+ * Shake effect
+ * @param {*} magnitude 
+ */
+Duedo.Viewport.prototype.Effect = function(effectName, duration, options) {
+
+	this._Effects.push(
+		{
+			Name: effectName,
+			Duration: duration,
+			Options: options,
+			ElapsedTime: 0,
+			OriginalPosition: this.Location.Clone()
+		}
+	);
+
+} 
 
 
 
@@ -25502,6 +25543,8 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 	{
 		this.Translation.MultiplyScalar(0);
 	}
+
+	this._UpdateEffects(deltaT);
 
 	return this;
 
@@ -26049,6 +26092,12 @@ Duedo.Viewport.prototype.RenderDebugInfo = function(renderer) {
 
 	this._DebugText.RenderOrderID = renderer.CurrentRenderOrderID++;
 };
+
+
+
+/**
+ * Viewport effects
+ */
 
 /*
 ==============================
