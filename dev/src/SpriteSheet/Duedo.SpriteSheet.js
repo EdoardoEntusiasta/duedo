@@ -582,6 +582,13 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location, forceRender = 
     /*Draw*/
     try
     {   
+
+        if(this.FlipX) {
+            context.translate(DToPixels(drawLoc.X), 0)
+            context.scale(-1, 1);
+            context.translate(-DToPixels(drawLoc.X), 0)
+        }
+
         context.drawImage(
             this.ActiveSS().SpriteSource,
             fc[0], fc[1],

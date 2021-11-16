@@ -39,14 +39,15 @@ Duedo.ViewportEffectShake.prototype._init = function(options = {}) {
  * @returns 
  */
 Duedo.ViewportEffectShake.prototype.Update = function(deltaT) {
-
 		if(this._ElapsedTime < this.Duration) {
 			this._ElapsedTime += deltaT;
+			// TODO decrementa intensità con ease-out
 			const offset = new Duedo.Vector2(
 				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.X * deltaT,
 				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.Y * deltaT
 			)
 			this.Viewport.View.Location.Add(offset);
+			return true;
 		} else {
       // Return the camera to its initial position
       this.Viewport.SetPosition(this.OriginalPosition.X, this.OriginalPosition.Y);
@@ -56,3 +57,6 @@ Duedo.ViewportEffectShake.prototype.Update = function(deltaT) {
     return true;
 }
 
+
+
+Duedo.ViewportEffectShake.prototype.Render = function(context) { }

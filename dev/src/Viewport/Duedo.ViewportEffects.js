@@ -12,10 +12,12 @@ Duedo.ViewportEffect.prototype.constructor = Duedo.ViewportEffect;
 Duedo.ViewportEffect.prototype._init = function() {}
 
 
-Duedo.ViewportEffect.prototype.PreUpdate = function() {}
+Duedo.ViewportEffect.prototype.PreUpdate = function(deltaT) {}
 
-Duedo.ViewportEffect.prototype.Update = function() {}
+Duedo.ViewportEffect.prototype.Update = function(deltaT) {}
 
-Duedo.ViewportEffect.prototype.PostUpdate = function() {}
+Duedo.ViewportEffect.prototype.PostUpdate = function(deltaT) {}
+
+Duedo.ViewportEffect.prototype.Render = function(context) {}
 
 

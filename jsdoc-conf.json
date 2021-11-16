@@ -1,0 +1,9 @@
+{
+  "opts": {
+      "template": "templates/default", 
+      "encoding": "utf8",              
+      "destination": "./out/",          
+      "recurse": true,                  
+      "tutorials": "path/to/tutorials"
+  }
+}

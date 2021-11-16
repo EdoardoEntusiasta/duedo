@@ -136,9 +136,9 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
  * TODO preUpdate effects?
  * @private
  */
-Duedo.Viewport.prototype._UpdateEffects = function(deltaT) {
+Duedo.Viewport.prototype._UpdateEffects = function(arg, method = 'Update') {
 	for(let i = this._Effects.length - 1; i >= 0; i--) {
-		if(!this._Effects[i].Update(deltaT)) {
+		if(!this._Effects[i][method](arg)) {
 			this._Effects.splice(i, 1);
 		}
 	}

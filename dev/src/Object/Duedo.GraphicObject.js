@@ -38,6 +38,11 @@ Duedo.GraphicObject = function () {
     */
     this.Scale;
 
+    /**
+     * Flip horizontally
+     */
+    this.FlipX = false;
+
     /*
     Opacity/Alpha
     */
@@ -263,7 +268,7 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
             child.ParentState = this.ParentState;
 
         child.Z = this.Z + child.Z;
-        child.Scale = this.Scale;
+        // child.Scale = this.Scale;
         // child.Alpha = this.Alpha;
     }
 

@@ -2276,6 +2276,11 @@ Duedo.GraphicObject = function () {
     */
     this.Scale;
 
+    /**
+     * Flip horizontally
+     */
+    this.FlipX = false;
+
     /*
     Opacity/Alpha
     */
@@ -2501,7 +2506,7 @@ Duedo.GraphicObject.prototype.SuperPostUpdate = function (deltaT) {
             child.ParentState = this.ParentState;
 
         child.Z = this.Z + child.Z;
-        child.Scale = this.Scale;
+        // child.Scale = this.Scale;
         // child.Alpha = this.Alpha;
     }
 
@@ -19056,6 +19061,13 @@ Duedo.SpriteSheet.prototype.Draw = function ( context , location, forceRender = 
     /*Draw*/
     try
     {   
+
+        if(this.FlipX) {
+            context.translate(DToPixels(drawLoc.X), 0)
+            context.scale(-1, 1);
+            context.translate(-DToPixels(drawLoc.X), 0)
+        }
+
         context.drawImage(
             this.ActiveSS().SpriteSource,
             fc[0], fc[1],
@@ -19209,13 +19221,17 @@ Object.defineProperty(Duedo.SpriteSheet.prototype, "IsPaused", {
 ==============================
 Duedo.Image
 Author: http://www.edoardocasella.it
-
-Notes:
-Simple image
 ==============================
 */
 
 
+ /**
+  * Create a new image object
+  * @class
+  * @constructor
+  * @param {Duedo.Game} gameContext
+  * @param {file} bufferedImage
+  */
 Duedo.Image = function(gameContext, bufferedImage) {
 	Duedo.GraphicObject.call(this);
 	this.Game = gameContext || Duedo.Global.Games[0];
@@ -19226,15 +19242,16 @@ Duedo.Image = function(gameContext, bufferedImage) {
 };
 
 
-/*Inherit GraphicObject*/
 Duedo.Image.prototype = Object.create(Duedo.GraphicObject.prototype);
 Duedo.Image.prototype.constructor = Duedo.Image;
 
 
-/*
- * _init
- * @private
-*/
+/**
+ * Initialize
+ * @memberof Duedo.Image
+ * @param {file} bufferedImage
+ * @ignore
+ */
 Duedo.Image.prototype._init = function(bufferedImage) {
 	this._super();
     
@@ -19406,6 +19423,12 @@ Duedo.Image.prototype.Draw = function(context, location, forceRender = false) {
 
     if(this.FixedToViewport && !Duedo.Conf.ScaleFixedToViewportOnZoom) {
         context.scale(this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom, this.Game.Viewport.ZoomMin / this.Game.Viewport.Zoom);
+    }
+
+    if(this.FlipX) {
+        context.translate(DToPixels(Destination.X), 0)
+        context.scale(-1, 1);
+        context.translate(-DToPixels(Destination.X), 0)
     }
 
     /*Draw*/
@@ -25383,9 +25406,9 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
  * TODO preUpdate effects?
  * @private
  */
-Duedo.Viewport.prototype._UpdateEffects = function(deltaT) {
+Duedo.Viewport.prototype._UpdateEffects = function(arg, method = 'Update') {
 	for(let i = this._Effects.length - 1; i >= 0; i--) {
-		if(!this._Effects[i].Update(deltaT)) {
+		if(!this._Effects[i][method](arg)) {
 			this._Effects.splice(i, 1);
 		}
 	}
@@ -26092,11 +26115,13 @@ Duedo.ViewportEffect.prototype.constructor = Duedo.ViewportEffect;
 Duedo.ViewportEffect.prototype._init = function() {}
 
 
-Duedo.ViewportEffect.prototype.PreUpdate = function() {}
+Duedo.ViewportEffect.prototype.PreUpdate = function(deltaT) {}
 
-Duedo.ViewportEffect.prototype.Update = function() {}
+Duedo.ViewportEffect.prototype.Update = function(deltaT) {}
 
-Duedo.ViewportEffect.prototype.PostUpdate = function() {}
+Duedo.ViewportEffect.prototype.PostUpdate = function(deltaT) {}
+
+Duedo.ViewportEffect.prototype.Render = function(context) {}
 
 
 
@@ -26141,14 +26166,15 @@ Duedo.ViewportEffectShake.prototype._init = function(options = {}) {
  * @returns 
  */
 Duedo.ViewportEffectShake.prototype.Update = function(deltaT) {
-
 		if(this._ElapsedTime < this.Duration) {
 			this._ElapsedTime += deltaT;
+			// TODO decrementa intensità con ease-out
 			const offset = new Duedo.Vector2(
 				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.X * deltaT,
 				Duedo.Utils.RandInRange(-0.2, 0.2) * this.Magnitude.Y * deltaT
 			)
 			this.Viewport.View.Location.Add(offset);
+			return true;
 		} else {
       // Return the camera to its initial position
       this.Viewport.SetPosition(this.OriginalPosition.X, this.OriginalPosition.Y);
@@ -26159,6 +26185,8 @@ Duedo.ViewportEffectShake.prototype.Update = function(deltaT) {
 }
 
 
+
+Duedo.ViewportEffectShake.prototype.Render = function(context) { }
 /*
 ==============================
 Duedo.World
@@ -27289,7 +27317,7 @@ Duedo.GameContext.prototype.Add = function( object ) {
         object._CallTriggers("stageadd");
     }
 
-    return object;
+    return this;
 
 };
 
