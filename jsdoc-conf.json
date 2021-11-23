@@ -2,7 +2,7 @@
   "opts": {
       "template": "templates/default", 
       "encoding": "utf8",              
-      "destination": "./out/",          
+      "destination": "./docs/jsdoc",          
       "recurse": true,                  
       "tutorials": "path/to/tutorials"
   }

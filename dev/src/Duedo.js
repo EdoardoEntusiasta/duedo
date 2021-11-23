@@ -45,7 +45,7 @@ Duedo.Conf = {
     // Objects pinned to the viewport will not be affected by the viewport scale / zoom and will keep the same size.
     ScaleFixedToViewportOnZoom: false, // note: if false, objects must be relocated manually
     // Minimum camera zoom/scale value
-    MinimumZoom: 1,
+    MinimumZoom: 0.1,
     /*The function to load when the DOM is ready*/
     MainFunc: "duedoMain",
     /*The game automatically starts the game loop -> Simulate(game, deltaT)*/

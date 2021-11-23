@@ -9,8 +9,9 @@ view-source:http://www.mrspeaker.net/dev/parcycle/
 */
 
 
-Duedo.ParticleSystem = function( gameContext, name ){
+Duedo.ParticleSystem = function( gameContext, name ) {
     Duedo.GraphicObject.call(this);
+
     this.Game = gameContext || Duedo.Global.Games[0];
     this.Type = Duedo.PARTICLE_SYSTEM;
     
@@ -19,33 +20,35 @@ Duedo.ParticleSystem = function( gameContext, name ){
     this.Initialized = false;
 
     /*Status*/
-    this.MaxParticles = 300;
+    this.MaxParticles = 120;
 	this.Particles = [];
 	this.Active = true;
 	this.IsDead = true;
 
 	/*Location random*/
-	this.LocationRandom = new Duedo.Vector2(0, 5);
+	this.LocationRandom = new Duedo.Vector2(0, 0);
 
     /*Size*/
-	this.Size = 0.5;
+	this.Size = 3.5;
 	this.SizeRandom = 0.1;
 
     /*Speed*/
-	this.Speed = 0.005;
+	this.Speed = 0.05;
 	this.SpeedRandom = 0.01;
-	this.MaxSpeed = 0.3;
+	this.MaxSpeed = 2;
 
     /*Lifespan*/
-	this.LifeSpan = 1;
-	this.LifeSpanRandom = 1;
+	this.LifeSpan = 0.7;
+	this.LifeSpanRandom = 0.2;
 
     /*Angle (rad) */
-	this.Angle = 0;
-	this.AngleRandom = 0;
+	this.Angle = 2 * Math.PI * (90 / 360);
+	this.AngleRandom = 2 * Math.PI * (45 / 360);
 
     /*Gravity*/
-	this.Gravity = new Duedo.Vector2(0, -0.01);
+	this.Gravity = new Duedo.Vector2(0, -0.05);
+
+    this.Shape = 'CIRCLE';
 
     /*Texture*/
 	this.Texture = null;
@@ -53,18 +56,18 @@ Duedo.ParticleSystem = function( gameContext, name ){
 	this.TextureDim = new Duedo.Dimension(0.7, 0.7);
 
     /*Colour*/
-	this.StartColour        = [ 255, 255, 255, 1 ];
-	this.StartColourRandom  = [ 10, 10, 10, 0.1 ];
-	this.FinishColour       = [ 0, 0, 0, 0 ];  
-	this.FinishColourRandom = [ 10, 10, 10, 0 ];
+	this.StartColour        = [ 239, 223, 0, 0.9 ];
+	this.StartColourRandom  = [ 0, 0, 0, 0 ];
+	this.FinishColour       = [ 186, 13, 13, 0 ];
+	this.FinishColourRandom = [ 0, 0, 0, 0 ];
 
     /*Sharpness*/
 	this.Sharpness = 1;
 	this.SharpnessRandom = 5;
 
     /*Mass*/
-	this.Mass = 0.5;
-	this.MassRandom = 1;
+	this.Mass = 1;
+	this.MassRandom = 0;
 
     /*Timing*/
 	this.ElapsedTime = 0;
@@ -76,13 +79,14 @@ Duedo.ParticleSystem = function( gameContext, name ){
 	this.ParticleIndex = 0;
 	this.ParticleCount = 0;
 
+    this.Forces = [];
+
     /*Global composite operations*/
 	this.BlendMode = Duedo.BlendModes.LIGHTER;
 
 
 	this._init( name );
 }
-
 
 
 
@@ -99,14 +103,12 @@ Particle system bindable events
 
 
 
-
 /*
  * _init
  * @private
 */
 Duedo.ParticleSystem.prototype._init = function ( name ) {
     this._super();
-
 
     this.EmissionRate = this.MaxParticles / this.LifeSpan;
     this.EmitCounter = 0;
@@ -117,7 +119,6 @@ Duedo.ParticleSystem.prototype._init = function ( name ) {
 
     return this;
 };
-
 
 
 
@@ -133,7 +134,25 @@ Duedo.ParticleSystem.prototype.Activate = function () {
 
 
 
+/**
+ * Add a force
+ * @param {*} vec2 
+ * @param {*} name 
+ * @returns 
+ */
+Duedo.ParticleSystem.prototype.AddForce = function(vec2, name) {
 
+    if(!name) {
+        name = `force${this.Forces.length}`;
+    }
+
+    this.Forces.push({
+        name,
+        vector: vec2
+    });
+
+    return this;
+}
 
 
 
@@ -154,10 +173,6 @@ Duedo.ParticleSystem.prototype.Stop = function () {
 
 
 
-
-
-
-
 /*
  * Load
  * @ublic
@@ -165,14 +180,13 @@ Duedo.ParticleSystem.prototype.Stop = function () {
 */
 Duedo.ParticleSystem.prototype.Load = function ( configurationJSON ) {
 
-
     if( typeof configurationJSON === "undefined" )
     {
         return;
     }
     
-    var cfg = JSON.parse(configurationJSON);
-
+    var cfg = configurationJSON;
+    
     if( typeof cfg["Properties"] !== "undefined" )
     {
         
@@ -218,15 +232,7 @@ Duedo.ParticleSystem.prototype.Load = function ( configurationJSON ) {
             }
         }
     }
-    
-    
-
-
 };
-
-
-
-
 
 
 
@@ -252,16 +258,8 @@ Duedo.ParticleSystem.prototype._AddParticle = function () {
 
     this.ParticleCount++;
 
-
-
     return this;
 };
-
-
-
-
-
-
 
 
 
@@ -270,7 +268,6 @@ Duedo.ParticleSystem.prototype._AddParticle = function () {
  * @private
 */
 Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
-
 
     var newAngle, vector, vectorSpeed;
 
@@ -281,12 +278,13 @@ Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
     particle.Location.X = this.Location.X + this.LocationRandom.X * Duedo.Utils.RandM1T1();
     particle.Location.Y = this.Location.Y + this.LocationRandom.Y * Duedo.Utils.RandM1T1();
 
-    newAngle    = (this.Angle + this.AngleRandom * Duedo.Utils.RandM1T1()) / 30;
+    newAngle    = (this.Angle + this.AngleRandom * Duedo.Utils.RandM1T1());
     vector      = new Duedo.Vector2(Math.cos(newAngle), Math.sin(newAngle)); // Could move to lookup for speed
-    vectorSpeed = this.Speed + this.SpeedRandom * Duedo.Utils.RandM1T1() / 30;
+    vectorSpeed = this.Speed + this.SpeedRandom * Duedo.Utils.RandM1T1();
 
 
     vector.MultiplyScalar(vectorSpeed);
+
     particle.Velocity = vector;
     particle.MaxSpeed = this.MaxSpeed;
 
@@ -330,11 +328,8 @@ Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
     particle.DeltaColour[2] = (end[2] - start[2]) / particle.TimeToLive;
     particle.DeltaColour[3] = (end[3] - start[3]) / particle.TimeToLive;
 
-    
-
     return this;
 };
-
 
 
 
@@ -399,7 +394,6 @@ Duedo.ParticleSystem.prototype.Update = function (deltaT) {
     }
     
     
-
     while (this.ParticleIndex < this.ParticleCount)
     {
 
@@ -428,9 +422,7 @@ Duedo.ParticleSystem.prototype.Update = function (deltaT) {
     this._CallTriggers("update");
 
     return this;
-
 };
-
 
 
 
@@ -447,7 +439,6 @@ Duedo.ParticleSystem.prototype.PostUpdate = function() {
     }
     
 };
-
 
 
 
@@ -481,35 +472,39 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
         size = particle.Size;
         halfSize = size >> 1;
 
-        x = ~~particle.Location.X;
-        y = ~~particle.Location.Y;
+        x = DToPixels(particle.Location.X);
+        y = DToPixels(particle.Location.Y);
 
-        
+
         if (this.Texture === null)
         {
+            context.beginPath();
 
-            // context.arc(DToPixels(x), DToPixels(y), DToPixels(size), 0, Math.PI * 2, false);
-            // context.fillStyle = context.strokeStyle = 'hsla(' + this.hue + ', ' + this.saturation + '%, ' + this.lightness + '%, ' + this.alpha + ')';
-            
-            // radgrad = context.createRadialGradient(x + halfSize, y + halfSize, particle.SizeSmall, x + halfSize, y + halfSize, halfSize);
             radgrad = context.createRadialGradient(
-                DToPixels(x),
-                DToPixels(y),
+                x,
+                y,
                 DToPixels(particle.SizeSmall),
-                DToPixels(x),
-                DToPixels(y),
+                x,
+                y,
                 DToPixels(halfSize)
             );
+            
             radgrad.addColorStop(0, particle.DrawColour);
             radgrad.addColorStop(1, 'rgba(0,0,0,0)'); //Super cool if you change these values (and add more colour stops)
+            
             context.fillStyle = radgrad;
-            // context.fillRect(DToPixels(x), DToPixels(y), DToPixels(size), DToPixels(size));
-            context.fillRect(
-                DToPixels(x) - DToPixels(size * this.Anchor.X),
-                DToPixels(y) - DToPixels(size * this.Anchor.Y),
-                DToPixels(size),
-                DToPixels(size)
-            );
+            
+            if(this.Shape == 'CIRCLE') {
+                context.arc(x, y, DToPixels(size), 0, Math.PI * 2, false);
+                context.fill();
+            } else if(this.Shape == 'RECTANGLE') {
+                context.fillRect(
+                    DToPixels(x) - DToPixels(size * this.Anchor.X),
+                    DToPixels(y) - DToPixels(size * this.Anchor.Y),
+                    DToPixels(size),
+                    DToPixels(size)
+                );
+            }
             
         }
         else
@@ -532,24 +527,15 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
 
             context.save();
             context.globalAlpha = particle.Alpha;
-            context.drawImage(tToDraw, DToPixels(x) - DToPixels(width / 2), DToPixels(y) - DToPixels(height / 2), DToPixels(width), DToPixels(height));
+            context.drawImage(tToDraw, x - DToPixels(width / 2), y- DToPixels(height / 2), DToPixels(width), DToPixels(height));
             context.restore();
         }
-
-
-        
     }
-
-
 
     context.restore();
 
-
     return this;
 };
-
-
-
 
 
 

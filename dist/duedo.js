@@ -45,7 +45,7 @@ Duedo.Conf = {
     // Objects pinned to the viewport will not be affected by the viewport scale / zoom and will keep the same size.
     ScaleFixedToViewportOnZoom: false, // note: if false, objects must be relocated manually
     // Minimum camera zoom/scale value
-    MinimumZoom: 1,
+    MinimumZoom: 0.1,
     /*The function to load when the DOM is ready*/
     MainFunc: "duedoMain",
     /*The game automatically starts the game loop -> Simulate(game, deltaT)*/
@@ -14285,6 +14285,18 @@ Duedo.PhysicsEngine.prototype._StepPhysics = function(dt, correction) {
 };
 
 
+/**
+ * SetGravity
+ * @param {*} x 
+ * @param {*} y 
+ * @returns 
+ */
+Duedo.PhysicsEngine.prototype.SetGravity = function(x, y) {
+    this.World.SetGravity(new b2Vec2(x, y));
+    return this;
+}
+
+
 /*
  * PostUpdate
 */
@@ -14853,7 +14865,6 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         {
             for(var valN in pValue )
             {
-                
                 Animation._Data[PropertyName][valN] = 
                 { 
                     StartValue: self.Parent[PropertyName][valN],
@@ -14865,7 +14876,6 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         /*Destination value as single number es: Radius: 50*/
         else
         {
-
             Animation._Data[PropertyName] =
             { 
                 StartValue: self.Parent[PropertyName],
@@ -17625,6 +17635,7 @@ Author: http://www.edoardocasella.it
 
 Duedo.Particle = function (gameContext) {
     Duedo.GraphicObject.call(this);
+
     this.Game = gameContext || Duedo.Global.Game;
     this.TYPE = Duedo.PARTICLE;
     
@@ -17681,12 +17692,17 @@ Duedo.Particle.prototype._init = function () {
 /*Main update*/
 Duedo.Particle.prototype.Update = function ( deltaT ) {
 
-    /*FIX: ADD deltaT*/
+    //Apply custom forces
+    this._Parent.Forces.forEach(force => {
+        this.ApplyForce(force.vector);
+    });
+
     //Apply gravity
-    this.ApplyForce(this._Parent.Gravity.Clone().MultiplyScalar(this.Mass));
+    // this.ApplyForce(this._Parent.Gravity.Clone().MultiplyScalar(this.Mass));
 
     this.Velocity.Add(this.Acceleration);
-    this.FixVelocity();
+    //this.FixVelocity();
+
     this.Location.Add(this.Velocity);
 
 
@@ -17701,10 +17717,9 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
         this._UpdateSimpleParticle( deltaT );
     }
 
-
     this.Renderable = this.CheckViewportIntersection();
 
-
+    this.Acceleration.Reset();
 
     return this;
 };
@@ -17721,16 +17736,15 @@ Duedo.Particle.prototype._UpdateTexturizedParticle = function ( deltaT ) {
     /*Update texture alpha*/
     this.Alpha = this.InitialAlpha - (this.Game.ElapsedTime - this.StartTime) / this.Life;
 
+    // Scale by global alpha
     this.Alpha *= this.Game.World.Alpha;
-
 
     if (this.Alpha <= 0)
     {
         this.Alpha = 0;
         this.Renderable = false;
     }
-       
-
+    
     return this;
 
 };
@@ -17746,12 +17760,10 @@ Duedo.Particle.prototype._UpdateSimpleParticle = function ( deltaT ) {
     var r, g, b, a;
     var draw;
 
-
     r = this.Colour[0] += (this.DeltaColour[0] * deltaT);
     g = this.Colour[1] += (this.DeltaColour[1] * deltaT);
     b = this.Colour[2] += (this.DeltaColour[2] * deltaT);
     a = this.Colour[3] += (this.DeltaColour[3] * deltaT);
-
 
     draw = [];
 
@@ -17766,9 +17778,7 @@ Duedo.Particle.prototype._UpdateSimpleParticle = function ( deltaT ) {
 
     this.DrawColour = draw.join(",");
 
-
     return this;
-
 };
 
 
@@ -17836,8 +17846,9 @@ view-source:http://www.mrspeaker.net/dev/parcycle/
 */
 
 
-Duedo.ParticleSystem = function( gameContext, name ){
+Duedo.ParticleSystem = function( gameContext, name ) {
     Duedo.GraphicObject.call(this);
+
     this.Game = gameContext || Duedo.Global.Games[0];
     this.Type = Duedo.PARTICLE_SYSTEM;
     
@@ -17846,33 +17857,35 @@ Duedo.ParticleSystem = function( gameContext, name ){
     this.Initialized = false;
 
     /*Status*/
-    this.MaxParticles = 300;
+    this.MaxParticles = 120;
 	this.Particles = [];
 	this.Active = true;
 	this.IsDead = true;
 
 	/*Location random*/
-	this.LocationRandom = new Duedo.Vector2(0, 5);
+	this.LocationRandom = new Duedo.Vector2(0, 0);
 
     /*Size*/
-	this.Size = 0.5;
+	this.Size = 3.5;
 	this.SizeRandom = 0.1;
 
     /*Speed*/
-	this.Speed = 0.005;
+	this.Speed = 0.05;
 	this.SpeedRandom = 0.01;
-	this.MaxSpeed = 0.3;
+	this.MaxSpeed = 2;
 
     /*Lifespan*/
-	this.LifeSpan = 1;
-	this.LifeSpanRandom = 1;
+	this.LifeSpan = 0.7;
+	this.LifeSpanRandom = 0.2;
 
     /*Angle (rad) */
-	this.Angle = 0;
-	this.AngleRandom = 0;
+	this.Angle = 2 * Math.PI * (90 / 360);
+	this.AngleRandom = 2 * Math.PI * (45 / 360);
 
     /*Gravity*/
-	this.Gravity = new Duedo.Vector2(0, -0.01);
+	this.Gravity = new Duedo.Vector2(0, -0.05);
+
+    this.Shape = 'CIRCLE';
 
     /*Texture*/
 	this.Texture = null;
@@ -17880,18 +17893,18 @@ Duedo.ParticleSystem = function( gameContext, name ){
 	this.TextureDim = new Duedo.Dimension(0.7, 0.7);
 
     /*Colour*/
-	this.StartColour        = [ 255, 255, 255, 1 ];
-	this.StartColourRandom  = [ 10, 10, 10, 0.1 ];
-	this.FinishColour       = [ 0, 0, 0, 0 ];  
-	this.FinishColourRandom = [ 10, 10, 10, 0 ];
+	this.StartColour        = [ 239, 223, 0, 0.9 ];
+	this.StartColourRandom  = [ 0, 0, 0, 0 ];
+	this.FinishColour       = [ 186, 13, 13, 0 ];
+	this.FinishColourRandom = [ 0, 0, 0, 0 ];
 
     /*Sharpness*/
 	this.Sharpness = 1;
 	this.SharpnessRandom = 5;
 
     /*Mass*/
-	this.Mass = 0.5;
-	this.MassRandom = 1;
+	this.Mass = 1;
+	this.MassRandom = 0;
 
     /*Timing*/
 	this.ElapsedTime = 0;
@@ -17903,13 +17916,14 @@ Duedo.ParticleSystem = function( gameContext, name ){
 	this.ParticleIndex = 0;
 	this.ParticleCount = 0;
 
+    this.Forces = [];
+
     /*Global composite operations*/
 	this.BlendMode = Duedo.BlendModes.LIGHTER;
 
 
 	this._init( name );
 }
-
 
 
 
@@ -17926,14 +17940,12 @@ Particle system bindable events
 
 
 
-
 /*
  * _init
  * @private
 */
 Duedo.ParticleSystem.prototype._init = function ( name ) {
     this._super();
-
 
     this.EmissionRate = this.MaxParticles / this.LifeSpan;
     this.EmitCounter = 0;
@@ -17944,7 +17956,6 @@ Duedo.ParticleSystem.prototype._init = function ( name ) {
 
     return this;
 };
-
 
 
 
@@ -17960,7 +17971,25 @@ Duedo.ParticleSystem.prototype.Activate = function () {
 
 
 
+/**
+ * Add a force
+ * @param {*} vec2 
+ * @param {*} name 
+ * @returns 
+ */
+Duedo.ParticleSystem.prototype.AddForce = function(vec2, name) {
 
+    if(!name) {
+        name = `force${this.Forces.length}`;
+    }
+
+    this.Forces.push({
+        name,
+        vector: vec2
+    });
+
+    return this;
+}
 
 
 
@@ -17981,10 +18010,6 @@ Duedo.ParticleSystem.prototype.Stop = function () {
 
 
 
-
-
-
-
 /*
  * Load
  * @ublic
@@ -17992,14 +18017,13 @@ Duedo.ParticleSystem.prototype.Stop = function () {
 */
 Duedo.ParticleSystem.prototype.Load = function ( configurationJSON ) {
 
-
     if( typeof configurationJSON === "undefined" )
     {
         return;
     }
     
-    var cfg = JSON.parse(configurationJSON);
-
+    var cfg = configurationJSON;
+    
     if( typeof cfg["Properties"] !== "undefined" )
     {
         
@@ -18045,15 +18069,7 @@ Duedo.ParticleSystem.prototype.Load = function ( configurationJSON ) {
             }
         }
     }
-    
-    
-
-
 };
-
-
-
-
 
 
 
@@ -18079,16 +18095,8 @@ Duedo.ParticleSystem.prototype._AddParticle = function () {
 
     this.ParticleCount++;
 
-
-
     return this;
 };
-
-
-
-
-
-
 
 
 
@@ -18097,7 +18105,6 @@ Duedo.ParticleSystem.prototype._AddParticle = function () {
  * @private
 */
 Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
-
 
     var newAngle, vector, vectorSpeed;
 
@@ -18108,12 +18115,13 @@ Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
     particle.Location.X = this.Location.X + this.LocationRandom.X * Duedo.Utils.RandM1T1();
     particle.Location.Y = this.Location.Y + this.LocationRandom.Y * Duedo.Utils.RandM1T1();
 
-    newAngle    = (this.Angle + this.AngleRandom * Duedo.Utils.RandM1T1()) / 30;
+    newAngle    = (this.Angle + this.AngleRandom * Duedo.Utils.RandM1T1());
     vector      = new Duedo.Vector2(Math.cos(newAngle), Math.sin(newAngle)); // Could move to lookup for speed
-    vectorSpeed = this.Speed + this.SpeedRandom * Duedo.Utils.RandM1T1() / 30;
+    vectorSpeed = this.Speed + this.SpeedRandom * Duedo.Utils.RandM1T1();
 
 
     vector.MultiplyScalar(vectorSpeed);
+
     particle.Velocity = vector;
     particle.MaxSpeed = this.MaxSpeed;
 
@@ -18157,11 +18165,8 @@ Duedo.ParticleSystem.prototype._InitParticle = function (particle) {
     particle.DeltaColour[2] = (end[2] - start[2]) / particle.TimeToLive;
     particle.DeltaColour[3] = (end[3] - start[3]) / particle.TimeToLive;
 
-    
-
     return this;
 };
-
 
 
 
@@ -18226,7 +18231,6 @@ Duedo.ParticleSystem.prototype.Update = function (deltaT) {
     }
     
     
-
     while (this.ParticleIndex < this.ParticleCount)
     {
 
@@ -18255,9 +18259,7 @@ Duedo.ParticleSystem.prototype.Update = function (deltaT) {
     this._CallTriggers("update");
 
     return this;
-
 };
-
 
 
 
@@ -18274,7 +18276,6 @@ Duedo.ParticleSystem.prototype.PostUpdate = function() {
     }
     
 };
-
 
 
 
@@ -18308,35 +18309,39 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
         size = particle.Size;
         halfSize = size >> 1;
 
-        x = ~~particle.Location.X;
-        y = ~~particle.Location.Y;
+        x = DToPixels(particle.Location.X);
+        y = DToPixels(particle.Location.Y);
 
-        
+
         if (this.Texture === null)
         {
+            context.beginPath();
 
-            // context.arc(DToPixels(x), DToPixels(y), DToPixels(size), 0, Math.PI * 2, false);
-            // context.fillStyle = context.strokeStyle = 'hsla(' + this.hue + ', ' + this.saturation + '%, ' + this.lightness + '%, ' + this.alpha + ')';
-            
-            // radgrad = context.createRadialGradient(x + halfSize, y + halfSize, particle.SizeSmall, x + halfSize, y + halfSize, halfSize);
             radgrad = context.createRadialGradient(
-                DToPixels(x),
-                DToPixels(y),
+                x,
+                y,
                 DToPixels(particle.SizeSmall),
-                DToPixels(x),
-                DToPixels(y),
+                x,
+                y,
                 DToPixels(halfSize)
             );
+            
             radgrad.addColorStop(0, particle.DrawColour);
             radgrad.addColorStop(1, 'rgba(0,0,0,0)'); //Super cool if you change these values (and add more colour stops)
+            
             context.fillStyle = radgrad;
-            // context.fillRect(DToPixels(x), DToPixels(y), DToPixels(size), DToPixels(size));
-            context.fillRect(
-                DToPixels(x) - DToPixels(size * this.Anchor.X),
-                DToPixels(y) - DToPixels(size * this.Anchor.Y),
-                DToPixels(size),
-                DToPixels(size)
-            );
+            
+            if(this.Shape == 'CIRCLE') {
+                context.arc(x, y, DToPixels(size), 0, Math.PI * 2, false);
+                context.fill();
+            } else if(this.Shape == 'RECTANGLE') {
+                context.fillRect(
+                    DToPixels(x) - DToPixels(size * this.Anchor.X),
+                    DToPixels(y) - DToPixels(size * this.Anchor.Y),
+                    DToPixels(size),
+                    DToPixels(size)
+                );
+            }
             
         }
         else
@@ -18359,24 +18364,15 @@ Duedo.ParticleSystem.prototype.Draw = function ( context ) {
 
             context.save();
             context.globalAlpha = particle.Alpha;
-            context.drawImage(tToDraw, DToPixels(x) - DToPixels(width / 2), DToPixels(y) - DToPixels(height / 2), DToPixels(width), DToPixels(height));
+            context.drawImage(tToDraw, x - DToPixels(width / 2), y- DToPixels(height / 2), DToPixels(width), DToPixels(height));
             context.restore();
         }
-
-
-        
     }
-
-
 
     context.restore();
 
-
     return this;
 };
-
-
-
 
 
 
@@ -19226,17 +19222,30 @@ Author: http://www.edoardocasella.it
 
 
  /**
-  * Create a new image object
   * @class
+  * @classdesc Create a new image object to be rendered
+  * @memberof Duedo
+  * @name Duedo.Image
+  * @inner
   * @constructor
-  * @param {Duedo.Game} gameContext
-  * @param {file} bufferedImage
+  * @param {Duedo.Game} gameContext A reference to the current game context (Duedo.GameContext)
+  * @param {file} bufferedImage A buffered file previously loaded
   */
 Duedo.Image = function(gameContext, bufferedImage) {
 	Duedo.GraphicObject.call(this);
+
+    /**
+     * A reference to the running game context
+     * @property {Duedo.GameContext}  Game               - Reference to the game context
+     */
 	this.Game = gameContext || Duedo.Global.Games[0];
+
+    /**
+     * A static reference to the type
+     * @property {integer}  [Type=Duedo.IMAGE]               - Type of this object
+     */
 	this.Type = Duedo.IMAGE;
-    this.CenterRelative = true;
+
 
 	this._init(bufferedImage);
 };
@@ -19266,28 +19275,34 @@ Duedo.Image.prototype._init = function(bufferedImage) {
 
 
 
-/*
+/**
  * PreUpdate
- * @public
-*/
+ * @memberof Duedo.Image
+ * @param {float} deltaT
+ * @ignore
+ */
 Duedo.Image.prototype.PreUpdate = function(deltaT) {
 };
 
 
 
-/*
+/**
  * Update
- * @public
-*/
+ * @memberof Duedo.Image
+ * @param {float} deltaT
+ * @ignore
+ */
 Duedo.Image.prototype.Update = function(deltaT) {
 };
 
 
 
-/*
+/**
  * PostUpdate
- * @public
-*/
+ * @memberof Duedo.Image
+ * @param {float} deltaT
+ * @ignore
+ */
 Duedo.Image.prototype.PostUpdate = function(deltaT) {
 
     if(this.Body) {
@@ -19323,11 +19338,12 @@ Duedo.Image.prototype.PostUpdate = function(deltaT) {
 
 
 
-/*
- * Width
- * @public
- * Width of this image
-*/
+/**
+ * The width of the image, possibly scaled according to the vector Image.Scale (x, y) 
+ * @name Width
+ * @memberof Duedo.Image
+ * @returns {float} the width of the image
+ */
 Object.defineProperty(Duedo.Image.prototype, "Width", {
     get:function() {
         return (this._Width * this.Scale.X);
@@ -19340,11 +19356,12 @@ Object.defineProperty(Duedo.Image.prototype, "Width", {
 
 
 
-/*
- * Height
- * @public
- * Height of this image
-*/
+/**
+ * The height of the image, possibly scaled according to the vector Image.Scale (x, y) 
+ * @name Height
+ * @memberof Duedo.Image
+ * @returns {float} the height of the image
+ */
 Object.defineProperty(Duedo.Image.prototype, "Height", {
     get:function() {
         return (this._Height * this.Scale.Y);
@@ -19358,11 +19375,12 @@ Object.defineProperty(Duedo.Image.prototype, "Height", {
 
 
 
-/*
- * HalfWidth
- * @public
- * HalfWidth of this image
-*/
+/**
+ * The half width of the image, possibly scaled according to the vector Image.Scale (x, y) 
+ * @name HalfWidth
+ * @memberof Duedo.Image
+ * @returns {float} the half width of the image
+ */
 Object.defineProperty(Duedo.Image.prototype, "HalfWidth", {
     get:function() {
         return this.Width / 2;
@@ -19371,11 +19389,12 @@ Object.defineProperty(Duedo.Image.prototype, "HalfWidth", {
 
 
 
-/*
- * HalfHeight
- * @public
- * HalfHeight of this image
-*/
+/**
+ * The half height of the image, possibly scaled according to the vector Image.Scale (x, y) 
+ * @name HalfHeight
+ * @memberof Duedo.Image
+ * @returns {float} the half height of the image
+ */
 Object.defineProperty(Duedo.Image.prototype, "HalfHeight", {
     get:function() {
         return this.Height / 2;
@@ -19384,10 +19403,13 @@ Object.defineProperty(Duedo.Image.prototype, "HalfHeight", {
 
 
 
-/*
- * Draw
- * @public
-*/
+/**
+ * The drawing method of this image object
+ * @private
+ * @name Draw
+ * @memberof Duedo.Image
+ * @ignore
+ */
 Duedo.Image.prototype.Draw = function(context, location, forceRender = false) {
 
 	if (!this.Renderable && !forceRender || this.Alpha === 0 || !this.Source )
@@ -20713,10 +20735,31 @@ Object.defineProperty(Duedo.SpeechRecognition.prototype, "Autostart", {
 /*
 ==============================
 Duedo.Sound
+Sound bindable events:
+- ended
+- volume
+- stop
+- pause
+- resume
+- play
+
 ==============================
 */
 
 
+ /**
+  * @class
+  * @classdesc Create a new sound object. The events that can be binded (sound.Bind(eventName, func)) to the sound are: ended, resume, play, volume, stop, pause. With the introduction of the new google policies, the sounds are played only after the user has interacted, even with just a click, with the page.
+  * @memberof Duedo
+  * @name Duedo.Sound
+  * @inner
+  * @constructor
+  * @param {file} source The audio file
+  * @param {string} name The name of this audio file
+  * @param {float} volume The volume of this audio file from 0 to 1
+  * @param {Duedo.SoundManager} soundManager A reference to the sound manager to which this sounds belongs to
+  * @param {boolean} connect Indicates whether this audio file should be connected immediately.
+  */
 Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
     Duedo.Object.call(this);
     this.Type = Duedo.SOUND;
@@ -20731,27 +20774,75 @@ Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
     this._Source;
     this._BufferSource;
 
-    this.Name; // Internal reference name
+    /**
+     * The manually associated name of this audio file
+     * @property {string}  [Name=John Doe]               - The manually associated name of this audio file
+     */
+    this.Name;
+
+    /**
+     * The original name of this audio file on filesystem
+     * @property {string}  [OriginalName=null]               
+     */
     this.OriginalName; // Original name of audiofile
+
+    /**
+     * The location in the world of this sound. The volume of this sound will vary based on the distance from the center of the viewport. The further it is from the viewport, the closer its volume will be to 0.
+     * @property {Duedo.Vector2}  [Location=null]               - World's location
+     */
     this.Location;
+
+    /**
+     * The playback rate of this sound, the higher is this value, the faster the sound will be reproduced.
+     * A standard value of 1.0 is the normal rate
+     * @property {double}  [PlaybackRate=1]               - The higher is this value, the faster the sound will be reproduced
+     */
     this.PlaybackRate = 1;
+
+
     this._IsPlaying = false;
 
+    /**
+     * The volume of this sound
+     * @property {double}  [Volume=1]               - A value between 0 and 1
+     */
     this.Volume = 1;
 
     this._TotalDuration;
     this._TotalDurationMS;
     this._StartTime;
 
+    /**
+     * Elapsed time
+     * @property {double}  [ElapsedTime=0]               - The time elapsed since the start of playback
+     */
     this.ElapsedTime = 0;
 
+    /**
+     * Indicates whether this sound is paused or not
+     * @property {boolean}  [Paused=false]               - If true this sound is paused
+     */
     this.Paused = false;
     this._PausePosition = 0;
     this._PausedTime;
 
+    /**
+     * Indicates whether the sound is dynamic. (If for example it has a Location in the world. See Location)
+     * @property {boolean}  [DynamicSound]               - If true, the sound is dynamic, it has a position in the world.
+     * @ignore
+     */
     this.DynamicSound = false;
-    this.MaxDistance = 800;
 
+    /**
+     * The maximum distance in meters after which the volume of this sound will be 0.
+     * @property {double}  [MaxDistance=26]               
+     */
+    this.MaxDistance = 26;
+
+    /**
+     * Indicates how many times the sound will be repeated. If 0 this sound will be played only once
+     * @property {integer}  [Repeat=0]               
+     */
     this.Repeat = 0;
     this._Repeated = 0;
 
@@ -20760,6 +20851,11 @@ Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
     this.Progress;
     this.End;
 
+
+    /**
+     * Indicates whether the sound should be completely removed from the SoundManager after its playback (or repeats)
+     * @property {boolean}  [RemoveAfterPlayback=true]               - By default this sound will be removed after the playback
+     */
     this.RemoveAfterPlayback = true;
 
     this._setup( source, name, volume, soundManager, connect );
@@ -20769,18 +20865,6 @@ Duedo.Sound = function ( source, name, volume, soundManager, connect ) {
 
 Duedo.Sound.prototype = Object.create(Duedo.Object.prototype);
 Duedo.Sound.prototype.constructor = Duedo.Sound;
-
-
-/*
-Sound bindable events:
-- ended
-- volume
-- stop
-- pause
-- resume
-- play
-*/
-
 
 
 /*
@@ -20860,12 +20944,16 @@ Duedo.Sound.prototype._setup = function ( source, name, volume, soundManager, co
 
 
 
-/*
- * SetLocation
- * Sets a spatial position to the sound,
- * its volume will vary according to the distance of the viewport
- * public
-*/
+/**
+ * Set a world's location to this sound. Its volume will vary in relation to the distance from the center of the viewport.
+ * @name SetLocation
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @param {double} x The x coordinate in the world expressed in meters
+ * @param {double} y The y coordinate in the world expressed in meters   
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.SetLocation = function ( x, y ) {
 
     if( x instanceof Duedo.Vector2 )
@@ -20890,10 +20978,15 @@ Duedo.Sound.prototype.SetLocation = function ( x, y ) {
 
 
 
-/*
- * SetMaxDistance
- * (when sound has a specific location in space)
-*/
+/**
+ * Set the max distance of this sound. The closer its location is to this value, the more its volume will be close to 0.
+ * @name SetMaxDistance
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @param {double} n The distanced expressed in meters
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.SetMaxDistance = function (n) {
     this.MaxDistance = n;
     return this;
@@ -20902,12 +20995,14 @@ Duedo.Sound.prototype.SetMaxDistance = function (n) {
 
 
 
-
-
-/*
- * Update
- * TODO: Don't update if sound is dynamic and too much distant from viewport
-*/
+/**
+ * Update. Repeated once for each cycle.
+ * @method
+ * @instance
+ * @ignore 
+ * @memberof Duedo.Sound
+ * @param {deltaT} The delta time
+ */
 Duedo.Sound.prototype.Update = function (deltaT) {
     
 
@@ -20968,9 +21063,15 @@ Duedo.Sound.prototype.Update = function (deltaT) {
 
 
 
-/*
- * SetVolume
-*/
+/**
+ * Set the volume of this sound (be aware that the value is made dynamic if the sound has a position in the world)
+ * @name SetVolume
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @param {double} volumeValue The volume between 0 and 1
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.SetVolume = function ( volumeValue ) {
 
     if (volumeValue > 1)
@@ -21009,9 +21110,14 @@ Duedo.Sound.prototype.SetVolume = function ( volumeValue ) {
 
 
 
-/*
- * Stop
-*/
+/**
+ * Stop the sound
+ * @name Stop
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.Stop = function () {
 
     if (!this._IsPlaying || !this._Source)
@@ -21064,9 +21170,14 @@ Duedo.Sound.prototype.Stop = function () {
 
 
 
-/*
- * Pause
-*/
+/**
+ * Pause the sound
+ * @name Pause
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.Pause = function () {
 
     if( this._IsPlaying )
@@ -21090,9 +21201,14 @@ Duedo.Sound.prototype.Pause = function () {
 
 
 
-/*
- * Resume
-*/
+/**
+ * Resume the sound
+ * @name Resume
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.Resume = function () {
 
     if( this.Paused && !this._IsPlaying )
@@ -21112,9 +21228,15 @@ Duedo.Sound.prototype.Resume = function () {
 
 
 
-/*
- * Loop
-*/
+/**
+ * Sets the number of repetitions of this sound.
+ * @name Loop
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @param {integer} loop Define how many times you want to repeat the sound (1...2...10...100...infinity)
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.Loop = function (loop) {
     if(!loop) loop = Infinity;
     this.Repeat = Math.floor(loop);
@@ -21127,11 +21249,15 @@ Duedo.Sound.prototype.Loop = function (loop) {
 
 
 
-/*
- * Play
- * If startFrom is !== null we are calling a resume operation
- * If startFrom == -1 audio will start from a random point
-*/
+/**
+ * Start a sound
+ * @name Play
+ * @method
+ * @instance
+ * @memberof Duedo.Sound
+ * @param {integer} startFrom It indicates from what moment (seconds) we want to start playing the sound. If the value is -1 the sound will start from a random moment.
+ * @returns {Duedo.Sound} the instance of this sound
+ */
 Duedo.Sound.prototype.Play = function ( startFrom ) {
 
     if( this._IsPlaying === true )
@@ -21205,9 +21331,10 @@ Duedo.Sound.prototype.Play = function ( startFrom ) {
 };
 
 
-/*
- * Playing
-*/
+/**
+ * It tells us if the sound is playing or not.
+ * @property {boolean}  [Playing=false]               
+ */
 Object.defineProperty(Duedo.Sound.prototype, "Playing", {
     get: function () {
         return this._IsPlaying;
@@ -21225,7 +21352,15 @@ According to the new Chrome policy, the audio context is activated only after a 
 ==============================
 */
 
-
+ /**
+  * @class
+  * @classdesc The soundManager takes care of the management of the sounds and allows the execution and setting of all the preloaded sounds. There is no need to create an instance, as it will be accessible from the Duedo.GameContext game instance 
+  * @memberof Duedo
+  * @name Duedo.SoundManager
+  * @inner
+  * @constructor
+  * @param {Duedo.Game} gameContext Instance of Duedo.GameContext
+  */
 Duedo.SoundManager = function ( _gameContext ) {
     Duedo.Object.call(this);
 
@@ -21242,7 +21377,7 @@ Duedo.SoundManager = function ( _gameContext ) {
 
     this._Sounds = [];
 
-    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
     this._PendingUserInteraction = false;
 
     this._UsingWebAudio = false;
@@ -21254,15 +21389,28 @@ Duedo.SoundManager = function ( _gameContext ) {
 };
 
 
-/*Inherit oject*/
+
 Duedo.SoundManager.prototype = Object.create(Duedo.Object.prototype);
 Duedo.SoundManager.prototype.constructor = Duedo.SoundManager;
 
 
+/**
+ * Return the current global volume
+ * @property {double}  [Volume=1]               - The global volume of the application
+ */
+ Object.defineProperty(Duedo.SoundManager.prototype, "Volume", {
 
-/*
- * _setup
-*/
+    get: function() {
+        return this._Volume;
+    },
+
+    set:function(value) {
+        this.SetVolume(value);
+    }
+
+});
+
+
 Duedo.SoundManager.prototype._setup = function () {
 
     //Choice AudioAPIs
@@ -21287,13 +21435,10 @@ Duedo.SoundManager.prototype._setup = function () {
         }
     }
 
-
-
     if( typeof this._AudioContext === "undefined" )
     {
         return;
     }
-
 
     //Create master gain
     if (typeof this._AudioContext.createGain === 'undefined')
@@ -21309,7 +21454,7 @@ Duedo.SoundManager.prototype._setup = function () {
 
     this._MasterGain.connect(this._AudioContext.destination);
 
-    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
     document.documentElement.addEventListener(
         "click", () => {
             if (this._AudioContext.state !== 'running') {
@@ -21322,62 +21467,17 @@ Duedo.SoundManager.prototype._setup = function () {
 
 
 
-
-
-
-/*
- * Update
-*/
-Duedo.SoundManager.prototype.Update = function (deltaT) {
-    
-    if(this._noAudio)
-    {
-        return;
-    }
-    
-    for (var index = this._Sounds.length - 1; index >= 0; index--)
-    {
-        this._Sounds[index].Update(deltaT);
-    }
-    
-};
-
-
-
-
-
-
-
-/*
- * _AddSound
- * private
-*/
-Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReference, volume ) {
-
-    var DUEDOSound;
-
-    //Instantiate a new sound
-    DUEDOSound = new Duedo.Sound( _bufferedSound, nameReference, volume, this, true );
-
-    this._Sounds.push(DUEDOSound);
-
-
-    return DUEDOSound;
-    
-};
-
-
-
-
-
-
-/*
- * Play
- * Set volume, location, rate, or choose whether to play the audio from a random point
- * options { Location: Vec2, Volume: integer, Rate: integer, NameReference: string, RandomStart: boolean}
- * When RandomStart == true playback will start from a random position
-*/
-Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
+/**
+ * Play a sound
+ * @name Play
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundName The sound's name (the one used when loading, otherwise the file name without spaces)
+ * @param {object} options The options (like: { Location, Volume, Rate, NameReference, RandomStart })
+ * @returns {Duedo.Sound} the instance of the requested sound
+ */
+ Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
     
     this._AudioContext.resume();
 
@@ -21421,13 +21521,61 @@ Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
 
 
 
+/**
+ * Update
+ * @param {*} deltaT 
+ * @ignore  
+ */
+Duedo.SoundManager.prototype.Update = function (deltaT) {
+    
+    if(this._noAudio)
+    {
+        return;
+    }
+    
+    for (var index = this._Sounds.length - 1; index >= 0; index--)
+    {
+        this._Sounds[index].Update(deltaT);
+    }
+    
+};
+
+
+/**
+ * @ignore
+ * @param {*} _bufferedSound 
+ * @param {*} nameReference 
+ * @param {*} volume 
+ */
+Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReference, volume ) {
+
+    var DUEDOSound;
+
+    //Instantiate a new sound
+    DUEDOSound = new Duedo.Sound( _bufferedSound, nameReference, volume, this, true );
+
+    this._Sounds.push(DUEDOSound);
+
+
+    return DUEDOSound;
+    
+};
 
 
 
 
-/*
- * NewSoundInstance
-*/
+
+
+/**
+ * Create a new sound instance and return it
+ * @name NewSoundInstance
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundName The sound's name
+ * @param {string} nameReference A custom reference name. If not specified will be "DUEDOSound_ + n"
+ * @returns {Duedo.Sound} the instance of the requested sound
+ */
 Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameReference ) {
 
     var s = this.GameContext.Cache.GetSound(soundName);
@@ -21438,7 +21586,7 @@ Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameRefere
     }
     else
     {
-        var DUEDOSound = this._AddSound(s, (nameReference !== undefined ? nameReference : ("TWODSound_" + this._Sounds.length)), this.Volume);
+        var DUEDOSound = this._AddSound(s, (nameReference !== undefined ? nameReference : ("DUEDOSound_" + this._Sounds.length)), this.Volume);
         
         DUEDOSound.OriginalName = soundName;
         
@@ -21458,10 +21606,15 @@ Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameRefere
 
 
 
-
-/*
- * StopSound
-*/
+/**
+ * Stop a sound
+ * @name StopSound
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundNameReference The reference name
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.StopSound = function ( soundNameReference ) {
     
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -21481,9 +21634,14 @@ Duedo.SoundManager.prototype.StopSound = function ( soundNameReference ) {
 
 
 
-/*
- * StopAllSounds
-*/
+/**
+ * Stop all playing sounds
+ * @name StopAllSounds
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.StopAllSounds = function () {
     
     for( var i in this._Sounds )
@@ -21502,8 +21660,6 @@ Duedo.SoundManager.prototype.StopAllSounds = function () {
         }
     }
 
-
-
     return this;
 };
 
@@ -21512,9 +21668,15 @@ Duedo.SoundManager.prototype.StopAllSounds = function () {
 
 
 
-/*
- * PauseSound
-*/
+/**
+ * Pause sound
+ * @name StopAllSounds
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundNameReference The reference name
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.PauseSound = function (soundNameReference) {
 
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -21530,6 +21692,7 @@ Duedo.SoundManager.prototype.PauseSound = function (soundNameReference) {
 };
 
 
+
 Duedo.SoundManager.prototype.IsPlaying = function(name) {
     const sound = this.GetListedSoundByName(name);
     if(!sound) {
@@ -21540,9 +21703,14 @@ Duedo.SoundManager.prototype.IsPlaying = function(name) {
 } 
 
 
-/*
- * PauseAllSounds
-*/
+/**
+ * Pause all sounds
+ * @name PauseAllSounds
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.PauseAllSounds = function () {
 
     for (var i in this._Sounds)
@@ -21558,19 +21726,21 @@ Duedo.SoundManager.prototype.PauseAllSounds = function () {
         }
     }
 
-
-
     return this;
 };
 
 
 
 
-
-
-/*
- * ResumeSound
-*/
+/**
+ * Resume a specific sound
+ * @name ResumeSound
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundNameReference The reference name
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.ResumeSound = function (soundNameReference) {
 
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -21587,12 +21757,14 @@ Duedo.SoundManager.prototype.ResumeSound = function (soundNameReference) {
 
 
 
-
-
-
-/*
- * ResumeAllSounds
-*/
+/**
+ * Resume all sounds
+ * @name ResumeAllSounds
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.ResumeAllSounds = function () {
 
     for (var i in this._Sounds)
@@ -21611,16 +21783,20 @@ Duedo.SoundManager.prototype.ResumeAllSounds = function () {
         }
     }
 
-
-
     return this;
 };
 
 
 
-/*
- * GetSoundByReferenceName
-*/
+/**
+ * Get a sound by name
+ * @name GetListedSoundByName
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} soundNameReference The reference name
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
 Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReference ) {
 
     if( typeof soundNameReference === "undefined" )
@@ -21630,7 +21806,7 @@ Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReferenc
 
     for (var i in this._Sounds)
     {
-        if (this._Sounds[i].OriginalName === soundNameReference)
+        if (this._Sounds[i].OriginalName === soundNameReference || this._Sounds[i].Name === soundNameReference)
         {
             return this._Sounds[i];
         }
@@ -21641,9 +21817,26 @@ Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReferenc
 
 
 
-/*
- * GetSoundByReferenceName
-*/
+/**
+ * Get a sound by name (short version)
+ * @name Sound
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} nameReference The reference name
+ * @returns {Duedo.SoundManager} the instance of the sound manager
+ */
+ Duedo.SoundManager.prototype.Sound = function ( nameReference ) {
+    return this.GetListedSoundByName( nameReference );
+};
+
+
+
+/**
+ * DEPRECATED
+ * @ignore
+ * @param {*} soundNameReference 
+ */
 Duedo.SoundManager.prototype.GetSoundByReferenceName = function ( soundNameReference ) {
 
     if( typeof soundNameReference === "undefined" )
@@ -21662,21 +21855,19 @@ Duedo.SoundManager.prototype.GetSoundByReferenceName = function ( soundNameRefer
     return null;
 };
 
-//Abbreviated version
-Duedo.SoundManager.prototype.Sound = function ( nameReference ) {
-    return this.GetSoundByReferenceName( nameReference );
-};
 
 
 
-
-
-
-
-
-/*
- * RemoveSound
-*/
+/**
+ * Remove a sound
+ * @name RemoveSound
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {string} reference The reference name or the Duedo.Sound object to remove
+ * @param {boolean} stop Whether to stop or not the sound
+ * @returns {Duedo.Sound} Return the removed sound
+ */
 Duedo.SoundManager.prototype.RemoveSound = function ( reference, stop ) {
     
     if( typeof reference === "undefined" )
@@ -21713,21 +21904,21 @@ Duedo.SoundManager.prototype.RemoveSound = function ( reference, stop ) {
 
     }
 
-
-
     console.warn("Duedo.SoundManager.RemoveSound: trying to remove a not identified sound");
 
 };
 
 
 
-
-
-/*
- * SetVolume
- *
- * global volume
-*/
+/**
+ * Set the global volume - 0 to 1
+ * @name SetVolume
+ * @method
+ * @instance
+ * @memberof Duedo.SoundManager
+ * @param {double} volumeValue The amount of volume
+ * @returns {Duedo.Sound} Return this instance of sound manager
+ */
 Duedo.SoundManager.prototype.SetVolume = function ( volumeValue ) {
 
     if (volumeValue > 1)
@@ -21755,16 +21946,14 @@ Duedo.SoundManager.prototype.SetVolume = function ( volumeValue ) {
         this._Sounds[i].SetVolume(volumeValue);
     }
 
-
-
     return this;
 };
 
 
 
-/*
- * _BufferedAudioResources
-*/
+/**
+ * @ignore
+ */
 Object.defineProperty(Duedo.SoundManager.prototype, "_BufferedAudioResources", {
 
     get: function () {
@@ -21781,23 +21970,6 @@ Object.defineProperty(Duedo.SoundManager.prototype, "_BufferedAudioResources", {
 
 });
 
-
-
-
-/*
- * Volume
-*/
-Object.defineProperty(Duedo.SoundManager.prototype, "Volume", {
-
-    get: function() {
-        return this._Volume;
-    },
-
-    set:function(value) {
-        this.SetVolume(value);
-    }
-
-});
 /*
 ==============================
 Duedo.Tile
@@ -25394,7 +25566,6 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 	/*Locations vectors2*/
 	this.Location     = this.View.Location;
 	this.LastLocation = new Duedo.Vector2(0, 0);
-
 	
 	return this;
 };
@@ -25506,7 +25677,7 @@ Duedo.Viewport.prototype._UpdateTargetDependancy = function() {
 
 	if(this._Dragging && this.DragPreventFollow)
 		return;
-
+	
 	/*Are we following a target?*/
 	this.UpdateTranslation();
 
@@ -25520,7 +25691,11 @@ Duedo.Viewport.prototype._UpdateTargetDependancy = function() {
 */
 Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
-   this._UpdateTargetDependancy();
+	// Calculate camera size based on zoom
+	this.View.Width = this.OriginalView.Width / this._Zoom;
+	this.View.Height = this.OriginalView.Height / this._Zoom;
+
+	this._UpdateTargetDependancy();
 
 	/*Update animations*/
 	this.UpdateAnimations( deltaT );
@@ -25532,10 +25707,6 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 	{
 		this.UpdateBoundsCollision();
 	}
-
-	// Calculate camera size based on zoom
-	this.View.Width = this.OriginalView.Width / this._Zoom;
-	this.View.Height = this.OriginalView.Height / this._Zoom;
 
 	this._UpdateOffset();
 
@@ -25554,6 +25725,10 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
 	this._UpdateEffects(deltaT);
 
+	if(this._Zoomed) {
+		this._Zoomed = false;
+	}
+
 	return this;
 
 };
@@ -25568,7 +25743,7 @@ Duedo.Viewport.prototype._UpdateOffset = function() {
 
 	let FinalOffset = new Duedo.Vector2(0, 0);
 
-	if(this._Zoomed && !this.Game.IsMobile) {
+	if(this._Zoomed && !this.Game.IsMobile && !this.Target) {
 		// Zoom toward the mouse	
 		const CameraTranslation = this.Game.InputManager.Mouse.PreviousWorldLocation
 			.Clone()
@@ -25580,8 +25755,6 @@ Duedo.Viewport.prototype._UpdateOffset = function() {
 			FinalPosition.X,
 			FinalPosition.Y
 		)
-
-		this._Zoomed = false;
 
 		this._Velocity.Reset();
 
@@ -25867,16 +26040,6 @@ Duedo.Viewport.prototype.Detach = function ( gobj ) {
 };
 
 
-/*
- * Animate
- * @public
- * Animate the View
-*/
-Duedo.Viewport.prototype.Animate = function ( AffectedProperties, Duration, Tweening, name ) {
-	return this.View.Animate(AffectedProperties, Duration, Tweening, name);
-};
-
-
 
 /*
  * Zoom
@@ -25899,7 +26062,13 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 		}
 
 		this.Game._Message('zoomed');
+
 		this._Zoomed = true;
+
+		// Recalculate Deadzone
+		if(this.Target) {
+			this.Follow(this.Target)
+		}
 	},
 
 	get: function () {
@@ -26545,12 +26714,12 @@ Duedo.Renderer.prototype.SortBuffer = function() {
 */
 Duedo.Renderer.prototype.Render = function() {
 
+	if(this.Game.Viewport.Zoom) {
+		this.Scale(this.Game.Viewport.Zoom, this.Game.Viewport.Zoom);
+	}
+
 	/*Transform and scale*/
 	this.SetTransformationMatrix();
-
-	if(this.Game.Viewport.Zoom) {
-		this.Context.scale(this.Game.Viewport.Zoom, this.Game.Viewport.Zoom);
-	}
 
 	/*Translate by viewport/camera*/
 	this.Translate(
@@ -26559,8 +26728,15 @@ Duedo.Renderer.prototype.Render = function() {
 	);
 
 	/*Clear*/
-	if(this.ClearBeforeRender) 
-		this.Clear();
+	// https://newbedev.com/how-to-clear-the-canvas-for-redrawing
+	if(this.ClearBeforeRender) {
+	this.Context.save();
+	this.Scale(1, 1);
+	this.SetTransformationMatrix();
+	this.Clear();
+	}
+
+	this.Context.restore();
 
 	this.SortBuffer(); /*each cycle? :( */
 	
@@ -26570,6 +26746,25 @@ Duedo.Renderer.prototype.Render = function() {
 	this.Game.StateManager.RenderState(this.Context);
 
 	return this;
+
+};
+
+
+
+/*
+ * Clear
+*/
+Duedo.Renderer.prototype.Clear = function() {
+
+	if( this.FillColor )
+	{
+		this.Context.fillStyle = this.FillColor;
+		this.Context.fillRect(0, 0, this.Canvas.width, this.Canvas.height);
+	}
+	else
+	{
+		this.Context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+	}
 
 };
 
@@ -26776,24 +26971,6 @@ Object.defineProperty(Duedo.Renderer.prototype, "MinZPlane", {
 
 });
 
-
-
-/*
- * Clear
-*/
-Duedo.Renderer.prototype.Clear = function() {
-
-	if( this.FillColor )
-	{
-		this.Context.fillStyle = this.FillColor;
-		this.Context.fillRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-	else
-	{
-		this.Context.clearRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-
-};
 
 
 

@@ -191,12 +191,12 @@ Duedo.Renderer.prototype.SortBuffer = function() {
 */
 Duedo.Renderer.prototype.Render = function() {
 
+	if(this.Game.Viewport.Zoom) {
+		this.Scale(this.Game.Viewport.Zoom, this.Game.Viewport.Zoom);
+	}
+
 	/*Transform and scale*/
 	this.SetTransformationMatrix();
-
-	if(this.Game.Viewport.Zoom) {
-		this.Context.scale(this.Game.Viewport.Zoom, this.Game.Viewport.Zoom);
-	}
 
 	/*Translate by viewport/camera*/
 	this.Translate(
@@ -205,8 +205,15 @@ Duedo.Renderer.prototype.Render = function() {
 	);
 
 	/*Clear*/
-	if(this.ClearBeforeRender) 
-		this.Clear();
+	// https://newbedev.com/how-to-clear-the-canvas-for-redrawing
+	if(this.ClearBeforeRender) {
+	this.Context.save();
+	this.Scale(1, 1);
+	this.SetTransformationMatrix();
+	this.Clear();
+	}
+
+	this.Context.restore();
 
 	this.SortBuffer(); /*each cycle? :( */
 	
@@ -216,6 +223,25 @@ Duedo.Renderer.prototype.Render = function() {
 	this.Game.StateManager.RenderState(this.Context);
 
 	return this;
+
+};
+
+
+
+/*
+ * Clear
+*/
+Duedo.Renderer.prototype.Clear = function() {
+
+	if( this.FillColor )
+	{
+		this.Context.fillStyle = this.FillColor;
+		this.Context.fillRect(0, 0, this.Canvas.width, this.Canvas.height);
+	}
+	else
+	{
+		this.Context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+	}
 
 };
 
@@ -422,24 +448,6 @@ Object.defineProperty(Duedo.Renderer.prototype, "MinZPlane", {
 
 });
 
-
-
-/*
- * Clear
-*/
-Duedo.Renderer.prototype.Clear = function() {
-
-	if( this.FillColor )
-	{
-		this.Context.fillStyle = this.FillColor;
-		this.Context.fillRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-	else
-	{
-		this.Context.clearRect(this.Game.Viewport.Offset.X, this.Game.Viewport.Offset.Y, this.Canvas.width, this.Canvas.height);
-	}
-
-};
 
 
 

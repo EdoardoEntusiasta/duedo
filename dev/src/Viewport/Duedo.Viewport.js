@@ -124,7 +124,6 @@ Duedo.Viewport.prototype._init = function ( ViewWidth, ViewHeight) {
 	/*Locations vectors2*/
 	this.Location     = this.View.Location;
 	this.LastLocation = new Duedo.Vector2(0, 0);
-
 	
 	return this;
 };
@@ -236,7 +235,7 @@ Duedo.Viewport.prototype._UpdateTargetDependancy = function() {
 
 	if(this._Dragging && this.DragPreventFollow)
 		return;
-
+	
 	/*Are we following a target?*/
 	this.UpdateTranslation();
 
@@ -250,7 +249,11 @@ Duedo.Viewport.prototype._UpdateTargetDependancy = function() {
 */
 Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
-   this._UpdateTargetDependancy();
+	// Calculate camera size based on zoom
+	this.View.Width = this.OriginalView.Width / this._Zoom;
+	this.View.Height = this.OriginalView.Height / this._Zoom;
+
+	this._UpdateTargetDependancy();
 
 	/*Update animations*/
 	this.UpdateAnimations( deltaT );
@@ -262,10 +265,6 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 	{
 		this.UpdateBoundsCollision();
 	}
-
-	// Calculate camera size based on zoom
-	this.View.Width = this.OriginalView.Width / this._Zoom;
-	this.View.Height = this.OriginalView.Height / this._Zoom;
 
 	this._UpdateOffset();
 
@@ -284,6 +283,10 @@ Duedo.Viewport.prototype.Update = function ( deltaT ) {
 
 	this._UpdateEffects(deltaT);
 
+	if(this._Zoomed) {
+		this._Zoomed = false;
+	}
+
 	return this;
 
 };
@@ -298,7 +301,7 @@ Duedo.Viewport.prototype._UpdateOffset = function() {
 
 	let FinalOffset = new Duedo.Vector2(0, 0);
 
-	if(this._Zoomed && !this.Game.IsMobile) {
+	if(this._Zoomed && !this.Game.IsMobile && !this.Target) {
 		// Zoom toward the mouse	
 		const CameraTranslation = this.Game.InputManager.Mouse.PreviousWorldLocation
 			.Clone()
@@ -310,8 +313,6 @@ Duedo.Viewport.prototype._UpdateOffset = function() {
 			FinalPosition.X,
 			FinalPosition.Y
 		)
-
-		this._Zoomed = false;
 
 		this._Velocity.Reset();
 
@@ -597,16 +598,6 @@ Duedo.Viewport.prototype.Detach = function ( gobj ) {
 };
 
 
-/*
- * Animate
- * @public
- * Animate the View
-*/
-Duedo.Viewport.prototype.Animate = function ( AffectedProperties, Duration, Tweening, name ) {
-	return this.View.Animate(AffectedProperties, Duration, Tweening, name);
-};
-
-
 
 /*
  * Zoom
@@ -629,7 +620,13 @@ Object.defineProperty(Duedo.Viewport.prototype, "Zoom", {
 		}
 
 		this.Game._Message('zoomed');
+
 		this._Zoomed = true;
+
+		// Recalculate Deadzone
+		if(this.Target) {
+			this.Follow(this.Target)
+		}
 	},
 
 	get: function () {

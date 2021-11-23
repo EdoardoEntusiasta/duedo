@@ -181,6 +181,18 @@ Duedo.PhysicsEngine.prototype._StepPhysics = function(dt, correction) {
 };
 
 
+/**
+ * SetGravity
+ * @param {*} x 
+ * @param {*} y 
+ * @returns 
+ */
+Duedo.PhysicsEngine.prototype.SetGravity = function(x, y) {
+    this.World.SetGravity(new b2Vec2(x, y));
+    return this;
+}
+
+
 /*
  * PostUpdate
 */

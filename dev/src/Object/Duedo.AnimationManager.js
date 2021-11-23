@@ -73,7 +73,6 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         {
             for(var valN in pValue )
             {
-                
                 Animation._Data[PropertyName][valN] = 
                 { 
                     StartValue: self.Parent[PropertyName][valN],
@@ -85,7 +84,6 @@ Duedo.AnimationManager.prototype.Animate = function ( AffectedProperties, Durati
         /*Destination value as single number es: Radius: 50*/
         else
         {
-
             Animation._Data[PropertyName] =
             { 
                 StartValue: self.Parent[PropertyName],

@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Duedo.SoundManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Duedo.SoundManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
 ==============================
 Duedo.SoundManager
 
@@ -35,7 +63,7 @@ Duedo.SoundManager = function ( _gameContext ) {
 
     this._Sounds = [];
 
-    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
     this._PendingUserInteraction = false;
 
     this._UsingWebAudio = false;
@@ -51,22 +79,6 @@ Duedo.SoundManager = function ( _gameContext ) {
 Duedo.SoundManager.prototype = Object.create(Duedo.Object.prototype);
 Duedo.SoundManager.prototype.constructor = Duedo.SoundManager;
 
-
-/**
- * Return the current global volume
- * @property {double}  [Volume=1]               - The global volume of the application
- */
- Object.defineProperty(Duedo.SoundManager.prototype, "Volume", {
-
-    get: function() {
-        return this._Volume;
-    },
-
-    set:function(value) {
-        this.SetVolume(value);
-    }
-
-});
 
 
 Duedo.SoundManager.prototype._setup = function () {
@@ -93,10 +105,13 @@ Duedo.SoundManager.prototype._setup = function () {
         }
     }
 
+
+
     if( typeof this._AudioContext === "undefined" )
     {
         return;
     }
+
 
     //Create master gain
     if (typeof this._AudioContext.createGain === 'undefined')
@@ -112,7 +127,7 @@ Duedo.SoundManager.prototype._setup = function () {
 
     this._MasterGain.connect(this._AudioContext.destination);
 
-    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
     document.documentElement.addEventListener(
         "click", () => {
             if (this._AudioContext.state !== 'running') {
@@ -125,17 +140,50 @@ Duedo.SoundManager.prototype._setup = function () {
 
 
 
+Duedo.SoundManager.prototype.Update = function (deltaT) {
+    
+    if(this._noAudio)
+    {
+        return;
+    }
+    
+    for (var index = this._Sounds.length - 1; index >= 0; index--)
+    {
+        this._Sounds[index].Update(deltaT);
+    }
+    
+};
+
+
+
+Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReference, volume ) {
+
+    var DUEDOSound;
+
+    //Instantiate a new sound
+    DUEDOSound = new Duedo.Sound( _bufferedSound, nameReference, volume, this, true );
+
+    this._Sounds.push(DUEDOSound);
+
+
+    return DUEDOSound;
+    
+};
+
+
+
+
 /**
  * Play a sound
  * @name Play
  * @method
  * @instance
- * @memberof Duedo.SoundManager
+ * @memberof Duedo
  * @param {string} soundName The sound's name (the one used when loading, otherwise the file name without spaces)
  * @param {object} options The options (like: { Location, Volume, Rate, NameReference, RandomStart })
  * @returns {Duedo.Sound} the instance of the requested sound
  */
- Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
+Duedo.SoundManager.prototype.Play = function ( soundName, options ) {
     
     this._AudioContext.resume();
 
@@ -179,61 +227,13 @@ Duedo.SoundManager.prototype._setup = function () {
 
 
 
-/**
- * Update
- * @param {*} deltaT 
- * @ignore  
- */
-Duedo.SoundManager.prototype.Update = function (deltaT) {
-    
-    if(this._noAudio)
-    {
-        return;
-    }
-    
-    for (var index = this._Sounds.length - 1; index >= 0; index--)
-    {
-        this._Sounds[index].Update(deltaT);
-    }
-    
-};
-
-
-/**
- * @ignore
- * @param {*} _bufferedSound 
- * @param {*} nameReference 
- * @param {*} volume 
- */
-Duedo.SoundManager.prototype._AddSound = function ( _bufferedSound, nameReference, volume ) {
-
-    var DUEDOSound;
-
-    //Instantiate a new sound
-    DUEDOSound = new Duedo.Sound( _bufferedSound, nameReference, volume, this, true );
-
-    this._Sounds.push(DUEDOSound);
-
-
-    return DUEDOSound;
-    
-};
 
 
 
 
-
-
-/**
- * Create a new sound instance and return it
- * @name NewSoundInstance
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} soundName The sound's name
- * @param {string} nameReference A custom reference name. If not specified will be "DUEDOSound_ + n"
- * @returns {Duedo.Sound} the instance of the requested sound
- */
+/*
+ * NewSoundInstance
+*/
 Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameReference ) {
 
     var s = this.GameContext.Cache.GetSound(soundName);
@@ -244,7 +244,7 @@ Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameRefere
     }
     else
     {
-        var DUEDOSound = this._AddSound(s, (nameReference !== undefined ? nameReference : ("DUEDOSound_" + this._Sounds.length)), this.Volume);
+        var DUEDOSound = this._AddSound(s, (nameReference !== undefined ? nameReference : ("TWODSound_" + this._Sounds.length)), this.Volume);
         
         DUEDOSound.OriginalName = soundName;
         
@@ -264,15 +264,10 @@ Duedo.SoundManager.prototype.NewSoundInstance = function ( soundName, nameRefere
 
 
 
-/**
- * Stop a sound
- * @name StopSound
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} soundNameReference The reference name
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+
+/*
+ * StopSound
+*/
 Duedo.SoundManager.prototype.StopSound = function ( soundNameReference ) {
     
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -292,14 +287,9 @@ Duedo.SoundManager.prototype.StopSound = function ( soundNameReference ) {
 
 
 
-/**
- * Stop all playing sounds
- * @name StopAllSounds
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+/*
+ * StopAllSounds
+*/
 Duedo.SoundManager.prototype.StopAllSounds = function () {
     
     for( var i in this._Sounds )
@@ -318,6 +308,8 @@ Duedo.SoundManager.prototype.StopAllSounds = function () {
         }
     }
 
+
+
     return this;
 };
 
@@ -326,15 +318,9 @@ Duedo.SoundManager.prototype.StopAllSounds = function () {
 
 
 
-/**
- * Pause sound
- * @name StopAllSounds
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} soundNameReference The reference name
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+/*
+ * PauseSound
+*/
 Duedo.SoundManager.prototype.PauseSound = function (soundNameReference) {
 
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -350,7 +336,6 @@ Duedo.SoundManager.prototype.PauseSound = function (soundNameReference) {
 };
 
 
-
 Duedo.SoundManager.prototype.IsPlaying = function(name) {
     const sound = this.GetListedSoundByName(name);
     if(!sound) {
@@ -361,14 +346,9 @@ Duedo.SoundManager.prototype.IsPlaying = function(name) {
 } 
 
 
-/**
- * Pause all sounds
- * @name PauseAllSounds
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+/*
+ * PauseAllSounds
+*/
 Duedo.SoundManager.prototype.PauseAllSounds = function () {
 
     for (var i in this._Sounds)
@@ -384,21 +364,19 @@ Duedo.SoundManager.prototype.PauseAllSounds = function () {
         }
     }
 
+
+
     return this;
 };
 
 
 
 
-/**
- * Resume a specific sound
- * @name ResumeSound
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} soundNameReference The reference name
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+
+
+/*
+ * ResumeSound
+*/
 Duedo.SoundManager.prototype.ResumeSound = function (soundNameReference) {
 
     var s = this.GetSoundByReferenceName(soundNameReference);
@@ -415,14 +393,12 @@ Duedo.SoundManager.prototype.ResumeSound = function (soundNameReference) {
 
 
 
-/**
- * Resume all sounds
- * @name ResumeAllSounds
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+
+
+
+/*
+ * ResumeAllSounds
+*/
 Duedo.SoundManager.prototype.ResumeAllSounds = function () {
 
     for (var i in this._Sounds)
@@ -441,20 +417,16 @@ Duedo.SoundManager.prototype.ResumeAllSounds = function () {
         }
     }
 
+
+
     return this;
 };
 
 
 
-/**
- * Get a sound by name
- * @name GetListedSoundByName
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} soundNameReference The reference name
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
+/*
+ * GetSoundByReferenceName
+*/
 Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReference ) {
 
     if( typeof soundNameReference === "undefined" )
@@ -464,7 +436,7 @@ Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReferenc
 
     for (var i in this._Sounds)
     {
-        if (this._Sounds[i].OriginalName === soundNameReference || this._Sounds[i].Name === soundNameReference)
+        if (this._Sounds[i].OriginalName === soundNameReference)
         {
             return this._Sounds[i];
         }
@@ -475,26 +447,9 @@ Duedo.SoundManager.prototype.GetListedSoundByName = function ( soundNameReferenc
 
 
 
-/**
- * Get a sound by name (short version)
- * @name Sound
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} nameReference The reference name
- * @returns {Duedo.SoundManager} the instance of the sound manager
- */
- Duedo.SoundManager.prototype.Sound = function ( nameReference ) {
-    return this.GetListedSoundByName( nameReference );
-};
-
-
-
-/**
- * DEPRECATED
- * @ignore
- * @param {*} soundNameReference 
- */
+/*
+ * GetSoundByReferenceName
+*/
 Duedo.SoundManager.prototype.GetSoundByReferenceName = function ( soundNameReference ) {
 
     if( typeof soundNameReference === "undefined" )
@@ -513,19 +468,21 @@ Duedo.SoundManager.prototype.GetSoundByReferenceName = function ( soundNameRefer
     return null;
 };
 
+//Abbreviated version
+Duedo.SoundManager.prototype.Sound = function ( nameReference ) {
+    return this.GetSoundByReferenceName( nameReference );
+};
 
 
 
-/**
- * Remove a sound
- * @name RemoveSound
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {string} reference The reference name or the Duedo.Sound object to remove
- * @param {boolean} stop Whether to stop or not the sound
- * @returns {Duedo.Sound} Return the removed sound
- */
+
+
+
+
+
+/*
+ * RemoveSound
+*/
 Duedo.SoundManager.prototype.RemoveSound = function ( reference, stop ) {
     
     if( typeof reference === "undefined" )
@@ -543,7 +500,7 @@ Duedo.SoundManager.prototype.RemoveSound = function ( reference, stop ) {
         
         if( index !== -1 )
         {
-            if ( this._Sounds[index]._IsPlaying && stop )
+            if ( this._Sounds[index]._IsPlaying &amp;&amp; stop )
             {
                 this._Sounds[index].Stop();
             }
@@ -562,21 +519,21 @@ Duedo.SoundManager.prototype.RemoveSound = function ( reference, stop ) {
 
     }
 
+
+
     console.warn("Duedo.SoundManager.RemoveSound: trying to remove a not identified sound");
 
 };
 
 
 
-/**
- * Set the global volume - 0 to 1
- * @name SetVolume
- * @method
- * @instance
- * @memberof Duedo.SoundManager
- * @param {double} volumeValue The amount of volume
- * @returns {Duedo.Sound} Return this instance of sound manager
- */
+
+
+/*
+ * SetVolume
+ *
+ * global volume
+*/
 Duedo.SoundManager.prototype.SetVolume = function ( volumeValue ) {
 
     if (volumeValue > 1)
@@ -584,7 +541,7 @@ Duedo.SoundManager.prototype.SetVolume = function ( volumeValue ) {
         volumeValue = 1;
     }
 
-    if (volumeValue < 0)
+    if (volumeValue &lt; 0)
     {
         volumeValue = 0;
     }
@@ -604,14 +561,16 @@ Duedo.SoundManager.prototype.SetVolume = function ( volumeValue ) {
         this._Sounds[i].SetVolume(volumeValue);
     }
 
+
+
     return this;
 };
 
 
 
-/**
- * @ignore
- */
+/*
+ * _BufferedAudioResources
+*/
 Object.defineProperty(Duedo.SoundManager.prototype, "_BufferedAudioResources", {
 
     get: function () {
@@ -627,3 +586,43 @@ Object.defineProperty(Duedo.SoundManager.prototype, "_BufferedAudioResources", {
     }
 
 });
+
+
+
+
+/*
+ * Volume
+*/
+Object.defineProperty(Duedo.SoundManager.prototype, "Volume", {
+
+    get: function() {
+        return this._Volume;
+    },
+
+    set:function(value) {
+        this.SetVolume(value);
+    }
+
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Duedo.Sound.html">Sound</a></li><li><a href="Duedo.SoundManager.html">SoundManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 16 2021 18:33:46 GMT+0400 (Armenia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

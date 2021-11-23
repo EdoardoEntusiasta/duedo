@@ -8,6 +8,7 @@ Author: http://www.edoardocasella.it
 
 Duedo.Particle = function (gameContext) {
     Duedo.GraphicObject.call(this);
+
     this.Game = gameContext || Duedo.Global.Game;
     this.TYPE = Duedo.PARTICLE;
     
@@ -64,12 +65,17 @@ Duedo.Particle.prototype._init = function () {
 /*Main update*/
 Duedo.Particle.prototype.Update = function ( deltaT ) {
 
-    /*FIX: ADD deltaT*/
+    //Apply custom forces
+    this._Parent.Forces.forEach(force => {
+        this.ApplyForce(force.vector);
+    });
+
     //Apply gravity
-    this.ApplyForce(this._Parent.Gravity.Clone().MultiplyScalar(this.Mass));
+    // this.ApplyForce(this._Parent.Gravity.Clone().MultiplyScalar(this.Mass));
 
     this.Velocity.Add(this.Acceleration);
-    this.FixVelocity();
+    //this.FixVelocity();
+
     this.Location.Add(this.Velocity);
 
 
@@ -84,10 +90,9 @@ Duedo.Particle.prototype.Update = function ( deltaT ) {
         this._UpdateSimpleParticle( deltaT );
     }
 
-
     this.Renderable = this.CheckViewportIntersection();
 
-
+    this.Acceleration.Reset();
 
     return this;
 };
@@ -104,16 +109,15 @@ Duedo.Particle.prototype._UpdateTexturizedParticle = function ( deltaT ) {
     /*Update texture alpha*/
     this.Alpha = this.InitialAlpha - (this.Game.ElapsedTime - this.StartTime) / this.Life;
 
+    // Scale by global alpha
     this.Alpha *= this.Game.World.Alpha;
-
 
     if (this.Alpha <= 0)
     {
         this.Alpha = 0;
         this.Renderable = false;
     }
-       
-
+    
     return this;
 
 };
@@ -129,12 +133,10 @@ Duedo.Particle.prototype._UpdateSimpleParticle = function ( deltaT ) {
     var r, g, b, a;
     var draw;
 
-
     r = this.Colour[0] += (this.DeltaColour[0] * deltaT);
     g = this.Colour[1] += (this.DeltaColour[1] * deltaT);
     b = this.Colour[2] += (this.DeltaColour[2] * deltaT);
     a = this.Colour[3] += (this.DeltaColour[3] * deltaT);
-
 
     draw = [];
 
@@ -149,9 +151,7 @@ Duedo.Particle.prototype._UpdateSimpleParticle = function ( deltaT ) {
 
     this.DrawColour = draw.join(",");
 
-
     return this;
-
 };
 
 
