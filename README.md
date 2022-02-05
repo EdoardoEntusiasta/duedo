@@ -1,7 +1,10 @@
 ![Alt text](http://projects.edoardocasella.it/duedo/img/logo.png?raw=true "Duedo")
 
 2D HTML5 game engine
-Duedo is currently under heavy development and actually does not have a physics engine and a mobile support
+Duedo is currently under heavy development
+
+Missing parts: tile engine
+
 
 Seeking collaborators
 
@@ -40,7 +43,7 @@ Using 'gulp' the build folder will contains duedo.js and duedo.minified.js
 8. Spritesheets and image rendering
 9. Geometry and math support
 10. Parallax
-11. *Physics engine: box2d, to be connected*
+11. Box2D physics engine
 12. *Tilemap: to develop*
 
 
